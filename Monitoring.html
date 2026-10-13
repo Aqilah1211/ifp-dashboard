@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IFP Monitoring Report - Dashboard Instalasi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -10,37 +10,43 @@
         
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f8fafc;
             color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Glassmorphic Navbar & Gradient */
+        /* Sleek Modern Header */
         .header-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%);
         }
 
         /* Modern Card Styling */
         .metric-card {
             background: #ffffff;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
-            transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1rem;
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
             border-color: rgba(191, 219, 254, 0.9);
         }
 
         /* Sleek custom scrollbars */
         .table-scroll::-webkit-scrollbar {
-            height: 7px;
-            width: 7px;
+            height: 6px;
+            width: 6px;
         }
         .table-scroll::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -59,9 +65,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            padding: 0.25rem 0.65rem;
+            padding: 0.25rem 0.625rem;
             border-radius: 9999px;
-            font-size: 0.72rem;
+            font-size: 0.75rem;
             font-weight: 700;
             white-space: nowrap;
         }
@@ -80,16 +86,16 @@
             border: 3px solid #e2e8f0;
             border-radius: 50%;
             border-top: 3px solid #2563eb;
-            width: 28px;
-            height: 28px;
-            animation: spin 0.9s linear infinite;
+            width: 32px;
+            height: 32px;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Modal backdrop */
         .modal-blur {
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
         }
     </style>
 </head>
@@ -97,29 +103,32 @@
 
     <!-- Top Header Navbar -->
     <header class="header-gradient text-white shadow-md sticky top-0 z-40">
-        <div class="w-full px-4 sm:px-6 lg:px-8">
-            <div class="py-3.5 flex flex-wrap justify-between items-center gap-3">
+        <div class="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="py-3 flex flex-wrap justify-between items-center gap-3">
                 
                 <!-- Brand Title -->
-                <div class="flex items-center gap-3">
-                    <div class="bg-white/15 p-2 rounded-xl backdrop-blur-md border border-white/20 shadow-inner flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="flex items-center gap-2.5">
+                    <div class="bg-blue-600/30 p-2 rounded-xl backdrop-blur-md border border-white/20 shadow-inner flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-base sm:text-lg font-extrabold tracking-tight">IFP Monitoring Report</h1>
-                            <span class="bg-blue-400/25 border border-blue-300/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
+                            <h1 class="text-sm sm:text-base md:text-lg font-extrabold tracking-tight">IFP Monitoring Report</h1>
+                            <span class="inline-flex items-center gap-1 bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                LIVE
+                            </span>
                         </div>
-                        <p class="text-[11px] text-blue-200/90 font-medium">Multi-Spreadsheet Installation Tracker</p>
+                        <p class="text-xs text-blue-200/90 font-medium">Dashboard Pemantauan & Instalasi Multi-Spreadsheet</p>
                     </div>
                 </div>
 
-                <!-- Action Controls Group -->
-                <div class="flex items-center gap-2">
+                <!-- Action Controls Group (Touch Friendly) -->
+                <div class="flex items-center gap-1.5 sm:gap-2">
                     <!-- Share Button -->
-                    <button onclick="generateShareLink()" title="Bagikan Konfigurasi ke Teman" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                    <button onclick="generateShareLink()" title="Bagikan Konfigurasi ke Teman" class="h-9 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/15 text-white px-2.5 sm:px-3 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
@@ -127,40 +136,40 @@
                     </button>
 
                     <!-- Kelola Sumber Data (15+ Sheets) -->
-                    <button onclick="openSourceManager()" title="Kelola Sumber Spreadsheet & CSV" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                    <button onclick="openSourceManager()" title="Kelola Sumber Spreadsheet & CSV" class="h-9 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/15 text-white px-2.5 sm:px-3 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                         </svg>
-                        <span>Sumber Data</span>
-                        <span id="nav-source-count" class="bg-blue-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">1</span>
+                        <span class="hidden xs:inline">Sumber Data</span>
+                        <span id="nav-source-count" class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">1</span>
                     </button>
 
                     <!-- Manual Refresh -->
-                    <button id="manual-refresh" onclick="fetchAllData({silent:false})" title="Perbarui Data Sekarang" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white p-2 rounded-xl transition flex items-center justify-center">
+                    <button id="manual-refresh" onclick="fetchAllData({silent:false})" title="Perbarui Data Sekarang" class="h-9 w-9 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/15 text-white rounded-xl transition flex items-center justify-center cursor-pointer">
                         <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
 
                     <!-- Auto Refresh Pill -->
-                    <button id="auto-toggle" onclick="toggleAutoRefresh()" title="Klik untuk On/Off Auto-refresh 30s" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-2.5 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1.5">
+                    <button id="auto-toggle" onclick="toggleAutoRefresh()" title="Klik untuk On/Off Auto-refresh 30s" class="h-9 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/15 text-white px-2.5 py-1 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
                         <span id="auto-pulse-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="auto-status-text" class="text-[11px] font-mono hidden md:inline">30s</span>
+                        <span id="auto-status-text" class="text-xs font-mono">30s</span>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Sub-Header: Active Data Source Ribbon -->
-        <div class="bg-black/20 border-t border-white/10 px-4 sm:px-6 lg:px-8 py-2">
-            <div class="w-full flex items-center justify-between text-xs overflow-x-auto gap-3">
+        <div class="bg-black/25 border-t border-white/10 px-3 sm:px-6 lg:px-8 py-2">
+            <div class="max-w-[1600px] mx-auto flex items-center justify-between text-xs overflow-x-auto gap-3">
                 <div class="flex items-center gap-2 shrink-0">
-                    <span class="text-white/70 text-[11px] font-semibold uppercase tracking-wider">Spreadsheet Terhubung:</span>
-                    <div id="source-chips" class="flex gap-2 items-center flex-wrap">
+                    <span class="text-white/75 text-xs font-semibold uppercase tracking-wider">Spreadsheet Terhubung:</span>
+                    <div id="source-chips" class="flex gap-2 items-center flex-nowrap sm:flex-wrap">
                         <!-- chips rendered here -->
                     </div>
                 </div>
-                <div class="text-[11px] text-white/70 shrink-0 font-medium">
+                <div class="text-xs text-white/70 shrink-0 font-medium">
                     Terakhir diperbarui: <span id="last-updated" class="font-mono text-white font-bold">-</span>
                 </div>
             </div>
@@ -168,15 +177,15 @@
     </header>
 
     <!-- Source Manager Modal (Support 15+ Spreadsheets) -->
-    <div id="source-modal" class="hidden fixed inset-0 z-50 modal-blur flex items-center justify-center p-4">
+    <div id="source-modal" class="hidden fixed inset-0 z-50 modal-blur flex items-center justify-center p-3 sm:p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
             <!-- Modal Header -->
-            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
+            <div class="px-5 sm:px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900">Kelola Sumber Spreadsheet</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Gabungkan hingga 15+ spreadsheet sekaligus ke dalam satu dashboard</p>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Kelola Sumber Spreadsheet</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Gabungkan data dari 15+ spreadsheet Google Sheets & CSV sekaligus</p>
                 </div>
-                <button onclick="closeSourceManager()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition">
+                <button onclick="closeSourceManager()" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-200 transition cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -184,16 +193,16 @@
             </div>
 
             <!-- Modal Body (Scrollable) -->
-            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+            <div class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
                 
                 <!-- Registered Spreadsheets List -->
                 <div>
                     <div class="flex justify-between items-center mb-2.5">
-                        <label class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
                             <span>Daftar Spreadsheet Terdaftar</span>
-                            <span id="modal-sheet-count" class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px]">1</span>
+                            <span id="modal-sheet-count" class="bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full text-xs">1</span>
                         </label>
-                        <button onclick="removeAllSpreadsheets()" class="text-[11px] text-red-500 hover:text-red-700 font-bold transition">
+                        <button onclick="removeAllSpreadsheets()" class="text-xs text-rose-600 hover:text-rose-800 font-bold transition cursor-pointer">
                             Hapus Semua
                         </button>
                     </div>
@@ -206,28 +215,28 @@
                 <!-- Input Switcher (Single vs Batch 15+ links) -->
                 <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
                     <div class="flex border-b border-slate-200 pb-2 mb-3 gap-2">
-                        <button onclick="switchInputMode('single')" id="btn-mode-single" class="px-3 py-1.5 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition">
+                        <button onclick="switchInputMode('single')" id="btn-mode-single" class="px-3 py-1.5 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition cursor-pointer">
                             + Tambah Satu Link
                         </button>
-                        <button onclick="switchInputMode('batch')" id="btn-mode-batch" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
-                            📋 Tempel Banyak Link Sekaligus (15+ Spreadsheet)
+                        <button onclick="switchInputMode('batch')" id="btn-mode-batch" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                            📋 Tempel Banyak Link Sekaligus (15+ Sheet)
                         </button>
                     </div>
 
                     <!-- Single Input -->
                     <div id="form-single-ss" class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" id="new-spreadsheet-id" placeholder="Paste link Google Sheet atau Spreadsheet ID..." class="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="text" id="new-sheet-name" placeholder="Sheet (opsional)" class="w-full sm:w-32 px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
-                        <button onclick="addSpreadsheet()" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition whitespace-nowrap shadow-sm">+ Tambah</button>
+                        <input type="text" id="new-spreadsheet-id" placeholder="Paste link Google Sheet atau Spreadsheet ID..." class="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" id="new-sheet-name" placeholder="Sheet (opsional)" class="w-full sm:w-32 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button onclick="addSpreadsheet()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold transition whitespace-nowrap shadow-xs cursor-pointer">+ Tambah</button>
                     </div>
 
                     <!-- Batch / Bulk Input -->
                     <div id="form-batch-ss" class="hidden space-y-2">
-                        <p class="text-[11px] text-slate-600 font-medium">Tempel daftar link spreadsheet di bawah (<strong>1 link per baris</strong>):</p>
-                        <textarea id="batch-spreadsheet-input" rows="4" placeholder="https://docs.google.com/spreadsheets/d/ID_1/edit&#10;https://docs.google.com/spreadsheets/d/ID_2/edit&#10;https://docs.google.com/spreadsheets/d/ID_3/edit&#10;... (tempel 15+ link sekaligus di sini)" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        <p class="text-xs text-slate-600 font-medium">Tempel daftar link Google Sheets di bawah (<strong>1 link per baris</strong>):</p>
+                        <textarea id="batch-spreadsheet-input" rows="4" placeholder="https://docs.google.com/spreadsheets/d/ID_1/edit&#10;https://docs.google.com/spreadsheets/d/ID_2/edit&#10;https://docs.google.com/spreadsheets/d/ID_3/edit&#10;... (bisa 15+ link sekaligus)" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                         <div class="flex justify-between items-center pt-1">
-                            <span class="text-[10px] text-slate-400">ID otomatis dipisahkan dan duplikat dibuang.</span>
-                            <button onclick="addBatchSpreadsheets()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                            <span class="text-xs text-slate-400">ID otomatis diekstrak & duplikat dibuang.</span>
+                            <button onclick="addBatchSpreadsheets()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">
                                 Tambahkan Semua Link
                             </button>
                         </div>
@@ -236,10 +245,10 @@
 
                 <!-- CSV File Dropzone -->
                 <div>
-                    <label class="text-xs font-bold uppercase tracking-wider text-slate-600 block mb-2">Import File CSV (Offline)</label>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2">Import File CSV (Offline)</label>
                     <div id="csv-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-5 text-center cursor-pointer bg-slate-50/50 transition" onclick="document.getElementById('csv-file-input').click()">
-                        <p class="text-xs font-semibold text-slate-700">Tarik & Lepas (Drag & Drop) file CSV ke sini atau <span class="text-blue-600 underline">Pilih File</span></p>
-                        <p class="text-[10px] text-slate-400 mt-1">Bisa pilih banyak file CSV sekaligus</p>
+                        <p class="text-xs sm:text-sm font-semibold text-slate-700">Tarik & Lepas (Drag & Drop) file CSV ke sini atau <span class="text-blue-600 underline">Pilih File</span></p>
+                        <p class="text-xs text-slate-400 mt-1">Mendukung banyak file CSV sekaligus</p>
                     </div>
                     <input type="file" id="csv-file-input" accept=".csv" multiple class="hidden" onchange="handleCSVFiles(this.files)">
                     <div id="csv-file-list" class="space-y-1.5 mt-2"></div>
@@ -248,12 +257,12 @@
                 <!-- Share Config & Export -->
                 <div class="bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
                     <label class="text-xs font-bold text-slate-800 block mb-1">Simpan & Bagikan Konfigurasi</label>
-                    <p class="text-[11px] text-slate-500 mb-3">Ekspor konfigurasi daftar 15+ spreadsheet Anda agar tidak perlu memasukkan ulang di komputer lain.</p>
+                    <p class="text-xs text-slate-500 mb-3">Ekspor daftar link spreadsheet agar rekan kerja dapat langsung menggunakannya tanpa input manual.</p>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="exportConfig()" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition shadow-2xs">
+                        <button onclick="exportConfig()" class="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">
                             📥 Download Config (.json)
                         </button>
-                        <label class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer shadow-2xs">
+                        <label class="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs">
                             📤 Upload Config (.json)
                             <input type="file" accept=".json" class="hidden" onchange="importConfig(this.files[0])">
                         </label>
@@ -263,153 +272,212 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="px-6 py-4 border-t border-slate-100 flex justify-between items-center bg-slate-50">
+            <div class="px-5 sm:px-6 py-4 border-t border-slate-100 flex justify-between items-center bg-slate-50">
                 <span id="source-status-text" class="text-xs text-slate-500 font-medium">1 spreadsheet aktif</span>
                 <div class="flex gap-2">
-                    <button onclick="closeSourceManager()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">Tutup</button>
-                    <button onclick="saveAndRefresh()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm">Simpan & Terapkan</button>
+                    <button onclick="closeSourceManager()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">Tutup</button>
+                    <button onclick="saveAndRefresh()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">Simpan & Terapkan</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content Container (Full Width) -->
-    <main class="w-full px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <!-- Main Content Container (Max Width 1600px for Super Clean Desktop + Mobile View) -->
+    <main class="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 flex-1">
         
         <!-- 4 Executive Stat Cards (Responsive 2x2 on Mobile, 4 Cols on Desktop) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-5 sm:mb-7">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
             
             <!-- Card 1: Total Unit -->
-            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit</p>
-                        <h2 id="total-unit" class="text-xl sm:text-3xl font-black text-slate-900 mt-1">0</h2>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit</p>
+                        <h2 id="total-unit" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0</h2>
                     </div>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                     </div>
                 </div>
-                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500">
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
                     <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
-                    <span id="total-sources" class="truncate">1 Spreadsheet</span>
+                    <span id="total-sources" class="truncate font-medium">1 Spreadsheet</span>
                 </div>
             </div>
 
             <!-- Card 2: Terpasang -->
-            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
-                        <h2 id="count-installed" class="text-xl sm:text-3xl font-black text-emerald-600 mt-1">0</h2>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
+                        <h2 id="count-installed" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">0</h2>
                     </div>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
                 <div class="mt-3 pt-2.5 border-t border-slate-100">
-                    <div class="flex justify-between items-center text-[10px] sm:text-[11px] font-semibold text-emerald-700 mb-1">
+                    <div class="flex justify-between items-center text-xs font-semibold text-emerald-700 mb-1.5">
                         <span>Progress Selesai</span>
-                        <span id="pct-installed">0%</span>
+                        <span id="pct-installed" class="font-bold">0%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div id="bar-installed" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Belum Pasang -->
-            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
-                        <h2 id="count-pending" class="text-xl sm:text-3xl font-black text-amber-500 mt-1">0</h2>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
+                        <h2 id="count-pending" class="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1">0</h2>
                     </div>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-9-9" />
                         </svg>
                     </div>
                 </div>
                 <div class="mt-3 pt-2.5 border-t border-slate-100">
-                    <div class="flex justify-between items-center text-[10px] sm:text-[11px] font-semibold text-amber-700 mb-1">
+                    <div class="flex justify-between items-center text-xs font-semibold text-amber-700 mb-1.5">
                         <span>Dalam Antrean</span>
-                        <span id="pct-pending">0%</span>
+                        <span id="pct-pending" class="font-bold">0%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div id="bar-pending" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 4: Trouble / Kendala -->
-            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
-                        <h2 id="count-trouble" class="text-xl sm:text-3xl font-black text-rose-600 mt-1">0</h2>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
+                        <h2 id="count-trouble" class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1">0</h2>
                     </div>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                 </div>
-                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500">
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
                     <span id="trouble-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                    <span id="trouble-desc" class="truncate">Semua lancar</span>
+                    <span id="trouble-desc" class="truncate font-medium">Semua lancar</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- Section: Progres Per Provinsi & Tim (Executive Cards) -->
+        <!-- ======================================================== -->
+        <!-- ANALYTICS BREAKDOWN HUB (PROVINSI & TIM LAPANGAN)        -->
+        <!-- ======================================================== -->
         <div class="mb-7">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5 px-1">
+            <!-- Analytics View Mode Switcher Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-                        <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800">Progres Per Provinsi & Tim</h3>
-                        <span id="province-team-count-badge" class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0 Tim</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">Klik kartu tim untuk langsung memfilter data instalasi di bawah</p>
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        <span>Analisis Progres Wilayah & Tim</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Ketuk salah satu kartu untuk memfilter data unit instalasi secara instan</p>
                 </div>
-                
-                <div class="flex items-center gap-2 self-start sm:self-auto">
-                    <button id="btn-reset-cards" onclick="resetAllCardsFilter()" class="text-xs font-bold text-slate-600 hover:text-blue-600 transition flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 shadow-2xs cursor-pointer">
-                        <span id="btn-reset-cards-label">Semua Tim & Provinsi Aktif</span>
+
+                <!-- Segmented Switcher for Clean Mobile & Desktop Viewing -->
+                <div class="inline-flex bg-slate-200/80 p-1 rounded-2xl text-xs font-bold self-start sm:self-auto border border-slate-300/40">
+                    <button id="btn-view-all-analytics" onclick="setAnalyticsView('all')" class="px-3 py-1.5 rounded-xl bg-white text-blue-700 shadow-xs transition cursor-pointer">
+                        Semua
+                    </button>
+                    <button id="btn-view-prov-analytics" onclick="setAnalyticsView('wilayah')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 transition cursor-pointer">
+                        📍 Wilayah
+                    </button>
+                    <button id="btn-view-team-analytics" onclick="setAnalyticsView('tim')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 transition cursor-pointer">
+                        👥 Tim
+                    </button>
+                    <button id="btn-toggle-analytics-collapse" onclick="toggleAnalyticsCollapse()" class="px-2.5 py-1.5 rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer" title="Sembunyikan / Tampilkan kartu analisis">
+                        <span id="collapse-icon">▲</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Province Horizontal Filter Switcher (Mobile Swipeable Pills) -->
-            <div id="province-tab-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-3">
-                <!-- Dynamically populated: [Semua Provinsi] [Prov. Bali (3 Tim)] ... -->
-            </div>
+            <!-- Collapsible Analytics Content Container -->
+            <div id="analytics-content-container" class="space-y-6 transition-all duration-300">
+                
+                <!-- SECTION 1: CARD PROGRES PER PROVINSI -->
+                <div id="section-province" class="space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700">📍 Progres Per Wilayah (Provinsi)</span>
+                            <span id="province-count-badge" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">0 Provinsi</span>
+                        </div>
+                        <button id="btn-reset-province-filter" onclick="resetProvinceFilter()" class="text-xs font-bold text-slate-600 hover:text-blue-600 transition flex items-center gap-1.5 px-3 py-1 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 shadow-xs cursor-pointer">
+                            <span id="btn-reset-province-label">Semua Wilayah Aktif</span>
+                        </button>
+                    </div>
 
-            <!-- Dynamic Province & Team Cards Grid -->
-            <div id="province-cards-grid" class="space-y-4">
-                <!-- Dynamically populated per province with team cards -->
+                    <!-- Standalone Province Cards Grid -->
+                    <div id="province-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                        <!-- Dynamically populated: 1 Card per Provinsi -->
+                    </div>
+                </div>
+
+                <!-- SECTION 2: CARD PROGRES PER TIM LAPANGAN -->
+                <div id="section-team" class="space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700">👥 Progres Per Tim Pelaksana</span>
+                            <span id="team-count-badge" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-0.5 rounded-full">3 Tim Utama</span>
+                        </div>
+                        <button id="btn-reset-team-filter" onclick="resetTeamFilter()" class="text-xs font-bold text-slate-600 hover:text-indigo-600 transition flex items-center gap-1.5 px-3 py-1 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 shadow-xs cursor-pointer">
+                            <span id="btn-reset-team-label">Semua Tim Aktif</span>
+                        </button>
+                    </div>
+
+                    <!-- Standalone Team Cards Grid -->
+                    <div id="team-cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                        <!-- Dynamically populated: Tim Mattew, Tim Yudi, Tim Rabil cards -->
+                    </div>
+                </div>
+
             </div>
         </div>
 
+        <!-- ======================================================== -->
+        <!-- ACTIVE FILTERS BAR (Clear feedback on what is filtered)   -->
+        <!-- ======================================================== -->
+        <div id="active-filters-bar" class="hidden flex items-center gap-2 flex-wrap mb-4 p-3 bg-blue-50/70 border border-blue-200/80 rounded-2xl text-xs">
+            <span class="text-blue-900 font-bold flex items-center gap-1.5 shrink-0">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                Filter Aktif:
+            </span>
+            <div id="active-filter-chips" class="flex items-center gap-1.5 flex-wrap">
+                <!-- dynamic active filter chips -->
+            </div>
+            <button onclick="resetFilters()" class="text-blue-700 hover:text-blue-900 font-bold underline ml-auto text-xs cursor-pointer">
+                Hapus Semua Filter
+            </button>
+        </div>
+
         <!-- Filter & Search Toolbar (Responsive, No Clipping) -->
-        <div class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/90 shadow-sm mb-6">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs mb-6">
             <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
                 
                 <!-- Search Box with proper priority flex width -->
-                <div class="flex-1 relative min-w-[200px]">
+                <div class="flex-1 relative min-w-[220px]">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </span>
                     <input type="text" id="global-search" oninput="applyAllFilters()" 
-                           placeholder="Cari ID transaksi, sekolah, teknisi, PIC..." 
+                           placeholder="Cari ID transaksi / NPSN, nama sekolah, teknisi, PIC..." 
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
                 </div>
 
@@ -417,7 +485,7 @@
                 <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
                     
                     <!-- Filter Tim (Mattew, Yudi, Rabil) -->
-                    <select id="filter-tim" onchange="onTimDropdownChange(this.value)" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <select id="filter-tim" onchange="onTimDropdownChange(this.value)" class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                         <option value="">Semua Tim</option>
                         <option value="M">Tim Mattew (M)</option>
                         <option value="Y">Tim Yudi (Y)</option>
@@ -425,22 +493,22 @@
                     </select>
 
                     <!-- Filter Provinsi -->
-                    <select id="filter-provinsi" onchange="onProvinceDropdownChange(this.value)" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <select id="filter-provinsi" onchange="onProvinceDropdownChange(this.value)" class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                         <option value="">Semua Provinsi</option>
                     </select>
 
                     <!-- Filter Kab / Kota -->
-                    <select id="filter-kab" onchange="applyAllFilters()" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <select id="filter-kab" onchange="applyAllFilters()" class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                         <option value="">Semua Kab/Kota</option>
                     </select>
 
                     <!-- Filter Teknisi -->
-                    <select id="filter-teknisi" onchange="applyAllFilters()" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <select id="filter-teknisi" onchange="applyAllFilters()" class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                         <option value="">Semua Teknisi</option>
                     </select>
 
                     <!-- Reset Button -->
-                    <button onclick="resetFilters()" class="col-span-2 sm:col-span-1 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer" title="Reset semua filter">
+                    <button onclick="resetFilters()" class="col-span-2 sm:col-span-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer" title="Reset semua filter">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -452,29 +520,29 @@
 
         <!-- Segmented Tabs & Mobile View Switcher -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
-            <div class="bg-slate-200/70 p-1 sm:p-1.5 rounded-2xl grid grid-cols-3 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full sm:w-auto">
-                <button onclick="switchTab('installed')" id="tab-installed" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-sm">
+            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-2xl grid grid-cols-3 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full sm:w-auto">
+                <button onclick="switchTab('installed')" id="tab-installed" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-xs cursor-pointer">
                     <span class="truncate">Terpasang</span>
-                    <span id="tab-count-installed" class="bg-emerald-100 text-emerald-800 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                    <span id="tab-count-installed" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
-                <button onclick="switchTab('pending')" id="tab-pending" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2">
+                <button onclick="switchTab('pending')" id="tab-pending" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                     <span class="truncate">Belum</span>
-                    <span id="tab-count-pending" class="bg-slate-300/70 text-slate-700 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                    <span id="tab-count-pending" class="bg-slate-300/70 text-slate-700 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
-                <button onclick="switchTab('trouble')" id="tab-trouble" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2">
+                <button onclick="switchTab('trouble')" id="tab-trouble" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                     <span class="truncate">Kendala</span>
-                    <span id="tab-count-trouble" class="bg-slate-300/70 text-slate-700 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                    <span id="tab-count-trouble" class="bg-slate-300/70 text-slate-700 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
             </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500 font-medium">
-                <div>Total Baris: <strong id="filter-result-count" class="text-slate-900 font-bold">0</strong> unit</div>
+            <div class="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm text-slate-500 font-medium">
+                <div>Total: <strong id="filter-result-count" class="text-slate-900 font-bold">0</strong> unit</div>
                 <!-- View Mode Switcher for Smartphone -->
-                <div class="md:hidden inline-flex bg-slate-200/80 p-0.5 rounded-xl text-xs font-bold">
-                    <button id="btn-view-card" onclick="setMobileViewMode('cards')" class="px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition">
+                <div class="md:hidden inline-flex bg-slate-200/80 p-0.5 rounded-xl text-xs font-bold border border-slate-300/40">
+                    <button id="btn-view-card" onclick="setMobileViewMode('cards')" class="px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-xs transition cursor-pointer">
                         📱 Kartu
                     </button>
-                    <button id="btn-view-table" onclick="setMobileViewMode('table')" class="px-2.5 py-1 rounded-lg text-slate-600 transition">
+                    <button id="btn-view-table" onclick="setMobileViewMode('table')" class="px-2.5 py-1 rounded-lg text-slate-600 transition cursor-pointer">
                         📊 Tabel
                     </button>
                 </div>
@@ -482,34 +550,34 @@
         </div>
 
         <!-- Table & Mobile Cards Container -->
-        <div id="table-card-container" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden mb-8">
+        <div id="table-card-container" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden mb-8">
             
             <!-- Table: Terpasang (Installed) -->
             <div id="installed-section">
                 <!-- Desktop Table View -->
                 <div id="installed-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
-                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
-                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
                                 <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
-                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
-                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
-                                <th class="py-3.5 px-3.5 w-40">Teknisi</th>
-                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
-                                <th class="py-3.5 px-3.5 w-44">PIC & Kontak</th>
-                                <th class="py-3.5 px-3.5 w-32 text-center">Status</th>
+                                <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-4 w-32">Provinsi</th>
+                                <th class="py-3.5 px-4 w-40">Teknisi</th>
+                                <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                                <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
+                                <th class="py-3.5 px-4 w-32 text-center">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="installed-table-body" class="divide-y divide-slate-100 text-xs">
+                        <tbody id="installed-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
                             <!-- rows rendered dynamically -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card Feed -->
-                <div id="installed-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                <div id="installed-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-slate-50/50">
                     <!-- cards rendered dynamically -->
                 </div>
 
@@ -523,27 +591,27 @@
                 <!-- Desktop Table View -->
                 <div id="pending-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
-                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
-                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
                                 <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
-                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
-                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
-                                <th class="py-3.5 px-3.5 w-40">Teknisi</th>
-                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
-                                <th class="py-3.5 px-3.5 w-44">PIC & Kontak</th>
-                                <th class="py-3.5 px-3.5 w-32 text-center">Status</th>
+                                <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-4 w-32">Provinsi</th>
+                                <th class="py-3.5 px-4 w-40">Teknisi</th>
+                                <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                                <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
+                                <th class="py-3.5 px-4 w-32 text-center">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="pending-table-body" class="divide-y divide-slate-100 text-xs">
+                        <tbody id="pending-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
                             <!-- rows rendered dynamically -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card Feed -->
-                <div id="pending-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                <div id="pending-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-slate-50/50">
                     <!-- cards rendered dynamically -->
                 </div>
 
@@ -557,26 +625,26 @@
                 <!-- Desktop Table View -->
                 <div id="trouble-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1000px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
-                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
-                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
                                 <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
-                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
-                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
-                                <th class="py-3.5 px-3.5 w-40">Teknisi / PIC</th>
-                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
+                                <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-4 w-32">Provinsi</th>
+                                <th class="py-3.5 px-4 w-40">Teknisi / PIC</th>
+                                <th class="py-3.5 px-4 w-32 text-center">Tim</th>
                                 <th class="py-3.5 px-5">Detail Kendala</th>
                             </tr>
                         </thead>
-                        <tbody id="trouble-table-body" class="divide-y divide-slate-100 text-xs">
+                        <tbody id="trouble-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
                             <!-- rows rendered dynamically -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card Feed -->
-                <div id="trouble-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                <div id="trouble-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-slate-50/50">
                     <!-- cards rendered dynamically -->
                 </div>
 
@@ -586,13 +654,13 @@
             </div>
 
             <!-- Simplified Next / Prev Pagination Toolbar -->
-            <div id="pagination-toolbar" class="px-4 sm:px-5 py-3.5 bg-slate-50 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div id="pagination-toolbar" class="px-4 sm:px-6 py-4 bg-slate-50 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
                 <!-- Info: Showing X to Y of Z units & Page count -->
-                <div class="flex items-center flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2 text-slate-500 font-medium text-center sm:text-left">
-                    <span>Menampilkan <strong id="pagination-range" class="text-slate-800 font-bold">0 - 0</strong> dari <strong id="pagination-total" class="text-slate-800 font-bold">0</strong> unit</span>
+                <div class="flex items-center flex-wrap justify-center sm:justify-start gap-2 text-slate-600 font-medium text-center sm:text-left">
+                    <span>Menampilkan <strong id="pagination-range" class="text-slate-900 font-bold">0 - 0</strong> dari <strong id="pagination-total" class="text-slate-900 font-bold">0</strong> unit</span>
                     <span class="text-slate-300 hidden sm:inline">|</span>
-                    <span id="pagination-page-info" class="text-slate-600 font-semibold">Halaman 1 dari 1</span>
-                    <span class="text-slate-400 text-[11px]">(Maks. 30 unit / halaman)</span>
+                    <span id="pagination-page-info" class="text-slate-700 font-semibold">Halaman 1 dari 1</span>
+                    <span class="text-slate-400 text-xs">(Maks. 30 unit / halaman)</span>
                 </div>
 
                 <!-- Page Nav: Next Button -->
@@ -605,13 +673,13 @@
         <!-- Loading Overlay -->
         <div id="loading-overlay" class="py-16 flex flex-col items-center justify-center">
             <div class="loader-ring mb-3"></div>
-            <p class="text-slate-500 text-xs font-semibold animate-pulse">Menghubungkan ke Google Spreadsheet & Menggabungkan Data...</p>
+            <p class="text-slate-600 text-xs sm:text-sm font-semibold animate-pulse">Menghubungkan ke Google Spreadsheet & Menggabungkan Data...</p>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200/80 py-4 text-center text-xs text-slate-400 mt-auto">
+    <footer class="bg-white border-t border-slate-200/80 py-4 text-center text-xs text-slate-500 mt-auto">
         IFP Installation Monitoring Dashboard &copy; 2026 &middot; Real-time Multi-Spreadsheet Sync
     </footer>
 
@@ -633,6 +701,8 @@
         let selectedTimFilter = '';
         let activeProvinceTab = 'ALL';
         let mobileViewMode = 'cards';
+        let analyticsViewMode = 'all'; // 'all', 'wilayah', 'tim'
+        let analyticsCollapsed = false;
 
         // Pagination State (Default 30 baris/unit per halaman)
         let pageSize = 30;
@@ -841,12 +911,12 @@
                 <div class="flex items-center justify-between bg-slate-50 hover:bg-slate-100/80 rounded-xl px-3.5 py-2.5 border border-slate-200/80 transition">
                     <div class="flex-1 min-w-0 pr-2">
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded font-mono">${idx + 1}</span>
-                            <p class="text-xs font-bold text-slate-800 truncate">${s.label || s.id}</p>
+                            <span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded font-mono">${idx + 1}</span>
+                            <p class="text-xs sm:text-sm font-bold text-slate-800 truncate">${s.label || s.id}</p>
                         </div>
-                        <p class="text-[10px] text-slate-500 truncate mt-0.5 font-mono">ID: ${s.id} ${s.sheet ? '· Sheet: ' + s.sheet : ''} &middot; ${s.rows && s.rows.length > 1 ? (s.rows.length - 1) + ' unit' : 'Siap ditarik'}</p>
+                        <p class="text-xs text-slate-500 truncate mt-0.5 font-mono">ID: ${s.id} ${s.sheet ? '· Sheet: ' + s.sheet : ''} &middot; ${s.rows && s.rows.length > 1 ? (s.rows.length - 1) + ' unit' : 'Siap ditarik'}</p>
                     </div>
-                    <button onclick="removeSource(${s.sourceId})" class="text-slate-400 hover:text-red-600 p-1 rounded-lg transition" title="Hapus spreadsheet ini">
+                    <button onclick="removeSource(${s.sourceId})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition cursor-pointer" title="Hapus spreadsheet ini">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -905,7 +975,7 @@
             container.innerHTML = csvSources.map(s => `
                 <div class="flex items-center justify-between bg-amber-50 rounded-xl px-3 py-2 border border-amber-200">
                     <p class="text-xs font-semibold text-amber-900 truncate">${s.label} (${s.rows.length > 1 ? s.rows.length - 1 : 0} unit)</p>
-                    <button onclick="removeSource(${s.sourceId})" class="text-red-400 hover:text-red-600 p-1" title="Hapus">
+                    <button onclick="removeSource(${s.sourceId})" class="text-rose-400 hover:text-rose-600 p-1 cursor-pointer" title="Hapus">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -952,7 +1022,7 @@
             const shareUrl = `${base}?sources=${encodeURIComponent(sourcesParam)}`;
 
             navigator.clipboard.writeText(shareUrl).then(() => {
-                alert('✅ Link Berhasil Disalin ke Clipboard!\n\nKirim link ini ke teman Anda agar langsung melihat dashboard yang sama.');
+                alert('✅ Link Berhasil Disalin ke Clipboard!\n\nKirim link ini ke rekan kerja agar langsung melihat dashboard yang sama.');
             }).catch(() => {
                 prompt('Salin link ini:', shareUrl);
             });
@@ -1212,7 +1282,7 @@
 
             populateFilterOptions(timSet, provSet, kabSet, teknisiSet);
             renderSourceChips();
-            renderProvinceTeamCards();
+            renderAllProgressCards();
             applyAllFilters();
         }
 
@@ -1256,16 +1326,16 @@
             const container = document.getElementById('source-chips');
             const active = dataSources.filter(s => s.rows && s.rows.length > 1);
             if (active.length === 0) {
-                container.innerHTML = '<span class="text-white/60 text-[11px]">Memuat spreadsheet...</span>';
+                container.innerHTML = '<span class="text-white/70 text-xs">Memuat spreadsheet...</span>';
                 return;
             }
             container.innerHTML = active.map(s => {
                 const count = s.rows.length - 1;
                 return `
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/15 text-white border border-white/20 whitespace-nowrap">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 text-white border border-white/20 whitespace-nowrap">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span>${s.label}</span>
-                        <span class="bg-white/20 px-1 rounded text-[9px] font-mono">${count} unit</span>
+                        <span class="bg-white/20 px-1.5 py-0.5 rounded text-xs font-mono">${count} unit</span>
                     </span>
                 `;
             }).join('');
@@ -1274,15 +1344,12 @@
         // ========================================================
         // PROVINCE & TEAM PROGRESS CARDS LOGIC
         // ========================================================
-        function computeProvinceTeamStats() {
+        
+        // 1. Hitung Statistik Per Provinsi
+        function computeProvinceStats() {
             const provMap = {};
-            
             allRecords.forEach(item => {
                 const prov = item.prov && item.prov !== '-' ? item.prov.trim() : 'Lainnya';
-                const rawTim = (item.timCode || '').trim().toUpperCase();
-                const timCode = rawTim || 'OTHER';
-                const timName = TIM_NAME_MAP[timCode] ? `Tim ${TIM_NAME_MAP[timCode]} (${timCode})` : (timCode === 'OTHER' ? 'Tim Belum Ditentukan' : `Tim ${timCode}`);
-
                 if (!provMap[prov]) {
                     provMap[prov] = {
                         prov: prov,
@@ -1290,7 +1357,8 @@
                         installed: 0,
                         pending: 0,
                         trouble: 0,
-                        teams: {}
+                        teams: new Set(),
+                        teknisiSet: new Set()
                     };
                 }
                 provMap[prov].total++;
@@ -1298,353 +1366,475 @@
                 else provMap[prov].pending++;
                 if (item.isTrouble) provMap[prov].trouble++;
 
-                if (!provMap[prov].teams[timCode]) {
-                    provMap[prov].teams[timCode] = {
-                        timCode: timCode,
-                        timName: timName,
-                        prov: prov,
-                        total: 0,
-                        installed: 0,
-                        pending: 0,
-                        trouble: 0,
-                        teknisiList: new Set()
-                    };
+                if (item.timCode) {
+                    provMap[prov].teams.add(item.timCode);
                 }
-                provMap[prov].teams[timCode].total++;
-                if (item.isInstalled) provMap[prov].teams[timCode].installed++;
-                else provMap[prov].teams[timCode].pending++;
-                if (item.isTrouble) provMap[prov].teams[timCode].trouble++;
                 if (item.teknisi && item.teknisi !== '-') {
-                    provMap[prov].teams[timCode].teknisiList.add(item.teknisi);
+                    provMap[prov].teknisiSet.add(item.teknisi);
                 }
             });
 
             return Object.values(provMap).map(p => {
                 const pct = p.total > 0 ? Math.round((p.installed / p.total) * 100) : 0;
-                const teamList = Object.values(p.teams).map(t => {
-                    const tPct = t.total > 0 ? Math.round((t.installed / t.total) * 100) : 0;
-                    return {
-                        ...t,
-                        pct: tPct,
-                        teknisiArr: Array.from(t.teknisiList)
-                    };
-                }).sort((a, b) => {
+                const timList = Array.from(p.teams).sort((a, b) => {
                     const order = { 'M': 1, 'Y': 2, 'R': 3 };
-                    const ordA = order[a.timCode] || 99;
-                    const ordB = order[b.timCode] || 99;
-                    if (ordA !== ordB) return ordA - ordB;
-                    return b.total - a.total;
+                    return (order[a] || 99) - (order[b] || 99);
                 });
-
                 return {
                     ...p,
                     pct: pct,
-                    teamList: teamList
+                    timList: timList,
+                    teknisiArr: Array.from(p.teknisiSet)
                 };
             }).sort((a, b) => b.total - a.total);
         }
 
-        function filterByProvinceAndTeam(provName, timCode) {
-            const cleanTim = timCode === 'OTHER' ? '' : timCode;
-            if (selectedProvinceFilter.toLowerCase() === provName.toLowerCase() && selectedTimFilter.toUpperCase() === cleanTim.toUpperCase()) {
-                // Toggle off
+        // 2. Hitung Statistik Per Tim Lapangan
+        function computeTeamStats() {
+            const teamMap = {};
+            // Default slot untuk Tim M, Y, R
+            ['M', 'Y', 'R'].forEach(code => {
+                teamMap[code] = {
+                    timCode: code,
+                    timName: `Tim ${TIM_NAME_MAP[code] || code} (${code})`,
+                    total: 0,
+                    installed: 0,
+                    pending: 0,
+                    trouble: 0,
+                    provinces: new Set(),
+                    teknisiSet: new Set()
+                };
+            });
+
+            allRecords.forEach(item => {
+                const rawTim = (item.timCode || '').trim().toUpperCase();
+                const code = rawTim || 'OTHER';
+                if (!teamMap[code]) {
+                    teamMap[code] = {
+                        timCode: code,
+                        timName: TIM_NAME_MAP[code] ? `Tim ${TIM_NAME_MAP[code]} (${code})` : (code === 'OTHER' ? 'Tim Belum Ditentukan' : `Tim ${code}`),
+                        total: 0,
+                        installed: 0,
+                        pending: 0,
+                        trouble: 0,
+                        provinces: new Set(),
+                        teknisiSet: new Set()
+                    };
+                }
+                teamMap[code].total++;
+                if (item.isInstalled) teamMap[code].installed++;
+                else teamMap[code].pending++;
+                if (item.isTrouble) teamMap[code].trouble++;
+
+                if (item.prov && item.prov !== '-') {
+                    teamMap[code].provinces.add(item.prov.trim());
+                }
+                if (item.teknisi && item.teknisi !== '-') {
+                    teamMap[code].teknisiSet.add(item.teknisi);
+                }
+            });
+
+            return Object.values(teamMap).map(t => {
+                const pct = t.total > 0 ? Math.round((t.installed / t.total) * 100) : 0;
+                return {
+                    ...t,
+                    pct: pct,
+                    provincesArr: Array.from(t.provinces),
+                    teknisiArr: Array.from(t.teknisiSet)
+                };
+            }).filter(t => t.total > 0 || ['M', 'Y', 'R'].includes(t.timCode)).sort((a, b) => {
+                const order = { 'M': 1, 'Y': 2, 'R': 3 };
+                const ordA = order[a.timCode] || 99;
+                const ordB = order[b.timCode] || 99;
+                if (ordA !== ordB) return ordA - ordB;
+                return b.total - a.total;
+            });
+        }
+
+        // 3. Render Card Progres Per Provinsi (Clean & Legible)
+        function renderProvinceCards() {
+            const gridContainer = document.getElementById('province-cards-grid');
+            const badge = document.getElementById('province-count-badge');
+            const btnResetLabel = document.getElementById('btn-reset-province-label');
+            if (!gridContainer) return;
+
+            const provStats = computeProvinceStats();
+
+            if (badge) {
+                badge.textContent = `${provStats.length} Wilayah`;
+            }
+
+            if (btnResetLabel) {
+                if (selectedProvinceFilter) {
+                    btnResetLabel.innerHTML = `<span class="text-blue-700 font-extrabold flex items-center gap-1">Reset (${escapeHtml(selectedProvinceFilter)}) &times;</span>`;
+                } else {
+                    btnResetLabel.innerHTML = `<span>Semua Wilayah Aktif</span>`;
+                }
+            }
+
+            if (provStats.length === 0) {
+                gridContainer.innerHTML = '<div class="col-span-full py-8 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Belum ada data spreadsheet terhubung.</div>';
+                return;
+            }
+
+            gridContainer.innerHTML = provStats.map(p => {
+                const isSelected = selectedProvinceFilter && selectedProvinceFilter.toLowerCase() === p.prov.toLowerCase();
+
+                const pctBadgeClass = p.pct === 100 
+                    ? 'bg-emerald-100 text-emerald-800' 
+                    : (p.pct > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600');
+
+                // Generate Team Badges (M, Y, R)
+                const teamBadgesHtml = p.timList.map(tCode => {
+                    let badgeBg = 'bg-slate-100 text-slate-700 border-slate-200';
+                    let tName = tCode;
+                    if (tCode === 'M') {
+                        badgeBg = 'bg-purple-100 text-purple-800 border-purple-200';
+                        tName = 'Tim M (Mattew)';
+                    } else if (tCode === 'Y') {
+                        badgeBg = 'bg-sky-100 text-sky-800 border-sky-200';
+                        tName = 'Tim Y (Yudi)';
+                    } else if (tCode === 'R') {
+                        badgeBg = 'bg-rose-100 text-rose-800 border-rose-200';
+                        tName = 'Tim R (Rabil)';
+                    }
+                    return `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold border ${badgeBg}">${escapeHtml(tName)}</span>`;
+                }).join('');
+
+                return `
+                    <div onclick="filterByProvince('${escapeHtml(p.prov)}')" 
+                         class="cursor-pointer rounded-2xl p-4 sm:p-5 border transition-all duration-200 relative overflow-hidden group shadow-xs hover:shadow-md ${
+                             isSelected 
+                                 ? 'ring-2 ring-blue-600 bg-blue-50/70 border-blue-400 shadow-md' 
+                                 : 'bg-white border-slate-200/90 hover:border-blue-300'
+                         }">
+                        <!-- Top Accent Bar -->
+                        <div class="absolute top-0 inset-x-0 h-1.5 ${isSelected ? 'bg-blue-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600'}"></div>
+
+                        <!-- Card Header -->
+                        <div class="flex items-start justify-between gap-2 mb-3 pt-0.5">
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-900 text-sm sm:text-base truncate group-hover:text-blue-600 transition">
+                                    📍 ${escapeHtml(p.prov)}
+                                </h4>
+                                <span class="text-xs text-slate-500 font-medium">${p.timList.length} Tim Bertugas</span>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${pctBadgeClass}">
+                                    ${p.pct}%
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3.5">
+                            <div class="h-full rounded-full transition-all duration-500 bg-blue-600" style="width: ${p.pct}%"></div>
+                        </div>
+
+                        <!-- 3 Clear Metric Columns (No tiny font) -->
+                        <div class="grid grid-cols-3 gap-2 text-center mb-3.5 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                            <div>
+                                <div class="text-xs font-medium text-slate-500">Total</div>
+                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${p.total}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-medium text-emerald-600">Selesai</div>
+                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${p.installed}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-medium text-amber-600">Belum</div>
+                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${p.pending}</div>
+                            </div>
+                        </div>
+
+                        <!-- Active Teams in Province -->
+                        <div class="flex items-center gap-1.5 flex-wrap mb-3.5">
+                            ${teamBadgesHtml || '<span class="text-xs text-slate-400 italic">Belum ada tim</span>'}
+                        </div>
+
+                        <!-- Footer / Status -->
+                        <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="font-bold flex items-center gap-1 ${isSelected ? 'text-blue-700' : 'text-slate-400 group-hover:text-blue-600'} transition">
+                                ${isSelected ? '✓ Filter Aktif (Lepas)' : 'Ketuk untuk filter →'}
+                            </span>
+                            ${p.trouble > 0 
+                                ? `<span class="text-rose-600 font-bold flex items-center gap-1 bg-rose-50 px-2.5 py-0.5 rounded-lg border border-rose-100 text-xs">⚠️ ${p.trouble} kendala</span>` 
+                                : `<span class="text-slate-400 text-xs font-medium">Lancar</span>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 4. Render Card Progres Per Tim Lapangan (Clean & Legible)
+        function renderTeamCards() {
+            const gridContainer = document.getElementById('team-cards-grid');
+            const badge = document.getElementById('team-count-badge');
+            const btnResetLabel = document.getElementById('btn-reset-team-label');
+            if (!gridContainer) return;
+
+            const teamStats = computeTeamStats();
+
+            if (badge) {
+                badge.textContent = `${teamStats.length} Tim Terdaftar`;
+            }
+
+            if (btnResetLabel) {
+                if (selectedTimFilter) {
+                    btnResetLabel.innerHTML = `<span class="text-indigo-700 font-extrabold flex items-center gap-1">Reset (Tim ${escapeHtml(selectedTimFilter)}) &times;</span>`;
+                } else {
+                    btnResetLabel.innerHTML = `<span>Semua Tim Aktif</span>`;
+                }
+            }
+
+            if (teamStats.length === 0) {
+                gridContainer.innerHTML = '<div class="col-span-full py-8 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Belum ada data tim.</div>';
+                return;
+            }
+
+            gridContainer.innerHTML = teamStats.map(team => {
+                const isSelected = selectedTimFilter && selectedTimFilter.toUpperCase() === team.timCode.toUpperCase();
+
+                // Distinct visual identity per team
+                let themeAccentBar = 'bg-gradient-to-r from-slate-400 to-slate-600';
+                let themeAvatar = 'bg-slate-700 text-white';
+                let themeBorderHover = 'hover:border-slate-400';
+                let themeActiveRing = 'ring-2 ring-indigo-500 bg-indigo-50/70 border-indigo-400 shadow-md';
+                let themeBar = 'bg-indigo-600';
+
+                if (team.timCode === 'M') {
+                    themeAccentBar = 'bg-gradient-to-r from-purple-500 to-indigo-600';
+                    themeAvatar = 'bg-purple-600 text-white';
+                    themeBorderHover = 'hover:border-purple-300';
+                    themeActiveRing = 'ring-2 ring-purple-600 bg-purple-50/70 border-purple-400 shadow-md';
+                    themeBar = 'bg-purple-600';
+                } else if (team.timCode === 'Y') {
+                    themeAccentBar = 'bg-gradient-to-r from-sky-500 to-blue-600';
+                    themeAvatar = 'bg-sky-600 text-white';
+                    themeBorderHover = 'hover:border-sky-300';
+                    themeActiveRing = 'ring-2 ring-sky-500 bg-sky-50/70 border-sky-400 shadow-md';
+                    themeBar = 'bg-sky-500';
+                } else if (team.timCode === 'R') {
+                    themeAccentBar = 'bg-gradient-to-r from-rose-500 to-amber-500';
+                    themeAvatar = 'bg-rose-600 text-white';
+                    themeBorderHover = 'hover:border-rose-300';
+                    themeActiveRing = 'ring-2 ring-rose-500 bg-rose-50/70 border-rose-400 shadow-md';
+                    themeBar = 'bg-rose-500';
+                }
+
+                const pctBadgeClass = team.pct === 100 
+                    ? 'bg-emerald-100 text-emerald-800' 
+                    : (team.pct > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600');
+
+                const provStr = team.provincesArr.length > 0 ? team.provincesArr.join(', ') : 'Belum ada wilayah';
+                const teknisiStr = team.teknisiArr.slice(0, 3).join(', ') + (team.teknisiArr.length > 3 ? ` (+${team.teknisiArr.length - 3})` : '');
+
+                return `
+                    <div onclick="filterByTeam('${escapeHtml(team.timCode)}')" 
+                         class="cursor-pointer rounded-2xl p-4 sm:p-5 border transition-all duration-200 relative overflow-hidden group shadow-xs hover:shadow-md ${
+                             isSelected 
+                                 ? themeActiveRing 
+                                 : 'bg-white border-slate-200/90 ' + themeBorderHover
+                         }">
+                        <!-- Top Accent Bar -->
+                        <div class="absolute top-0 inset-x-0 h-1.5 ${themeAccentBar}"></div>
+
+                        <!-- Card Header -->
+                        <div class="flex items-start justify-between gap-2 mb-3 pt-0.5">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base shrink-0 shadow-xs ${themeAvatar}">
+                                    ${escapeHtml(team.timCode === 'OTHER' ? '?' : team.timCode)}
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-slate-900 text-sm sm:text-base truncate group-hover:text-blue-600 transition">
+                                        ${escapeHtml(team.timName)}
+                                    </h4>
+                                    <span class="text-xs text-slate-500 font-medium flex items-center gap-1 truncate" title="${escapeHtml(provStr)}">
+                                        📍 ${escapeHtml(provStr)}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${pctBadgeClass}">
+                                    ${team.pct}%
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3.5">
+                            <div class="h-full rounded-full transition-all duration-500 ${themeBar}" style="width: ${team.pct}%"></div>
+                        </div>
+
+                        <!-- 3 Clear Metric Columns (No tiny font) -->
+                        <div class="grid grid-cols-3 gap-2 text-center mb-3.5 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                            <div>
+                                <div class="text-xs font-medium text-slate-500">Total</div>
+                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${team.total}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-medium text-emerald-600">Selesai</div>
+                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${team.installed}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-medium text-amber-600">Belum</div>
+                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${team.pending}</div>
+                            </div>
+                        </div>
+
+                        <!-- Teknisi List Pill -->
+                        <div class="text-xs text-slate-700 bg-slate-50 rounded-xl px-3 py-2 border border-slate-100 mb-3 flex items-center gap-1.5 truncate">
+                            <span class="text-slate-500 font-bold shrink-0">👤 Teknisi:</span>
+                            <span class="truncate font-semibold text-slate-800" title="${escapeHtml(team.teknisiArr.join(', '))}">${escapeHtml(teknisiStr || 'Belum ada data')}</span>
+                        </div>
+
+                        <!-- Footer / Status -->
+                        <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="font-bold flex items-center gap-1 ${isSelected ? 'text-indigo-700' : 'text-slate-400 group-hover:text-indigo-600'} transition">
+                                ${isSelected ? '✓ Filter Aktif (Lepas)' : 'Ketuk untuk filter tim →'}
+                            </span>
+                            ${team.trouble > 0 
+                                ? `<span class="text-rose-600 font-bold flex items-center gap-1 bg-rose-50 px-2.5 py-0.5 rounded-lg border border-rose-100 text-xs">⚠️ ${team.trouble} kendala</span>` 
+                                : `<span class="text-slate-400 text-xs font-medium">Lancar</span>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 5. Render All Progress Cards (Provinsi & Tim)
+        function renderAllProgressCards() {
+            renderProvinceCards();
+            renderTeamCards();
+        }
+
+        // Backward compatibility alias
+        function renderProvinceTeamCards() {
+            renderAllProgressCards();
+        }
+
+        // Analytics Segmented Switcher & Collapse Controls
+        function setAnalyticsView(mode) {
+            analyticsViewMode = mode;
+            const btnAll = document.getElementById('btn-view-all-analytics');
+            const btnProv = document.getElementById('btn-view-prov-analytics');
+            const btnTeam = document.getElementById('btn-view-team-analytics');
+            const secProv = document.getElementById('section-province');
+            const secTeam = document.getElementById('section-team');
+
+            // Reset buttons styling
+            [btnAll, btnProv, btnTeam].forEach(b => {
+                if (b) b.className = 'px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 transition cursor-pointer';
+            });
+
+            if (mode === 'wilayah') {
+                if (btnProv) btnProv.className = 'px-3 py-1.5 rounded-xl bg-white text-blue-700 shadow-xs transition cursor-pointer font-bold';
+                if (secProv) secProv.classList.remove('hidden');
+                if (secTeam) secTeam.classList.add('hidden');
+            } else if (mode === 'tim') {
+                if (btnTeam) btnTeam.className = 'px-3 py-1.5 rounded-xl bg-white text-indigo-700 shadow-xs transition cursor-pointer font-bold';
+                if (secProv) secProv.classList.add('hidden');
+                if (secTeam) secTeam.classList.remove('hidden');
+            } else {
+                if (btnAll) btnAll.className = 'px-3 py-1.5 rounded-xl bg-white text-blue-700 shadow-xs transition cursor-pointer font-bold';
+                if (secProv) secProv.classList.remove('hidden');
+                if (secTeam) secTeam.classList.remove('hidden');
+            }
+        }
+
+        function toggleAnalyticsCollapse() {
+            analyticsCollapsed = !analyticsCollapsed;
+            const content = document.getElementById('analytics-content-container');
+            const icon = document.getElementById('collapse-icon');
+            if (analyticsCollapsed) {
+                if (content) content.classList.add('hidden');
+                if (icon) icon.innerText = '▼';
+            } else {
+                if (content) content.classList.remove('hidden');
+                if (icon) icon.innerText = '▲';
+            }
+        }
+
+        // 6. Interactive Filter Handlers
+        function filterByProvince(provName) {
+            if (selectedProvinceFilter.toLowerCase() === provName.toLowerCase()) {
                 selectedProvinceFilter = '';
-                selectedTimFilter = '';
             } else {
                 selectedProvinceFilter = provName;
-                selectedTimFilter = cleanTim;
             }
 
             const provSelect = document.getElementById('filter-provinsi');
             if (provSelect) provSelect.value = selectedProvinceFilter;
+
+            applyAllFilters(true);
+            renderAllProgressCards();
+        }
+
+        function filterByProvinceOnly(provName) {
+            filterByProvince(provName);
+        }
+
+        function filterByTeam(timCode) {
+            const cleanTim = timCode === 'OTHER' ? '' : timCode;
+            if (selectedTimFilter.toUpperCase() === cleanTim.toUpperCase()) {
+                selectedTimFilter = '';
+            } else {
+                selectedTimFilter = cleanTim;
+            }
+
             const timSelect = document.getElementById('filter-tim');
             if (timSelect) timSelect.value = selectedTimFilter;
 
             applyAllFilters(true);
-            renderProvinceTeamCards();
+            renderAllProgressCards();
         }
 
-        function filterByProvinceOnly(provName) {
-            if (selectedProvinceFilter.toLowerCase() === provName.toLowerCase() && !selectedTimFilter) {
-                selectedProvinceFilter = '';
-            } else {
-                selectedProvinceFilter = provName;
-                selectedTimFilter = '';
-            }
-
+        function filterByProvinceAndTeam(provName, timCode) {
+            selectedProvinceFilter = provName;
+            selectedTimFilter = timCode === 'OTHER' ? '' : timCode;
             const provSelect = document.getElementById('filter-provinsi');
             if (provSelect) provSelect.value = selectedProvinceFilter;
             const timSelect = document.getElementById('filter-tim');
-            if (timSelect) timSelect.value = '';
-
+            if (timSelect) timSelect.value = selectedTimFilter;
             applyAllFilters(true);
-            renderProvinceTeamCards();
+            renderAllProgressCards();
         }
 
-        function setProvinceTab(provName) {
-            activeProvinceTab = provName;
-            renderProvinceTeamCards();
-        }
-
-        function resetAllCardsFilter() {
+        function resetProvinceFilter() {
             selectedProvinceFilter = '';
-            selectedTimFilter = '';
-            activeProvinceTab = 'ALL';
             const provSelect = document.getElementById('filter-provinsi');
             if (provSelect) provSelect.value = '';
+
+            applyAllFilters(true);
+            renderAllProgressCards();
+        }
+
+        function resetTeamFilter() {
+            selectedTimFilter = '';
             const timSelect = document.getElementById('filter-tim');
             if (timSelect) timSelect.value = '';
 
             applyAllFilters(true);
-            renderProvinceTeamCards();
+            renderAllProgressCards();
+        }
+
+        function resetAllCardsFilter() {
+            resetProvinceFilter();
+            resetTeamFilter();
         }
 
         function onProvinceDropdownChange(val) {
             selectedProvinceFilter = val || '';
             applyAllFilters(true);
-            renderProvinceTeamCards();
+            renderAllProgressCards();
         }
 
         function onTimDropdownChange(val) {
             selectedTimFilter = val || '';
             applyAllFilters(true);
-            renderProvinceTeamCards();
-        }
-
-        function renderProvinceTeamCards() {
-            const gridContainer = document.getElementById('province-cards-grid');
-            const tabBar = document.getElementById('province-tab-bar');
-            if (!gridContainer) return;
-
-            const provStats = computeProvinceTeamStats();
-
-            // Total team badge count
-            let totalTeamsCount = 0;
-            provStats.forEach(p => totalTeamsCount += p.teamList.length);
-            const teamBadge = document.getElementById('province-team-count-badge');
-            if (teamBadge) {
-                teamBadge.textContent = `${totalTeamsCount} Tim di ${provStats.length} Provinsi`;
-            }
-
-            // Reset button label
-            const btnResetLabel = document.getElementById('btn-reset-cards-label');
-            if (btnResetLabel) {
-                if (selectedProvinceFilter || selectedTimFilter) {
-                    let desc = selectedProvinceFilter || 'Semua Prov';
-                    if (selectedTimFilter) desc += ` · Tim ${selectedTimFilter}`;
-                    btnResetLabel.innerHTML = `<span class="text-blue-700 font-extrabold flex items-center gap-1">Reset (${escapeHtml(desc)}) &times;</span>`;
-                } else {
-                    btnResetLabel.innerHTML = `<span>Semua Tim & Provinsi Aktif</span>`;
-                }
-            }
-
-            // Render Province Filter Switcher Tab Bar
-            if (tabBar) {
-                const totalAllUnits = allRecords.length;
-                let tabsHtml = `
-                    <button onclick="setProvinceTab('ALL')" 
-                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                                activeProvinceTab === 'ALL' 
-                                    ? 'bg-blue-600 text-white shadow-xs' 
-                                    : 'bg-white text-slate-600 border border-slate-200/90 hover:bg-slate-50'
-                            }">
-                        <span>🏢 Semua Provinsi</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeProvinceTab === 'ALL' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}">${totalAllUnits}</span>
-                    </button>
-                `;
-
-                provStats.forEach(p => {
-                    const isTabActive = activeProvinceTab.toLowerCase() === p.prov.toLowerCase();
-                    tabsHtml += `
-                        <button onclick="setProvinceTab('${escapeHtml(p.prov)}')" 
-                                class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                                    isTabActive 
-                                        ? 'bg-blue-600 text-white shadow-xs' 
-                                        : 'bg-white text-slate-600 border border-slate-200/90 hover:bg-slate-50'
-                                }">
-                            <span>📍 ${escapeHtml(p.prov)}</span>
-                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono ${isTabActive ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}">${p.teamList.length} Tim &middot; ${p.total} unit</span>
-                        </button>
-                    `;
-                });
-
-                tabBar.innerHTML = tabsHtml;
-            }
-
-            if (provStats.length === 0) {
-                gridContainer.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Belum ada data spreadsheet terhubung.</div>';
-                return;
-            }
-
-            // Filter provinces according to activeProvinceTab
-            const visibleProvinces = activeProvinceTab === 'ALL' 
-                ? provStats 
-                : provStats.filter(p => p.prov.toLowerCase() === activeProvinceTab.toLowerCase());
-
-            if (visibleProvinces.length === 0) {
-                gridContainer.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Tidak ada data untuk provinsi yang dipilih.</div>';
-                return;
-            }
-
-            gridContainer.innerHTML = visibleProvinces.map(p => {
-                const provActive = selectedProvinceFilter && selectedProvinceFilter.toLowerCase() === p.prov.toLowerCase();
-
-                const teamCardsHtml = p.teamList.map(team => {
-                    const isSelected = selectedProvinceFilter && 
-                                       selectedProvinceFilter.toLowerCase() === p.prov.toLowerCase() && 
-                                       selectedTimFilter && 
-                                       selectedTimFilter.toUpperCase() === team.timCode;
-
-                    // Color theme per Tim
-                    let themeAccentBar = 'bg-gradient-to-r from-slate-400 to-slate-600';
-                    let themeAvatar = 'bg-slate-700 text-white';
-                    let themeBorderHover = 'hover:border-slate-400';
-                    let themeActiveRing = 'ring-2 ring-blue-500 bg-blue-50/60 border-blue-400 shadow-md';
-                    let themeBar = 'bg-blue-600';
-
-                    if (team.timCode === 'M') {
-                        themeAccentBar = 'bg-gradient-to-r from-purple-500 to-indigo-600';
-                        themeAvatar = 'bg-purple-600 text-white';
-                        themeBorderHover = 'hover:border-purple-300';
-                        themeActiveRing = 'ring-2 ring-purple-600 bg-purple-50/70 border-purple-400 shadow-md';
-                        themeBar = 'bg-purple-600';
-                    } else if (team.timCode === 'Y') {
-                        themeAccentBar = 'bg-gradient-to-r from-sky-500 to-blue-600';
-                        themeAvatar = 'bg-sky-600 text-white';
-                        themeBorderHover = 'hover:border-sky-300';
-                        themeActiveRing = 'ring-2 ring-sky-500 bg-sky-50/70 border-sky-400 shadow-md';
-                        themeBar = 'bg-sky-500';
-                    } else if (team.timCode === 'R') {
-                        themeAccentBar = 'bg-gradient-to-r from-rose-500 to-amber-500';
-                        themeAvatar = 'bg-rose-600 text-white';
-                        themeBorderHover = 'hover:border-rose-300';
-                        themeActiveRing = 'ring-2 ring-rose-500 bg-rose-50/70 border-rose-400 shadow-md';
-                        themeBar = 'bg-rose-500';
-                    }
-
-                    const pctBadgeClass = team.pct === 100 
-                        ? 'bg-emerald-100 text-emerald-800' 
-                        : (team.pct > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600');
-
-                    const teknisiStr = team.teknisiArr.slice(0, 3).join(', ') + (team.teknisiArr.length > 3 ? ` (+${team.teknisiArr.length - 3})` : '');
-
-                    return `
-                        <div onclick="filterByProvinceAndTeam('${escapeHtml(p.prov)}', '${escapeHtml(team.timCode)}')" 
-                             class="cursor-pointer rounded-2xl p-4 border transition-all duration-200 relative overflow-hidden group shadow-2xs hover:shadow-md ${
-                                 isSelected 
-                                     ? themeActiveRing 
-                                     : 'bg-white border-slate-200/90 ' + themeBorderHover
-                             }">
-                            <!-- Top Accent Bar -->
-                            <div class="absolute top-0 inset-x-0 h-1.5 ${themeAccentBar}"></div>
-
-                            <!-- Card Header -->
-                            <div class="flex items-start justify-between gap-2 mb-2.5 pt-0.5">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-2xs ${themeAvatar}">
-                                        ${escapeHtml(team.timCode === 'OTHER' ? '?' : team.timCode)}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <h5 class="font-extrabold text-slate-900 text-sm truncate group-hover:text-blue-600 transition">
-                                            ${escapeHtml(team.timName)}
-                                        </h5>
-                                        <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1 truncate">
-                                            📍 ${escapeHtml(p.prov)}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="text-xs font-mono font-black px-2.5 py-1 rounded-full ${pctBadgeClass}">
-                                        ${team.pct}%
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Progress Bar -->
-                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3 border border-slate-100/80">
-                                <div class="h-full rounded-full transition-all duration-500 ${themeBar}" style="width: ${team.pct}%"></div>
-                            </div>
-
-                            <!-- 3 Mini Metric Badges -->
-                            <div class="grid grid-cols-3 gap-1.5 text-center mb-3">
-                                <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
-                                    <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</div>
-                                    <div class="text-xs sm:text-sm font-black text-slate-800 font-mono mt-0.5">${team.total}</div>
-                                </div>
-                                <div class="bg-emerald-50/80 rounded-xl p-2 border border-emerald-100/60">
-                                    <div class="text-[9px] sm:text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Terpasang</div>
-                                    <div class="text-xs sm:text-sm font-black text-emerald-700 font-mono mt-0.5">${team.installed}</div>
-                                </div>
-                                <div class="bg-amber-50/80 rounded-xl p-2 border border-amber-100/60">
-                                    <div class="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase tracking-wider">Belum</div>
-                                    <div class="text-xs sm:text-sm font-black text-amber-700 font-mono mt-0.5">${team.pending}</div>
-                                </div>
-                            </div>
-
-                            <!-- Teknisi List Pill -->
-                            <div class="text-[11px] text-slate-600 bg-slate-50/80 rounded-xl px-2.5 py-1.5 border border-slate-100 mb-2.5 flex items-center gap-1.5 truncate">
-                                <span class="text-slate-400 font-bold shrink-0 text-[10px]">👤 Teknisi:</span>
-                                <span class="truncate font-semibold text-slate-700 text-[11px]" title="${escapeHtml(team.teknisiArr.join(', '))}">${escapeHtml(teknisiStr || 'Belum ada data')}</span>
-                            </div>
-
-                            <!-- Footer Status / Action Hint -->
-                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                                <span class="font-bold flex items-center gap-1 ${isSelected ? 'text-blue-700' : 'text-slate-400 group-hover:text-blue-600'} transition">
-                                    ${isSelected ? '✓ Filter Aktif' : 'Klik untuk filter →'}
-                                </span>
-                                ${team.trouble > 0 
-                                    ? `<span class="text-rose-600 font-extrabold flex items-center gap-1 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 text-[10px]">⚠️ ${team.trouble} kendala</span>` 
-                                    : `<span class="text-slate-400 text-[10px] font-medium">Lancar</span>`
-                                }
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                return `
-                    <div class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs">
-                        <!-- Province Header Ribbon -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 mb-4 border-b border-slate-100">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
-                                    🏢
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h4 class="font-black text-slate-900 text-sm sm:text-base">${escapeHtml(p.prov)}</h4>
-                                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-full ${p.pct === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">
-                                            ${p.pct}% Selesai
-                                        </span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-500 font-medium flex items-center gap-2 flex-wrap mt-0.5">
-                                        <span>${p.total} Total Unit</span>
-                                        <span>&bull;</span>
-                                        <span class="text-emerald-600 font-bold">${p.installed} Terpasang</span>
-                                        <span>&bull;</span>
-                                        <span class="text-amber-600 font-bold">${p.pending} Belum</span>
-                                        <span>&bull;</span>
-                                        <span class="text-slate-600 font-semibold">${p.teamList.length} Tim Bertugas</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button onclick="filterByProvinceOnly('${escapeHtml(p.prov)}')" 
-                                    class="self-start sm:self-auto text-xs font-bold px-3.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
-                                        provActive && !selectedTimFilter
-                                            ? 'bg-blue-600 text-white shadow-xs'
-                                            : 'text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100/70 border border-blue-100'
-                                    }">
-                                <span>${provActive && !selectedTimFilter ? '✓ Filter Provinsi Ini Aktif' : 'Filter Semua Tim di ' + escapeHtml(p.prov)}</span>
-                            </button>
-                        </div>
-
-                        <!-- Team Cards Grid in this Province -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3.5">
-                            ${teamCardsHtml}
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            renderAllProgressCards();
         }
 
         // ========================================================
@@ -1740,8 +1930,73 @@
                 troubleDesc.className = 'truncate text-slate-500';
             }
 
+            renderActiveFiltersBar();
             renderAllTables();
             renderPagination();
+        }
+
+        // Active Filter Chips Visual Feedback
+        function renderActiveFiltersBar() {
+            const bar = document.getElementById('active-filters-bar');
+            const container = document.getElementById('active-filter-chips');
+            if (!bar || !container) return;
+
+            const search = document.getElementById('global-search').value.trim();
+            const tim = selectedTimFilter || document.getElementById('filter-tim').value;
+            const prov = selectedProvinceFilter || document.getElementById('filter-provinsi').value;
+            const kab = document.getElementById('filter-kab').value;
+            const tek = document.getElementById('filter-teknisi').value;
+
+            const chips = [];
+
+            if (search) {
+                chips.push(`
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white text-slate-800 border border-slate-200 font-semibold">
+                        <span>🔍 "${escapeHtml(search)}"</span>
+                        <button onclick="document.getElementById('global-search').value=''; applyAllFilters(true);" class="text-slate-400 hover:text-rose-600 cursor-pointer ml-0.5">&times;</button>
+                    </span>
+                `);
+            }
+            if (tim) {
+                const timLabel = TIM_NAME_MAP[tim] ? `Tim ${TIM_NAME_MAP[tim]} (${tim})` : `Tim ${tim}`;
+                chips.push(`
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-50 text-purple-800 border border-purple-200 font-semibold">
+                        <span>👥 ${escapeHtml(timLabel)}</span>
+                        <button onclick="resetTeamFilter()" class="text-purple-400 hover:text-rose-600 cursor-pointer ml-0.5">&times;</button>
+                    </span>
+                `);
+            }
+            if (prov) {
+                chips.push(`
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
+                        <span>📍 ${escapeHtml(prov)}</span>
+                        <button onclick="resetProvinceFilter()" class="text-blue-400 hover:text-rose-600 cursor-pointer ml-0.5">&times;</button>
+                    </span>
+                `);
+            }
+            if (kab) {
+                chips.push(`
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-semibold">
+                        <span>🏙️ ${escapeHtml(kab)}</span>
+                        <button onclick="document.getElementById('filter-kab').value=''; applyAllFilters(true);" class="text-slate-400 hover:text-rose-600 cursor-pointer ml-0.5">&times;</button>
+                    </span>
+                `);
+            }
+            if (tek) {
+                chips.push(`
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-semibold">
+                        <span>👤 ${escapeHtml(tek)}</span>
+                        <button onclick="document.getElementById('filter-teknisi').value=''; applyAllFilters(true);" class="text-slate-400 hover:text-rose-600 cursor-pointer ml-0.5">&times;</button>
+                    </span>
+                `);
+            }
+
+            if (chips.length > 0) {
+                container.innerHTML = chips.join('');
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
         }
 
         function resetFilters() {
@@ -1754,7 +2009,7 @@
             selectedTimFilter = '';
             activeProvinceTab = 'ALL';
             applyAllFilters(true);
-            renderProvinceTeamCards();
+            renderAllProgressCards();
         }
 
         function getPagedItems(list, page) {
@@ -1864,7 +2119,7 @@
             if (curr > 1) {
                 html += `
                     <button onclick="changePage(${curr - 1})" 
-                            class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer">
+                            class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer">
                         <span>&larr; Prev</span>
                     </button>
                 `;
@@ -1874,7 +2129,7 @@
             if (curr < totalPages) {
                 html += `
                     <button onclick="changePage(${curr + 1})" 
-                            class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+                            class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer">
                         <span>Next</span>
                         <span>&rarr;</span>
                     </button>
@@ -1901,7 +2156,7 @@
             if (!code) return '<span class="text-slate-300 font-mono text-xs">-</span>';
             const c = code.toUpperCase();
             let cls = 'badge-team-other';
-            let name = TIM_NAME_MAP[c] ? `${c} &middot; ${TIM_NAME_MAP[c]}` : `Tim ${c}`;
+            let name = TIM_NAME_MAP[c] ? `Tim ${TIM_NAME_MAP[c]} (${c})` : `Tim ${c}`;
             if (c === 'M') cls = 'badge-team-m';
             if (c === 'Y') cls = 'badge-team-y';
             if (c === 'R') cls = 'badge-team-r';
@@ -1925,7 +2180,7 @@
             ];
 
             if (mode === 'cards') {
-                if (btnCard) btnCard.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition';
+                if (btnCard) btnCard.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-xs transition font-bold';
                 if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-lg text-slate-600 transition';
                 wrappers.forEach(w => {
                     if (w) {
@@ -1936,7 +2191,7 @@
                 cardContainers.forEach(c => c && c.classList.remove('hidden'));
             } else {
                 if (btnCard) btnCard.className = 'px-2.5 py-1 rounded-lg text-slate-600 transition';
-                if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition';
+                if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-xs transition font-bold';
                 wrappers.forEach(w => {
                     if (w) {
                         w.classList.remove('hidden');
@@ -1947,6 +2202,9 @@
             }
         }
 
+        // ========================================================
+        // RENDERING TABLES & MOBILE CARDS (PROFESSIONAL UI/UX)
+        // ========================================================
         function renderInstalledTable(items, startIdx = 0) {
             const tbody = document.getElementById('installed-table-body');
             const mobileContainer = document.getElementById('installed-mobile-cards');
@@ -1961,20 +2219,20 @@
             empty.classList.add('hidden');
 
             tbody.innerHTML = items.map((row, idx) => `
-                <tr class="hover:bg-emerald-50/40 transition-colors">
-                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
-                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
-                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
-                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
-                    <td class="py-3 px-3.5 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
-                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
-                    <td class="py-3 px-3.5 whitespace-nowrap">
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
                         <div class="font-bold text-slate-800">${escapeHtml(row.pic || '-')}</div>
-                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-[11px] font-mono text-slate-500 hover:text-blue-600 transition flex items-center gap-1">📞 ${escapeHtml(row.telp)}</a>` : ''}
+                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-xs font-mono text-emerald-700 hover:text-emerald-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(row.telp)}</a>` : ''}
                     </td>
-                    <td class="py-3 px-3.5 text-center whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <span>Terpasang</span>
                         </span>
@@ -1984,42 +2242,44 @@
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
-                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:border-emerald-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                                <span class="text-xs sm:text-sm font-mono font-bold text-blue-700 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                 <span>Terpasang</span>
                             </span>
                         </div>
 
-                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
                         
-                        <div class="text-[11px] text-slate-500 font-medium mb-3 flex items-center gap-1">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3 flex items-center gap-1.5">
                             <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 text-xs pt-2.5 border-t border-slate-100">
-                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teknisi & Tim</div>
-                                <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.teknisi)}</div>
-                                <div class="mt-1">${getTimBadge(row.timCode)}</div>
-                            </div>
-                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex flex-col justify-between">
-                                <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">PIC Sekolah</div>
-                                    <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.pic || '-')}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-100">
+                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <span class="text-slate-500 font-medium">Teknisi:</span>
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="font-bold text-slate-800 truncate">${escapeHtml(row.teknisi)}</span>
+                                    ${getTimBadge(row.timCode)}
                                 </div>
-                                ${row.telp ? `
-                                    <a href="tel:${escapeHtml(row.telp)}" class="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-extrabold shadow-2xs transition">
-                                        📞 Hubungi
-                                    </a>
-                                ` : '<span class="text-[10px] text-slate-400 mt-1 italic">Tanpa nomor</span>'}
+                            </div>
+                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <span class="text-slate-500 font-medium">PIC:</span>
+                                <span class="font-bold text-slate-800 truncate">${escapeHtml(row.pic || '-')}</span>
                             </div>
                         </div>
+
+                        ${row.telp ? `
+                            <a href="tel:${escapeHtml(row.telp)}" class="mt-3 w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                <span>Hubungi PIC: ${escapeHtml(row.telp)}</span>
+                            </a>
+                        ` : ''}
                     </div>
                 `).join('');
             }
@@ -2039,20 +2299,20 @@
             empty.classList.add('hidden');
 
             tbody.innerHTML = items.map((row, idx) => `
-                <tr class="hover:bg-amber-50/40 transition-colors">
-                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
-                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
-                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
-                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
-                    <td class="py-3 px-3.5 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
-                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
-                    <td class="py-3 px-3.5 whitespace-nowrap">
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
                         <div class="font-bold text-slate-800">${escapeHtml(row.pic || '-')}</div>
-                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-[11px] font-mono text-slate-500 hover:text-blue-600 transition flex items-center gap-1">📞 ${escapeHtml(row.telp)}</a>` : ''}
+                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-xs font-mono text-blue-600 hover:text-blue-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(row.telp)}</a>` : ''}
                     </td>
-                    <td class="py-3 px-3.5 text-center whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
                             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                             <span>Belum Pasang</span>
                         </span>
@@ -2062,42 +2322,44 @@
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
-                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:border-amber-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                                <span class="text-xs sm:text-sm font-mono font-bold text-blue-700 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                 <span>Belum Pasang</span>
                             </span>
                         </div>
 
-                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
                         
-                        <div class="text-[11px] text-slate-500 font-medium mb-3 flex items-center gap-1">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3 flex items-center gap-1.5">
                             <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 text-xs pt-2.5 border-t border-slate-100">
-                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teknisi & Tim</div>
-                                <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.teknisi)}</div>
-                                <div class="mt-1">${getTimBadge(row.timCode)}</div>
-                            </div>
-                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex flex-col justify-between">
-                                <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">PIC Sekolah</div>
-                                    <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.pic || '-')}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-100">
+                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <span class="text-slate-500 font-medium">Teknisi:</span>
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="font-bold text-slate-800 truncate">${escapeHtml(row.teknisi)}</span>
+                                    ${getTimBadge(row.timCode)}
                                 </div>
-                                ${row.telp ? `
-                                    <a href="tel:${escapeHtml(row.telp)}" class="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-extrabold shadow-2xs transition">
-                                        📞 Hubungi
-                                    </a>
-                                ` : '<span class="text-[10px] text-slate-400 mt-1 italic">Tanpa nomor</span>'}
+                            </div>
+                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <span class="text-slate-500 font-medium">PIC:</span>
+                                <span class="font-bold text-slate-800 truncate">${escapeHtml(row.pic || '-')}</span>
                             </div>
                         </div>
+
+                        ${row.telp ? `
+                            <a href="tel:${escapeHtml(row.telp)}" class="mt-3 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                <span>Hubungi PIC: ${escapeHtml(row.telp)}</span>
+                            </a>
+                        ` : ''}
                     </div>
                 `).join('');
             }
@@ -2118,18 +2380,18 @@
 
             tbody.innerHTML = items.map((row, idx) => `
                 <tr class="hover:bg-rose-50/40 transition-colors">
-                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
-                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
-                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
-                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
-                    <td class="py-3 px-3.5 whitespace-nowrap">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
                         <div class="font-semibold text-slate-800">${escapeHtml(row.teknisi)}</div>
-                        <div class="text-[11px] text-slate-500">PIC: ${escapeHtml(row.pic)}</div>
+                        <div class="text-xs text-slate-500">PIC: ${escapeHtml(row.pic)}</div>
                     </td>
-                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
-                    <td class="py-3 px-5">
-                        <div class="text-xs text-rose-800 bg-rose-50 p-3 rounded-xl border border-rose-200 font-medium">
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3.5 px-5">
+                        <div class="text-xs sm:text-sm text-rose-900 bg-rose-50 p-3 rounded-xl border border-rose-200 font-medium">
                             ${escapeHtml(row.kendala)}
                         </div>
                     </td>
@@ -2138,31 +2400,31 @@
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-white rounded-2xl p-4 border border-rose-200 shadow-2xs transition-all">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
-                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-rose-200 shadow-xs transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                                <span class="text-xs sm:text-sm font-mono font-bold text-blue-700 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                                 <span>Kendala</span>
                             </span>
                         </div>
 
-                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
-                        <div class="text-[11px] text-slate-500 font-medium mb-2.5">
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3">
                             📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)} &middot; 👤 ${escapeHtml(row.teknisi)}
                         </div>
 
-                        <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 font-medium mb-2.5">
-                            <div class="text-[10px] font-bold text-rose-700 uppercase tracking-wider mb-0.5">Detail Kendala:</div>
+                        <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs sm:text-sm text-rose-900 font-medium mb-3 leading-relaxed">
+                            <div class="font-bold text-rose-700 uppercase tracking-wider text-xs mb-1">⚠️ Detail Kendala:</div>
                             ${escapeHtml(row.kendala)}
                         </div>
 
-                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                            <span class="text-slate-500 text-[11px]">PIC: <strong class="text-slate-800">${escapeHtml(row.pic || '-')}</strong></span>
-                            ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg font-bold text-[10px] hover:bg-rose-200 transition">📞 Hubungi</a>` : ''}
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm">
+                            <span class="text-slate-600">PIC: <strong class="text-slate-800">${escapeHtml(row.pic || '-')}</strong></span>
+                            ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs shadow-xs transition">📞 Hubungi</a>` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -2183,20 +2445,20 @@
             const btnTrouble = document.getElementById('tab-trouble');
 
             // Reset active styles
-            const normalCls = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2';
+            const normalCls = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer';
             [btnInstalled, btnPending, btnTrouble].forEach(btn => {
                 if (btn) btn.className = normalCls;
             });
 
             if (tab === 'installed') {
                 document.getElementById('installed-section').classList.remove('hidden');
-                btnInstalled.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-sm';
+                btnInstalled.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-xs cursor-pointer';
             } else if (tab === 'pending') {
                 document.getElementById('pending-section').classList.remove('hidden');
-                btnPending.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-amber-700 shadow-sm';
+                btnPending.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-amber-700 shadow-xs cursor-pointer';
             } else if (tab === 'trouble') {
                 document.getElementById('trouble-section').classList.remove('hidden');
-                btnTrouble.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-rose-700 shadow-sm';
+                btnTrouble.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-rose-700 shadow-xs cursor-pointer';
             }
 
             renderPagination();
