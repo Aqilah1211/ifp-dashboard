@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFP Monitoring Report - Dashboard Instalasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* Glassmorphic Navbar & Gradient */
+        .header-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+        }
+
+        /* Modern Card Styling */
+        .metric-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+            transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            border-color: rgba(191, 219, 254, 0.9);
+        }
+
+        /* Sleek custom scrollbars */
+        .table-scroll::-webkit-scrollbar {
+            height: 7px;
+            width: 7px;
+        }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 9999px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Badges */
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .badge-team-m { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+        .badge-team-y { background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .badge-team-r { background-color: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
+        .badge-team-other { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* Hide scrollbars for smooth touch scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Loader */
+        .loader-ring {
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            border-top: 3px solid #2563eb;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Modal backdrop */
+        .modal-blur {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(6px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Top Header Navbar -->
+    <header class="header-gradient text-white shadow-md sticky top-0 z-40">
+        <div class="w-full px-4 sm:px-6 lg:px-8">
+            <div class="py-3.5 flex flex-wrap justify-between items-center gap-3">
+                
+                <!-- Brand Title -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/15 p-2 rounded-xl backdrop-blur-md border border-white/20 shadow-inner flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-base sm:text-lg font-extrabold tracking-tight">IFP Monitoring Report</h1>
+                            <span class="bg-blue-400/25 border border-blue-300/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
+                        </div>
+                        <p class="text-[11px] text-blue-200/90 font-medium">Multi-Spreadsheet Installation Tracker</p>
+                    </div>
+                </div>
+
+                <!-- Action Controls Group -->
+                <div class="flex items-center gap-2">
+                    <!-- Share Button -->
+                    <button onclick="generateShareLink()" title="Bagikan Konfigurasi ke Teman" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span class="hidden sm:inline">Bagikan</span>
+                    </button>
+
+                    <!-- Kelola Sumber Data (15+ Sheets) -->
+                    <button onclick="openSourceManager()" title="Kelola Sumber Spreadsheet & CSV" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                        <span>Sumber Data</span>
+                        <span id="nav-source-count" class="bg-blue-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">1</span>
+                    </button>
+
+                    <!-- Manual Refresh -->
+                    <button id="manual-refresh" onclick="fetchAllData({silent:false})" title="Perbarui Data Sekarang" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white p-2 rounded-xl transition flex items-center justify-center">
+                        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+
+                    <!-- Auto Refresh Pill -->
+                    <button id="auto-toggle" onclick="toggleAutoRefresh()" title="Klik untuk On/Off Auto-refresh 30s" class="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-2.5 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1.5">
+                        <span id="auto-pulse-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="auto-status-text" class="text-[11px] font-mono hidden md:inline">30s</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub-Header: Active Data Source Ribbon -->
+        <div class="bg-black/20 border-t border-white/10 px-4 sm:px-6 lg:px-8 py-2">
+            <div class="w-full flex items-center justify-between text-xs overflow-x-auto gap-3">
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-white/70 text-[11px] font-semibold uppercase tracking-wider">Spreadsheet Terhubung:</span>
+                    <div id="source-chips" class="flex gap-2 items-center flex-wrap">
+                        <!-- chips rendered here -->
+                    </div>
+                </div>
+                <div class="text-[11px] text-white/70 shrink-0 font-medium">
+                    Terakhir diperbarui: <span id="last-updated" class="font-mono text-white font-bold">-</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Source Manager Modal (Support 15+ Spreadsheets) -->
+    <div id="source-modal" class="hidden fixed inset-0 z-50 modal-blur flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Kelola Sumber Spreadsheet</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Gabungkan hingga 15+ spreadsheet sekaligus ke dalam satu dashboard</p>
+                </div>
+                <button onclick="closeSourceManager()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                
+                <!-- Registered Spreadsheets List -->
+                <div>
+                    <div class="flex justify-between items-center mb-2.5">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-2">
+                            <span>Daftar Spreadsheet Terdaftar</span>
+                            <span id="modal-sheet-count" class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px]">1</span>
+                        </label>
+                        <button onclick="removeAllSpreadsheets()" class="text-[11px] text-red-500 hover:text-red-700 font-bold transition">
+                            Hapus Semua
+                        </button>
+                    </div>
+
+                    <div id="spreadsheet-list" class="space-y-2 max-h-52 overflow-y-auto pr-1 table-scroll">
+                        <!-- dynamic list -->
+                    </div>
+                </div>
+
+                <!-- Input Switcher (Single vs Batch 15+ links) -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
+                    <div class="flex border-b border-slate-200 pb-2 mb-3 gap-2">
+                        <button onclick="switchInputMode('single')" id="btn-mode-single" class="px-3 py-1.5 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition">
+                            + Tambah Satu Link
+                        </button>
+                        <button onclick="switchInputMode('batch')" id="btn-mode-batch" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+                            📋 Tempel Banyak Link Sekaligus (15+ Spreadsheet)
+                        </button>
+                    </div>
+
+                    <!-- Single Input -->
+                    <div id="form-single-ss" class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="new-spreadsheet-id" placeholder="Paste link Google Sheet atau Spreadsheet ID..." class="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" id="new-sheet-name" placeholder="Sheet (opsional)" class="w-full sm:w-32 px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button onclick="addSpreadsheet()" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition whitespace-nowrap shadow-sm">+ Tambah</button>
+                    </div>
+
+                    <!-- Batch / Bulk Input -->
+                    <div id="form-batch-ss" class="hidden space-y-2">
+                        <p class="text-[11px] text-slate-600 font-medium">Tempel daftar link spreadsheet di bawah (<strong>1 link per baris</strong>):</p>
+                        <textarea id="batch-spreadsheet-input" rows="4" placeholder="https://docs.google.com/spreadsheets/d/ID_1/edit&#10;https://docs.google.com/spreadsheets/d/ID_2/edit&#10;https://docs.google.com/spreadsheets/d/ID_3/edit&#10;... (tempel 15+ link sekaligus di sini)" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="text-[10px] text-slate-400">ID otomatis dipisahkan dan duplikat dibuang.</span>
+                            <button onclick="addBatchSpreadsheets()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                                Tambahkan Semua Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSV File Dropzone -->
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-600 block mb-2">Import File CSV (Offline)</label>
+                    <div id="csv-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-5 text-center cursor-pointer bg-slate-50/50 transition" onclick="document.getElementById('csv-file-input').click()">
+                        <p class="text-xs font-semibold text-slate-700">Tarik & Lepas (Drag & Drop) file CSV ke sini atau <span class="text-blue-600 underline">Pilih File</span></p>
+                        <p class="text-[10px] text-slate-400 mt-1">Bisa pilih banyak file CSV sekaligus</p>
+                    </div>
+                    <input type="file" id="csv-file-input" accept=".csv" multiple class="hidden" onchange="handleCSVFiles(this.files)">
+                    <div id="csv-file-list" class="space-y-1.5 mt-2"></div>
+                </div>
+
+                <!-- Share Config & Export -->
+                <div class="bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
+                    <label class="text-xs font-bold text-slate-800 block mb-1">Simpan & Bagikan Konfigurasi</label>
+                    <p class="text-[11px] text-slate-500 mb-3">Ekspor konfigurasi daftar 15+ spreadsheet Anda agar tidak perlu memasukkan ulang di komputer lain.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportConfig()" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition shadow-2xs">
+                            📥 Download Config (.json)
+                        </button>
+                        <label class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer shadow-2xs">
+                            📤 Upload Config (.json)
+                            <input type="file" accept=".json" class="hidden" onchange="importConfig(this.files[0])">
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 flex justify-between items-center bg-slate-50">
+                <span id="source-status-text" class="text-xs text-slate-500 font-medium">1 spreadsheet aktif</span>
+                <div class="flex gap-2">
+                    <button onclick="closeSourceManager()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">Tutup</button>
+                    <button onclick="saveAndRefresh()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm">Simpan & Terapkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container (Full Width) -->
+    <main class="w-full px-4 sm:px-6 lg:px-8 py-6 flex-1">
+        
+        <!-- 4 Executive Stat Cards (Responsive 2x2 on Mobile, 4 Cols on Desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-5 sm:mb-7">
+            
+            <!-- Card 1: Total Unit -->
+            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit</p>
+                        <h2 id="total-unit" class="text-xl sm:text-3xl font-black text-slate-900 mt-1">0</h2>
+                    </div>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+                    <span id="total-sources" class="truncate">1 Spreadsheet</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Terpasang -->
+            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
+                        <h2 id="count-installed" class="text-xl sm:text-3xl font-black text-emerald-600 mt-1">0</h2>
+                    </div>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                    <div class="flex justify-between items-center text-[10px] sm:text-[11px] font-semibold text-emerald-700 mb-1">
+                        <span>Progress Selesai</span>
+                        <span id="pct-installed">0%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="bar-installed" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Belum Pasang -->
+            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
+                        <h2 id="count-pending" class="text-xl sm:text-3xl font-black text-amber-500 mt-1">0</h2>
+                    </div>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-9-9" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                    <div class="flex justify-between items-center text-[10px] sm:text-[11px] font-semibold text-amber-700 mb-1">
+                        <span>Dalam Antrean</span>
+                        <span id="pct-pending">0%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="bar-pending" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Trouble / Kendala -->
+            <div class="metric-card p-3.5 sm:p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
+                        <h2 id="count-trouble" class="text-xl sm:text-3xl font-black text-rose-600 mt-1">0</h2>
+                    </div>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500">
+                    <span id="trouble-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span id="trouble-desc" class="truncate">Semua lancar</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section: Progres Per Provinsi & Tim (Executive Cards) -->
+        <div class="mb-7">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5 px-1">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                        <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800">Progres Per Provinsi & Tim</h3>
+                        <span id="province-team-count-badge" class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0 Tim</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">Klik kartu tim untuk langsung memfilter data instalasi di bawah</p>
+                </div>
+                
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                    <button id="btn-reset-cards" onclick="resetAllCardsFilter()" class="text-xs font-bold text-slate-600 hover:text-blue-600 transition flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 shadow-2xs cursor-pointer">
+                        <span id="btn-reset-cards-label">Semua Tim & Provinsi Aktif</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Province Horizontal Filter Switcher (Mobile Swipeable Pills) -->
+            <div id="province-tab-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-3">
+                <!-- Dynamically populated: [Semua Provinsi] [Prov. Bali (3 Tim)] ... -->
+            </div>
+
+            <!-- Dynamic Province & Team Cards Grid -->
+            <div id="province-cards-grid" class="space-y-4">
+                <!-- Dynamically populated per province with team cards -->
+            </div>
+        </div>
+
+        <!-- Filter & Search Toolbar (Responsive, No Clipping) -->
+        <div class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/90 shadow-sm mb-6">
+            <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+                
+                <!-- Search Box with proper priority flex width -->
+                <div class="flex-1 relative min-w-[200px]">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="global-search" oninput="applyAllFilters()" 
+                           placeholder="Cari ID transaksi, sekolah, teknisi, PIC..." 
+                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <!-- Dropdown Filters Group (Responsive 2x2 grid on mobile, flex on desktop) -->
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+                    
+                    <!-- Filter Tim (Mattew, Yudi, Rabil) -->
+                    <select id="filter-tim" onchange="onTimDropdownChange(this.value)" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="">Semua Tim</option>
+                        <option value="M">Tim Mattew (M)</option>
+                        <option value="Y">Tim Yudi (Y)</option>
+                        <option value="R">Tim Rabil (R)</option>
+                    </select>
+
+                    <!-- Filter Provinsi -->
+                    <select id="filter-provinsi" onchange="onProvinceDropdownChange(this.value)" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="">Semua Provinsi</option>
+                    </select>
+
+                    <!-- Filter Kab / Kota -->
+                    <select id="filter-kab" onchange="applyAllFilters()" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="">Semua Kab/Kota</option>
+                    </select>
+
+                    <!-- Filter Teknisi -->
+                    <select id="filter-teknisi" onchange="applyAllFilters()" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="">Semua Teknisi</option>
+                    </select>
+
+                    <!-- Reset Button -->
+                    <button onclick="resetFilters()" class="col-span-2 sm:col-span-1 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer" title="Reset semua filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segmented Tabs & Mobile View Switcher -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+            <div class="bg-slate-200/70 p-1 sm:p-1.5 rounded-2xl grid grid-cols-3 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full sm:w-auto">
+                <button onclick="switchTab('installed')" id="tab-installed" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-sm">
+                    <span class="truncate">Terpasang</span>
+                    <span id="tab-count-installed" class="bg-emerald-100 text-emerald-800 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                </button>
+                <button onclick="switchTab('pending')" id="tab-pending" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2">
+                    <span class="truncate">Belum</span>
+                    <span id="tab-count-pending" class="bg-slate-300/70 text-slate-700 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                </button>
+                <button onclick="switchTab('trouble')" id="tab-trouble" class="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2">
+                    <span class="truncate">Kendala</span>
+                    <span id="tab-count-trouble" class="bg-slate-300/70 text-slate-700 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">0</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500 font-medium">
+                <div>Total Baris: <strong id="filter-result-count" class="text-slate-900 font-bold">0</strong> unit</div>
+                <!-- View Mode Switcher for Smartphone -->
+                <div class="md:hidden inline-flex bg-slate-200/80 p-0.5 rounded-xl text-xs font-bold">
+                    <button id="btn-view-card" onclick="setMobileViewMode('cards')" class="px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition">
+                        📱 Kartu
+                    </button>
+                    <button id="btn-view-table" onclick="setMobileViewMode('table')" class="px-2.5 py-1 rounded-lg text-slate-600 transition">
+                        📊 Tabel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table & Mobile Cards Container -->
+        <div id="table-card-container" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden mb-8">
+            
+            <!-- Table: Terpasang (Installed) -->
+            <div id="installed-section">
+                <!-- Desktop Table View -->
+                <div id="installed-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
+                    <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
+                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
+                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
+                                <th class="py-3.5 px-3.5 w-40">Teknisi</th>
+                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
+                                <th class="py-3.5 px-3.5 w-44">PIC & Kontak</th>
+                                <th class="py-3.5 px-3.5 w-32 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="installed-table-body" class="divide-y divide-slate-100 text-xs">
+                            <!-- rows rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card Feed -->
+                <div id="installed-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                    <!-- cards rendered dynamically -->
+                </div>
+
+                <div id="installed-empty" class="hidden py-16 text-center text-slate-400 text-sm">
+                    Tidak ada unit terpasang yang cocok dengan pencarian / filter.
+                </div>
+            </div>
+
+            <!-- Table: Belum Pasang (Pending) -->
+            <div id="pending-section" class="hidden">
+                <!-- Desktop Table View -->
+                <div id="pending-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
+                    <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
+                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
+                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
+                                <th class="py-3.5 px-3.5 w-40">Teknisi</th>
+                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
+                                <th class="py-3.5 px-3.5 w-44">PIC & Kontak</th>
+                                <th class="py-3.5 px-3.5 w-32 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-table-body" class="divide-y divide-slate-100 text-xs">
+                            <!-- rows rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card Feed -->
+                <div id="pending-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                    <!-- cards rendered dynamically -->
+                </div>
+
+                <div id="pending-empty" class="hidden py-16 text-center text-slate-400 text-sm">
+                    Tidak ada sekolah dalam antrean belum pasang (Semua telah selesai!).
+                </div>
+            </div>
+
+            <!-- Table: Kendala (Trouble) -->
+            <div id="trouble-section" class="hidden">
+                <!-- Desktop Table View -->
+                <div id="trouble-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
+                    <table class="w-full text-left min-w-[1000px] divide-y divide-slate-100">
+                        <thead class="bg-slate-50/90 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3.5 px-3.5 w-12 text-center">No.</th>
+                                <th class="py-3.5 px-3.5 w-44">ID Transaksi / NPSN</th>
+                                <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
+                                <th class="py-3.5 px-3.5 w-36">Kab / Kota</th>
+                                <th class="py-3.5 px-3.5 w-28">Provinsi</th>
+                                <th class="py-3.5 px-3.5 w-40">Teknisi / PIC</th>
+                                <th class="py-3.5 px-3.5 w-28 text-center">Tim</th>
+                                <th class="py-3.5 px-5">Detail Kendala</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trouble-table-body" class="divide-y divide-slate-100 text-xs">
+                            <!-- rows rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card Feed -->
+                <div id="trouble-mobile-cards" class="md:hidden p-3.5 space-y-3">
+                    <!-- cards rendered dynamically -->
+                </div>
+
+                <div id="trouble-empty" class="hidden py-16 text-center text-slate-400 text-sm">
+                    🎉 Tidak ada kendala teknis yang dilaporkan. Semua instalasi berjalan normal!
+                </div>
+            </div>
+
+            <!-- Simplified Next / Prev Pagination Toolbar -->
+            <div id="pagination-toolbar" class="px-4 sm:px-5 py-3.5 bg-slate-50 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <!-- Info: Showing X to Y of Z units & Page count -->
+                <div class="flex items-center flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2 text-slate-500 font-medium text-center sm:text-left">
+                    <span>Menampilkan <strong id="pagination-range" class="text-slate-800 font-bold">0 - 0</strong> dari <strong id="pagination-total" class="text-slate-800 font-bold">0</strong> unit</span>
+                    <span class="text-slate-300 hidden sm:inline">|</span>
+                    <span id="pagination-page-info" class="text-slate-600 font-semibold">Halaman 1 dari 1</span>
+                    <span class="text-slate-400 text-[11px]">(Maks. 30 unit / halaman)</span>
+                </div>
+
+                <!-- Page Nav: Next Button -->
+                <div id="pagination-buttons" class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                    <!-- Populated dynamically: Next / Prev -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="py-16 flex flex-col items-center justify-center">
+            <div class="loader-ring mb-3"></div>
+            <p class="text-slate-500 text-xs font-semibold animate-pulse">Menghubungkan ke Google Spreadsheet & Menggabungkan Data...</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/80 py-4 text-center text-xs text-slate-400 mt-auto">
+        IFP Installation Monitoring Dashboard &copy; 2026 &middot; Real-time Multi-Spreadsheet Sync
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // ========================================================
+        // STATE CONFIGURATION
+        // ========================================================
+        const DEFAULT_SPREADSHEET_ID = '1NjipAIoPF5DD1TEDTNRzVADDmtPLyvVHw2muXPMMeRU';
+
+        let dataSources = [];
+        let sourceIdCounter = 0;
+        const AUTO_REFRESH_INTERVAL_MS = 30000;
+        let autoRefreshEnabled = true;
+
+        let allRecords = [];
+        let activeTab = 'installed';
+        let selectedProvinceFilter = '';
+        let selectedTimFilter = '';
+        let activeProvinceTab = 'ALL';
+        let mobileViewMode = 'cards';
+
+        // Pagination State (Default 30 baris/unit per halaman)
+        let pageSize = 30;
+        let currentPages = {
+            installed: 1,
+            pending: 1,
+            trouble: 1
+        };
+        let currentFilteredData = {
+            installed: [],
+            pending: [],
+            trouble: []
+        };
+
+        const TIM_NAME_MAP = {
+            'M': 'Mattew',
+            'Y': 'Yudi',
+            'R': 'Rabil'
+        };
+
+        // ========================================================
+        // INITIALIZATION & SOURCES
+        // ========================================================
+        function loadSavedSources() {
+            // 1. Cek parameter dari Share Link URL
+            const urlSources = loadFromURLParams();
+            if (urlSources && urlSources.length > 0) {
+                dataSources = urlSources;
+                saveSources();
+                return;
+            }
+
+            // 2. Cek localStorage
+            try {
+                const saved = localStorage.getItem('ifp_sources_v3');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        dataSources = parsed.map(s => ({
+                            ...s,
+                            rows: [],
+                            hash: ''
+                        }));
+                        sourceIdCounter = dataSources.length;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('Gagal memuat saved sources:', e);
+            }
+
+            // 3. Fallback: Default spreadsheet pengguna (Bali)
+            dataSources = [{
+                type: 'spreadsheet',
+                id: DEFAULT_SPREADSHEET_ID,
+                sheet: '',
+                label: 'Spreadsheet Utama (Bali)',
+                sourceId: sourceIdCounter++,
+                rows: [],
+                hash: ''
+            }];
+        }
+
+        function saveSources() {
+            try {
+                const toSave = dataSources.filter(s => s.type === 'spreadsheet').map(s => ({
+                    type: s.type,
+                    id: s.id,
+                    sheet: s.sheet,
+                    label: s.label,
+                    sourceId: s.sourceId
+                }));
+                localStorage.setItem('ifp_sources_v3', JSON.stringify(toSave));
+            } catch (e) {
+                console.warn('Gagal menyimpan sources:', e);
+            }
+        }
+
+        function extractSpreadsheetId(input) {
+            const match = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+            if (match) return match[1];
+            return input.trim();
+        }
+
+        function switchInputMode(mode) {
+            const btnSingle = document.getElementById('btn-mode-single');
+            const btnBatch = document.getElementById('btn-mode-batch');
+            const formSingle = document.getElementById('form-single-ss');
+            const formBatch = document.getElementById('form-batch-ss');
+
+            if (mode === 'batch') {
+                formSingle.classList.add('hidden');
+                formBatch.classList.remove('hidden');
+                btnBatch.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                btnBatch.classList.remove('text-slate-500');
+                btnSingle.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btnSingle.classList.add('text-slate-500');
+            } else {
+                formBatch.classList.add('hidden');
+                formSingle.classList.remove('hidden');
+                btnSingle.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                btnSingle.classList.remove('text-slate-500');
+                btnBatch.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btnBatch.classList.add('text-slate-500');
+            }
+        }
+
+        function addSpreadsheet() {
+            const raw = document.getElementById('new-spreadsheet-id').value.trim();
+            const sheet = document.getElementById('new-sheet-name').value.trim();
+            if (!raw) {
+                alert('Silakan masukkan Link atau ID Google Sheet');
+                return;
+            }
+            const ssId = extractSpreadsheetId(raw);
+            if (dataSources.some(s => s.type === 'spreadsheet' && s.id === ssId && s.sheet === sheet)) {
+                alert('Spreadsheet ini sudah ada dalam daftar!');
+                return;
+            }
+
+            dataSources.push({
+                type: 'spreadsheet',
+                id: ssId,
+                sheet: sheet,
+                label: 'Sheet ' + (dataSources.length + 1) + ' (' + ssId.substring(0, 10) + '...)',
+                sourceId: sourceIdCounter++,
+                rows: [],
+                hash: ''
+            });
+
+            document.getElementById('new-spreadsheet-id').value = '';
+            document.getElementById('new-sheet-name').value = '';
+            renderSpreadsheetList();
+            updateSourceStatus();
+        }
+
+        function addBatchSpreadsheets() {
+            const raw = document.getElementById('batch-spreadsheet-input').value;
+            if (!raw || !raw.trim()) {
+                alert('Silakan tempel minimal satu link Google Sheets');
+                return;
+            }
+
+            const lines = raw.split(/\r?\n/);
+            let addedCount = 0;
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                const ssId = extractSpreadsheetId(trimmed);
+                if (ssId && !dataSources.some(s => s.type === 'spreadsheet' && s.id === ssId)) {
+                    dataSources.push({
+                        type: 'spreadsheet',
+                        id: ssId,
+                        sheet: '',
+                        label: 'Sheet ' + (dataSources.length + 1) + ' (' + ssId.substring(0, 8) + '...)',
+                        sourceId: sourceIdCounter++,
+                        rows: [],
+                        hash: ''
+                    });
+                    addedCount++;
+                }
+            });
+
+            document.getElementById('batch-spreadsheet-input').value = '';
+            renderSpreadsheetList();
+            updateSourceStatus();
+
+            if (addedCount > 0) {
+                alert(`✅ Berhasil menambahkan ${addedCount} spreadsheet baru!\n\nKlik "Simpan & Terapkan" di bawah untuk memuat dan menggabungkan semua data.`);
+            } else {
+                alert('Semua link yang ditempel sudah ada dalam daftar.');
+            }
+        }
+
+        function removeSource(sourceId) {
+            dataSources = dataSources.filter(s => s.sourceId !== sourceId);
+            renderSpreadsheetList();
+            renderCSVFileList();
+            updateSourceStatus();
+        }
+
+        function removeAllSpreadsheets() {
+            if (confirm('Yakin ingin mengosongkan semua spreadsheet dari daftar?')) {
+                dataSources = dataSources.filter(s => s.type !== 'spreadsheet');
+                renderSpreadsheetList();
+                updateSourceStatus();
+            }
+        }
+
+        function renderSpreadsheetList() {
+            const container = document.getElementById('spreadsheet-list');
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+            
+            const badge = document.getElementById('modal-sheet-count');
+            if (badge) badge.innerText = sheets.length;
+
+            const navBadge = document.getElementById('nav-source-count');
+            if (navBadge) navBadge.innerText = sheets.length;
+
+            if (sheets.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic py-2 text-center">Belum ada spreadsheet terdaftar.</p>';
+                return;
+            }
+            container.innerHTML = sheets.map((s, idx) => `
+                <div class="flex items-center justify-between bg-slate-50 hover:bg-slate-100/80 rounded-xl px-3.5 py-2.5 border border-slate-200/80 transition">
+                    <div class="flex-1 min-w-0 pr-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded font-mono">${idx + 1}</span>
+                            <p class="text-xs font-bold text-slate-800 truncate">${s.label || s.id}</p>
+                        </div>
+                        <p class="text-[10px] text-slate-500 truncate mt-0.5 font-mono">ID: ${s.id} ${s.sheet ? '· Sheet: ' + s.sheet : ''} &middot; ${s.rows && s.rows.length > 1 ? (s.rows.length - 1) + ' unit' : 'Siap ditarik'}</p>
+                    </div>
+                    <button onclick="removeSource(${s.sourceId})" class="text-slate-400 hover:text-red-600 p-1 rounded-lg transition" title="Hapus spreadsheet ini">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ========================================================
+        // CSV IMPORT (DRAG & DROP)
+        // ========================================================
+        function setupDragDrop() {
+            const zone = document.getElementById('csv-drop-zone');
+            if (!zone) return;
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('border-blue-500', 'bg-blue-50/50'); });
+            zone.addEventListener('dragleave', () => { zone.classList.remove('border-blue-500', 'bg-blue-50/50'); });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('border-blue-500', 'bg-blue-50/50');
+                handleCSVFiles(e.dataTransfer.files);
+            });
+        }
+
+        function handleCSVFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!file.name.toLowerCase().endsWith('.csv')) {
+                    alert(`"${file.name}" bukan file CSV.`);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const rows = parseCSV(e.target.result);
+                    dataSources.push({
+                        type: 'csv',
+                        id: file.name,
+                        sheet: '-',
+                        label: file.name,
+                        sourceId: sourceIdCounter++,
+                        rows: rows,
+                        hash: ''
+                    });
+                    renderCSVFileList();
+                    updateSourceStatus();
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function renderCSVFileList() {
+            const container = document.getElementById('csv-file-list');
+            const csvSources = dataSources.filter(s => s.type === 'csv');
+            if (csvSources.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = csvSources.map(s => `
+                <div class="flex items-center justify-between bg-amber-50 rounded-xl px-3 py-2 border border-amber-200">
+                    <p class="text-xs font-semibold text-amber-900 truncate">${s.label} (${s.rows.length > 1 ? s.rows.length - 1 : 0} unit)</p>
+                    <button onclick="removeSource(${s.sourceId})" class="text-red-400 hover:text-red-600 p-1" title="Hapus">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateSourceStatus() {
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet').length;
+            const csvs = dataSources.filter(s => s.type === 'csv').length;
+            document.getElementById('source-status-text').textContent =
+                `${sheets} Google Spreadsheet, ${csvs} File CSV terdaftar`;
+        }
+
+        function openSourceManager() {
+            renderSpreadsheetList();
+            renderCSVFileList();
+            updateSourceStatus();
+            document.getElementById('source-modal').classList.remove('hidden');
+        }
+
+        function closeSourceManager() {
+            document.getElementById('source-modal').classList.add('hidden');
+        }
+
+        function saveAndRefresh() {
+            saveSources();
+            closeSourceManager();
+            fetchAllData({ silent: false });
+        }
+
+        // ========================================================
+        // SHARING & CONFIG EXPORT
+        // ========================================================
+        function generateShareLink() {
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+            if (sheets.length === 0) {
+                alert('Tidak ada spreadsheet untuk dibagikan');
+                return;
+            }
+            const base = window.location.href.split('?')[0];
+            const sourcesParam = sheets.map(s => s.id + (s.sheet ? ':' + s.sheet : '')).join(',');
+            const shareUrl = `${base}?sources=${encodeURIComponent(sourcesParam)}`;
+
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('✅ Link Berhasil Disalin ke Clipboard!\n\nKirim link ini ke teman Anda agar langsung melihat dashboard yang sama.');
+            }).catch(() => {
+                prompt('Salin link ini:', shareUrl);
+            });
+        }
+
+        function loadFromURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sourcesParam = urlParams.get('sources');
+            if (sourcesParam) {
+                const entries = decodeURIComponent(sourcesParam).split(',');
+                const list = [];
+                entries.forEach((entry, idx) => {
+                    const [id, sheet] = entry.split(':');
+                    if (id && id.trim()) {
+                        list.push({
+                            type: 'spreadsheet',
+                            id: id.trim(),
+                            sheet: (sheet || '').trim(),
+                            label: 'Spreadsheet ' + (idx + 1),
+                            sourceId: sourceIdCounter++,
+                            rows: [],
+                            hash: ''
+                        });
+                    }
+                });
+                if (list.length > 0) return list;
+            }
+            return null;
+        }
+
+        function exportConfig() {
+            const config = {
+                version: 3,
+                sources: dataSources.filter(s => s.type === 'spreadsheet').map(s => ({
+                    id: s.id,
+                    sheet: s.sheet,
+                    label: s.label
+                })),
+                exportedAt: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ifp-monitoring-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importConfig(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    if (!config.sources || !Array.isArray(config.sources)) {
+                        alert('Format file config tidak valid');
+                        return;
+                    }
+                    dataSources = dataSources.filter(s => s.type !== 'spreadsheet');
+                    config.sources.forEach(s => {
+                        dataSources.push({
+                            type: 'spreadsheet',
+                            id: s.id,
+                            sheet: s.sheet || '',
+                            label: s.label || s.id.substring(0, 10),
+                            sourceId: sourceIdCounter++,
+                            rows: [],
+                            hash: ''
+                        });
+                    });
+                    saveSources();
+                    renderSpreadsheetList();
+                    updateSourceStatus();
+                    alert(`✅ Berhasil import ${config.sources.length} spreadsheet!`);
+                } catch (err) {
+                    alert('Gagal membaca file config: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ========================================================
+        // FETCHING GOOGLE SPREADSHEETS
+        // ========================================================
+        async function fetchSpreadsheetData(source) {
+            let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=out:csv`;
+            if (source.sheet && source.sheet.trim()) {
+                url += `&sheet=${encodeURIComponent(source.sheet.trim())}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const csvData = await response.text();
+                source.rows = parseCSV(csvData);
+            } catch (err) {
+                console.error(`Gagal memuat spreadsheet [${source.id}]:`, err);
+            }
+        }
+
+        function parseCSV(csvText) {
+            if (!csvText) return [];
+            return csvText.split(/\r?\n/).map(line => {
+                if (!line || line.trim() === '') return [];
+                return line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(cell => {
+                    return cell.replace(/^"|"$/g, '').trim();
+                });
+            }).filter(r => r.length > 0);
+        }
+
+        async function fetchAllData(opts = { silent: false }) {
+            const refreshIcon = document.getElementById('refresh-icon');
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            if (!opts.silent) {
+                refreshIcon.classList.add('animate-spin');
+                loadingOverlay.style.display = 'flex';
+            }
+
+            try {
+                const spreadsheetSources = dataSources.filter(s => s.type === 'spreadsheet');
+                await Promise.all(spreadsheetSources.map(s => fetchSpreadsheetData(s)));
+
+                processAllSources();
+                document.getElementById('last-updated').innerText = new Date().toLocaleTimeString('id-ID');
+            } catch (error) {
+                console.error('Error saat refresh data:', error);
+            } finally {
+                loadingOverlay.style.display = 'none';
+                refreshIcon.classList.remove('animate-spin');
+            }
+        }
+
+        // ========================================================
+        // SMART COLUMN DETECTION & MERGING
+        // ========================================================
+        function detectColumns(headers, sampleRows) {
+            const norm = headers.map(h => (h || '').toLowerCase().trim());
+            
+            let idIdx = norm.findIndex(h => h.includes('id transaksi') || h.includes('npsn') || h.includes('trans. id') || h === 'id unit');
+            if (idIdx === -1) idIdx = norm.findIndex(h => h === 'id' || h.includes('transaksi'));
+
+            let namaIdx = norm.findIndex(h => (h.includes('nama sekolah') || h.includes('sekolah') || h.includes('nama unit')) && !h.includes('teknisi') && !h.includes('pic'));
+            if (namaIdx === -1) namaIdx = norm.findIndex(h => h === 'nama');
+
+            let teknisiIdx = norm.findIndex(h => h.includes('nama teknisi') || h.includes('teknisi'));
+            let kabIdx = norm.findIndex(h => h.includes('kab/kota') || h.includes('kabupaten') || h.includes('kota'));
+            let provIdx = norm.findIndex(h => h.includes('provinsi') || h.includes('prov'));
+            let picIdx = norm.findIndex(h => h.includes('nama pic') || h === 'pic');
+            let telpIdx = norm.findIndex(h => h.includes('no pic') || h.includes('telp pic') || h.includes('no telp') || h.includes('telp'));
+            let timIdx = norm.findIndex(h => h.includes('tim') || h.includes('group') || h.includes('handler') || h.includes('koordinator'));
+            let statusIdx = norm.findIndex(h => h.includes('status') || h.includes('selesai') || h.includes('terpasang') || h.includes('instalasi'));
+            let kendalaIdx = norm.findIndex(h => h.includes('kendala') || h.includes('keterangan') || h.includes('catatan') || h.includes('masalah'));
+
+            if (sampleRows && sampleRows.length > 0) {
+                if (statusIdx === -1) {
+                    for (let c = 0; c < headers.length; c++) {
+                        const val = (sampleRows[0][c] || '').toLowerCase().trim();
+                        if (val === 'false' || val === 'true') {
+                            statusIdx = c;
+                            break;
+                        }
+                    }
+                }
+                if (timIdx === -1) {
+                    for (let c = 0; c < headers.length; c++) {
+                        const val = (sampleRows[0][c] || '').trim().toUpperCase();
+                        if (c !== statusIdx && (val === 'M' || val === 'Y' || val === 'R')) {
+                            timIdx = c;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (idIdx === -1) idIdx = 2;
+            if (namaIdx === -1) namaIdx = 3;
+            if (teknisiIdx === -1) teknisiIdx = 0;
+            if (provIdx === -1) provIdx = 4;
+            if (kabIdx === -1) kabIdx = 5;
+            if (picIdx === -1) picIdx = 6;
+            if (telpIdx === -1) telpIdx = 7;
+            if (statusIdx === -1) statusIdx = 8;
+            if (timIdx === -1) timIdx = 9;
+
+            return { idIdx, namaIdx, teknisiIdx, kabIdx, provIdx, picIdx, telpIdx, timIdx, statusIdx, kendalaIdx };
+        }
+
+        function isItemInstalled(val) {
+            if (!val) return false;
+            const v = String(val).trim().toLowerCase();
+            if (v === 'true' || v === '1' || v === 'yes' || v === 'ya' || v === 'selesai' || v === 'installed') return true;
+            if (v.includes('instalasi') && v.includes('selesai')) return true;
+            return false;
+        }
+
+        function processAllSources() {
+            allRecords = [];
+            const timSet = new Set();
+            const provSet = new Set();
+            const kabSet = new Set();
+            const teknisiSet = new Set();
+
+            dataSources.forEach(source => {
+                const rows = source.rows;
+                if (!rows || rows.length <= 1) return;
+
+                const headers = rows[0];
+                const sampleRows = rows.slice(1, 5);
+                const cols = detectColumns(headers, sampleRows);
+
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0) continue;
+
+                    const idVal = (row[cols.idIdx] || '').trim();
+                    const namaSekolah = (row[cols.namaIdx] || '').trim();
+                    if (!idVal && !namaSekolah) continue;
+
+                    const teknisi = (row[cols.teknisiIdx] || '').trim() || '-';
+                    const kab = (row[cols.kabIdx] || '').trim();
+                    const prov = (row[cols.provIdx] || '').trim();
+                    const wilayah = kab ? (prov ? `${kab}, ${prov}` : kab) : (prov || '-');
+                    const pic = (row[cols.picIdx] || '').trim();
+                    const telp = (row[cols.telpIdx] || '').trim();
+                    const rawStatus = row[cols.statusIdx] || '';
+                    const timCode = (row[cols.timIdx] || '').trim().toUpperCase();
+                    const kendala = cols.kendalaIdx !== -1 ? (row[cols.kendalaIdx] || '').trim() : '';
+
+                    const installed = isItemInstalled(rawStatus);
+
+                    if (timCode) timSet.add(timCode);
+                    if (prov) provSet.add(prov);
+                    if (kab) kabSet.add(kab);
+                    if (teknisi && teknisi !== '-') teknisiSet.add(teknisi);
+
+                    allRecords.push({
+                        id: idVal,
+                        nama: namaSekolah,
+                        teknisi: teknisi,
+                        kab: kab || '-',
+                        prov: prov || '-',
+                        wilayah: wilayah,
+                        pic: pic,
+                        telp: telp,
+                        timCode: timCode,
+                        timName: TIM_NAME_MAP[timCode] ? `${timCode} · ${TIM_NAME_MAP[timCode]}` : timCode,
+                        status: installed ? 'Terpasang' : 'Belum Pasang',
+                        isInstalled: installed,
+                        kendala: kendala,
+                        isTrouble: kendala.length > 1,
+                        source: source.label || source.id
+                    });
+                }
+            });
+
+            populateFilterOptions(timSet, provSet, kabSet, teknisiSet);
+            renderSourceChips();
+            renderProvinceTeamCards();
+            applyAllFilters();
+        }
+
+        function populateFilterOptions(timSet, provSet, kabSet, teknisiSet) {
+            const timSelect = document.getElementById('filter-tim');
+            const currentTim = timSelect.value;
+            timSelect.innerHTML = '<option value="">Semua Tim</option>';
+            ['M', 'Y', 'R'].concat(Array.from(timSet).filter(t => !['M','Y','R'].includes(t))).forEach(code => {
+                if (!code) return;
+                const name = TIM_NAME_MAP[code] ? `Tim ${TIM_NAME_MAP[code]} (${code})` : `Tim ${code}`;
+                timSelect.innerHTML += `<option value="${code}">${name}</option>`;
+            });
+            timSelect.value = currentTim;
+
+            const provSelect = document.getElementById('filter-provinsi');
+            const currentProv = provSelect.value;
+            provSelect.innerHTML = '<option value="">Semua Provinsi</option>';
+            Array.from(provSet).sort().forEach(p => {
+                provSelect.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+            provSelect.value = currentProv;
+
+            const kabSelect = document.getElementById('filter-kab');
+            const currentKab = kabSelect.value;
+            kabSelect.innerHTML = '<option value="">Semua Kab/Kota</option>';
+            Array.from(kabSet).sort().forEach(k => {
+                kabSelect.innerHTML += `<option value="${k}">${k}</option>`;
+            });
+            kabSelect.value = currentKab;
+
+            const tekSelect = document.getElementById('filter-teknisi');
+            const currentTek = tekSelect.value;
+            tekSelect.innerHTML = '<option value="">Semua Teknisi</option>';
+            Array.from(teknisiSet).sort().forEach(t => {
+                tekSelect.innerHTML += `<option value="${t}">${t}</option>`;
+            });
+            tekSelect.value = currentTek;
+        }
+
+        function renderSourceChips() {
+            const container = document.getElementById('source-chips');
+            const active = dataSources.filter(s => s.rows && s.rows.length > 1);
+            if (active.length === 0) {
+                container.innerHTML = '<span class="text-white/60 text-[11px]">Memuat spreadsheet...</span>';
+                return;
+            }
+            container.innerHTML = active.map(s => {
+                const count = s.rows.length - 1;
+                return `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/15 text-white border border-white/20 whitespace-nowrap">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>${s.label}</span>
+                        <span class="bg-white/20 px-1 rounded text-[9px] font-mono">${count} unit</span>
+                    </span>
+                `;
+            }).join('');
+        }
+
+        // ========================================================
+        // PROVINCE & TEAM PROGRESS CARDS LOGIC
+        // ========================================================
+        function computeProvinceTeamStats() {
+            const provMap = {};
+            
+            allRecords.forEach(item => {
+                const prov = item.prov && item.prov !== '-' ? item.prov.trim() : 'Lainnya';
+                const rawTim = (item.timCode || '').trim().toUpperCase();
+                const timCode = rawTim || 'OTHER';
+                const timName = TIM_NAME_MAP[timCode] ? `Tim ${TIM_NAME_MAP[timCode]} (${timCode})` : (timCode === 'OTHER' ? 'Tim Belum Ditentukan' : `Tim ${timCode}`);
+
+                if (!provMap[prov]) {
+                    provMap[prov] = {
+                        prov: prov,
+                        total: 0,
+                        installed: 0,
+                        pending: 0,
+                        trouble: 0,
+                        teams: {}
+                    };
+                }
+                provMap[prov].total++;
+                if (item.isInstalled) provMap[prov].installed++;
+                else provMap[prov].pending++;
+                if (item.isTrouble) provMap[prov].trouble++;
+
+                if (!provMap[prov].teams[timCode]) {
+                    provMap[prov].teams[timCode] = {
+                        timCode: timCode,
+                        timName: timName,
+                        prov: prov,
+                        total: 0,
+                        installed: 0,
+                        pending: 0,
+                        trouble: 0,
+                        teknisiList: new Set()
+                    };
+                }
+                provMap[prov].teams[timCode].total++;
+                if (item.isInstalled) provMap[prov].teams[timCode].installed++;
+                else provMap[prov].teams[timCode].pending++;
+                if (item.isTrouble) provMap[prov].teams[timCode].trouble++;
+                if (item.teknisi && item.teknisi !== '-') {
+                    provMap[prov].teams[timCode].teknisiList.add(item.teknisi);
+                }
+            });
+
+            return Object.values(provMap).map(p => {
+                const pct = p.total > 0 ? Math.round((p.installed / p.total) * 100) : 0;
+                const teamList = Object.values(p.teams).map(t => {
+                    const tPct = t.total > 0 ? Math.round((t.installed / t.total) * 100) : 0;
+                    return {
+                        ...t,
+                        pct: tPct,
+                        teknisiArr: Array.from(t.teknisiList)
+                    };
+                }).sort((a, b) => {
+                    const order = { 'M': 1, 'Y': 2, 'R': 3 };
+                    const ordA = order[a.timCode] || 99;
+                    const ordB = order[b.timCode] || 99;
+                    if (ordA !== ordB) return ordA - ordB;
+                    return b.total - a.total;
+                });
+
+                return {
+                    ...p,
+                    pct: pct,
+                    teamList: teamList
+                };
+            }).sort((a, b) => b.total - a.total);
+        }
+
+        function filterByProvinceAndTeam(provName, timCode) {
+            const cleanTim = timCode === 'OTHER' ? '' : timCode;
+            if (selectedProvinceFilter.toLowerCase() === provName.toLowerCase() && selectedTimFilter.toUpperCase() === cleanTim.toUpperCase()) {
+                // Toggle off
+                selectedProvinceFilter = '';
+                selectedTimFilter = '';
+            } else {
+                selectedProvinceFilter = provName;
+                selectedTimFilter = cleanTim;
+            }
+
+            const provSelect = document.getElementById('filter-provinsi');
+            if (provSelect) provSelect.value = selectedProvinceFilter;
+            const timSelect = document.getElementById('filter-tim');
+            if (timSelect) timSelect.value = selectedTimFilter;
+
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function filterByProvinceOnly(provName) {
+            if (selectedProvinceFilter.toLowerCase() === provName.toLowerCase() && !selectedTimFilter) {
+                selectedProvinceFilter = '';
+            } else {
+                selectedProvinceFilter = provName;
+                selectedTimFilter = '';
+            }
+
+            const provSelect = document.getElementById('filter-provinsi');
+            if (provSelect) provSelect.value = selectedProvinceFilter;
+            const timSelect = document.getElementById('filter-tim');
+            if (timSelect) timSelect.value = '';
+
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function setProvinceTab(provName) {
+            activeProvinceTab = provName;
+            renderProvinceTeamCards();
+        }
+
+        function resetAllCardsFilter() {
+            selectedProvinceFilter = '';
+            selectedTimFilter = '';
+            activeProvinceTab = 'ALL';
+            const provSelect = document.getElementById('filter-provinsi');
+            if (provSelect) provSelect.value = '';
+            const timSelect = document.getElementById('filter-tim');
+            if (timSelect) timSelect.value = '';
+
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function onProvinceDropdownChange(val) {
+            selectedProvinceFilter = val || '';
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function onTimDropdownChange(val) {
+            selectedTimFilter = val || '';
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function renderProvinceTeamCards() {
+            const gridContainer = document.getElementById('province-cards-grid');
+            const tabBar = document.getElementById('province-tab-bar');
+            if (!gridContainer) return;
+
+            const provStats = computeProvinceTeamStats();
+
+            // Total team badge count
+            let totalTeamsCount = 0;
+            provStats.forEach(p => totalTeamsCount += p.teamList.length);
+            const teamBadge = document.getElementById('province-team-count-badge');
+            if (teamBadge) {
+                teamBadge.textContent = `${totalTeamsCount} Tim di ${provStats.length} Provinsi`;
+            }
+
+            // Reset button label
+            const btnResetLabel = document.getElementById('btn-reset-cards-label');
+            if (btnResetLabel) {
+                if (selectedProvinceFilter || selectedTimFilter) {
+                    let desc = selectedProvinceFilter || 'Semua Prov';
+                    if (selectedTimFilter) desc += ` · Tim ${selectedTimFilter}`;
+                    btnResetLabel.innerHTML = `<span class="text-blue-700 font-extrabold flex items-center gap-1">Reset (${escapeHtml(desc)}) &times;</span>`;
+                } else {
+                    btnResetLabel.innerHTML = `<span>Semua Tim & Provinsi Aktif</span>`;
+                }
+            }
+
+            // Render Province Filter Switcher Tab Bar
+            if (tabBar) {
+                const totalAllUnits = allRecords.length;
+                let tabsHtml = `
+                    <button onclick="setProvinceTab('ALL')" 
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                                activeProvinceTab === 'ALL' 
+                                    ? 'bg-blue-600 text-white shadow-xs' 
+                                    : 'bg-white text-slate-600 border border-slate-200/90 hover:bg-slate-50'
+                            }">
+                        <span>🏢 Semua Provinsi</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeProvinceTab === 'ALL' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}">${totalAllUnits}</span>
+                    </button>
+                `;
+
+                provStats.forEach(p => {
+                    const isTabActive = activeProvinceTab.toLowerCase() === p.prov.toLowerCase();
+                    tabsHtml += `
+                        <button onclick="setProvinceTab('${escapeHtml(p.prov)}')" 
+                                class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                                    isTabActive 
+                                        ? 'bg-blue-600 text-white shadow-xs' 
+                                        : 'bg-white text-slate-600 border border-slate-200/90 hover:bg-slate-50'
+                                }">
+                            <span>📍 ${escapeHtml(p.prov)}</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono ${isTabActive ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}">${p.teamList.length} Tim &middot; ${p.total} unit</span>
+                        </button>
+                    `;
+                });
+
+                tabBar.innerHTML = tabsHtml;
+            }
+
+            if (provStats.length === 0) {
+                gridContainer.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Belum ada data spreadsheet terhubung.</div>';
+                return;
+            }
+
+            // Filter provinces according to activeProvinceTab
+            const visibleProvinces = activeProvinceTab === 'ALL' 
+                ? provStats 
+                : provStats.filter(p => p.prov.toLowerCase() === activeProvinceTab.toLowerCase());
+
+            if (visibleProvinces.length === 0) {
+                gridContainer.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">Tidak ada data untuk provinsi yang dipilih.</div>';
+                return;
+            }
+
+            gridContainer.innerHTML = visibleProvinces.map(p => {
+                const provActive = selectedProvinceFilter && selectedProvinceFilter.toLowerCase() === p.prov.toLowerCase();
+
+                const teamCardsHtml = p.teamList.map(team => {
+                    const isSelected = selectedProvinceFilter && 
+                                       selectedProvinceFilter.toLowerCase() === p.prov.toLowerCase() && 
+                                       selectedTimFilter && 
+                                       selectedTimFilter.toUpperCase() === team.timCode;
+
+                    // Color theme per Tim
+                    let themeAccentBar = 'bg-gradient-to-r from-slate-400 to-slate-600';
+                    let themeAvatar = 'bg-slate-700 text-white';
+                    let themeBorderHover = 'hover:border-slate-400';
+                    let themeActiveRing = 'ring-2 ring-blue-500 bg-blue-50/60 border-blue-400 shadow-md';
+                    let themeBar = 'bg-blue-600';
+
+                    if (team.timCode === 'M') {
+                        themeAccentBar = 'bg-gradient-to-r from-purple-500 to-indigo-600';
+                        themeAvatar = 'bg-purple-600 text-white';
+                        themeBorderHover = 'hover:border-purple-300';
+                        themeActiveRing = 'ring-2 ring-purple-600 bg-purple-50/70 border-purple-400 shadow-md';
+                        themeBar = 'bg-purple-600';
+                    } else if (team.timCode === 'Y') {
+                        themeAccentBar = 'bg-gradient-to-r from-sky-500 to-blue-600';
+                        themeAvatar = 'bg-sky-600 text-white';
+                        themeBorderHover = 'hover:border-sky-300';
+                        themeActiveRing = 'ring-2 ring-sky-500 bg-sky-50/70 border-sky-400 shadow-md';
+                        themeBar = 'bg-sky-500';
+                    } else if (team.timCode === 'R') {
+                        themeAccentBar = 'bg-gradient-to-r from-rose-500 to-amber-500';
+                        themeAvatar = 'bg-rose-600 text-white';
+                        themeBorderHover = 'hover:border-rose-300';
+                        themeActiveRing = 'ring-2 ring-rose-500 bg-rose-50/70 border-rose-400 shadow-md';
+                        themeBar = 'bg-rose-500';
+                    }
+
+                    const pctBadgeClass = team.pct === 100 
+                        ? 'bg-emerald-100 text-emerald-800' 
+                        : (team.pct > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600');
+
+                    const teknisiStr = team.teknisiArr.slice(0, 3).join(', ') + (team.teknisiArr.length > 3 ? ` (+${team.teknisiArr.length - 3})` : '');
+
+                    return `
+                        <div onclick="filterByProvinceAndTeam('${escapeHtml(p.prov)}', '${escapeHtml(team.timCode)}')" 
+                             class="cursor-pointer rounded-2xl p-4 border transition-all duration-200 relative overflow-hidden group shadow-2xs hover:shadow-md ${
+                                 isSelected 
+                                     ? themeActiveRing 
+                                     : 'bg-white border-slate-200/90 ' + themeBorderHover
+                             }">
+                            <!-- Top Accent Bar -->
+                            <div class="absolute top-0 inset-x-0 h-1.5 ${themeAccentBar}"></div>
+
+                            <!-- Card Header -->
+                            <div class="flex items-start justify-between gap-2 mb-2.5 pt-0.5">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-2xs ${themeAvatar}">
+                                        ${escapeHtml(team.timCode === 'OTHER' ? '?' : team.timCode)}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h5 class="font-extrabold text-slate-900 text-sm truncate group-hover:text-blue-600 transition">
+                                            ${escapeHtml(team.timName)}
+                                        </h5>
+                                        <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1 truncate">
+                                            📍 ${escapeHtml(p.prov)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="text-xs font-mono font-black px-2.5 py-1 rounded-full ${pctBadgeClass}">
+                                        ${team.pct}%
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3 border border-slate-100/80">
+                                <div class="h-full rounded-full transition-all duration-500 ${themeBar}" style="width: ${team.pct}%"></div>
+                            </div>
+
+                            <!-- 3 Mini Metric Badges -->
+                            <div class="grid grid-cols-3 gap-1.5 text-center mb-3">
+                                <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                                    <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</div>
+                                    <div class="text-xs sm:text-sm font-black text-slate-800 font-mono mt-0.5">${team.total}</div>
+                                </div>
+                                <div class="bg-emerald-50/80 rounded-xl p-2 border border-emerald-100/60">
+                                    <div class="text-[9px] sm:text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Terpasang</div>
+                                    <div class="text-xs sm:text-sm font-black text-emerald-700 font-mono mt-0.5">${team.installed}</div>
+                                </div>
+                                <div class="bg-amber-50/80 rounded-xl p-2 border border-amber-100/60">
+                                    <div class="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase tracking-wider">Belum</div>
+                                    <div class="text-xs sm:text-sm font-black text-amber-700 font-mono mt-0.5">${team.pending}</div>
+                                </div>
+                            </div>
+
+                            <!-- Teknisi List Pill -->
+                            <div class="text-[11px] text-slate-600 bg-slate-50/80 rounded-xl px-2.5 py-1.5 border border-slate-100 mb-2.5 flex items-center gap-1.5 truncate">
+                                <span class="text-slate-400 font-bold shrink-0 text-[10px]">👤 Teknisi:</span>
+                                <span class="truncate font-semibold text-slate-700 text-[11px]" title="${escapeHtml(team.teknisiArr.join(', '))}">${escapeHtml(teknisiStr || 'Belum ada data')}</span>
+                            </div>
+
+                            <!-- Footer Status / Action Hint -->
+                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                                <span class="font-bold flex items-center gap-1 ${isSelected ? 'text-blue-700' : 'text-slate-400 group-hover:text-blue-600'} transition">
+                                    ${isSelected ? '✓ Filter Aktif' : 'Klik untuk filter →'}
+                                </span>
+                                ${team.trouble > 0 
+                                    ? `<span class="text-rose-600 font-extrabold flex items-center gap-1 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 text-[10px]">⚠️ ${team.trouble} kendala</span>` 
+                                    : `<span class="text-slate-400 text-[10px] font-medium">Lancar</span>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs">
+                        <!-- Province Header Ribbon -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 mb-4 border-b border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
+                                    🏢
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h4 class="font-black text-slate-900 text-sm sm:text-base">${escapeHtml(p.prov)}</h4>
+                                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-full ${p.pct === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">
+                                            ${p.pct}% Selesai
+                                        </span>
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 font-medium flex items-center gap-2 flex-wrap mt-0.5">
+                                        <span>${p.total} Total Unit</span>
+                                        <span>&bull;</span>
+                                        <span class="text-emerald-600 font-bold">${p.installed} Terpasang</span>
+                                        <span>&bull;</span>
+                                        <span class="text-amber-600 font-bold">${p.pending} Belum</span>
+                                        <span>&bull;</span>
+                                        <span class="text-slate-600 font-semibold">${p.teamList.length} Tim Bertugas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="filterByProvinceOnly('${escapeHtml(p.prov)}')" 
+                                    class="self-start sm:self-auto text-xs font-bold px-3.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
+                                        provActive && !selectedTimFilter
+                                            ? 'bg-blue-600 text-white shadow-xs'
+                                            : 'text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100/70 border border-blue-100'
+                                    }">
+                                <span>${provActive && !selectedTimFilter ? '✓ Filter Provinsi Ini Aktif' : 'Filter Semua Tim di ' + escapeHtml(p.prov)}</span>
+                            </button>
+                        </div>
+
+                        <!-- Team Cards Grid in this Province -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3.5">
+                            ${teamCardsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========================================================
+        // FILTERING & PAGINATION LOGIC
+        // ========================================================
+        function applyAllFilters(resetPage = true) {
+            const search = document.getElementById('global-search').value.toLowerCase().trim();
+            
+            // Sinergi filter tim dari kartu & dropdown
+            const timSelect = document.getElementById('filter-tim');
+            let currentTim = selectedTimFilter || (timSelect ? timSelect.value : '');
+            if (timSelect && timSelect.value !== currentTim) {
+                timSelect.value = currentTim;
+            }
+            const selectedTim = currentTim.toUpperCase();
+
+            // Sinergi filter provinsi dari kartu & dropdown
+            const provSelect = document.getElementById('filter-provinsi');
+            let currentProv = selectedProvinceFilter || (provSelect ? provSelect.value : '');
+            if (provSelect && provSelect.value !== currentProv) {
+                provSelect.value = currentProv;
+            }
+            const selectedProv = currentProv.toLowerCase();
+
+            const selectedKab = document.getElementById('filter-kab').value.toLowerCase();
+            const selectedTek = document.getElementById('filter-teknisi').value.toLowerCase();
+
+            const filtered = allRecords.filter(item => {
+                if (selectedTim && item.timCode !== selectedTim) return false;
+                if (selectedProv && !item.prov.toLowerCase().includes(selectedProv)) return false;
+                if (selectedKab && !item.kab.toLowerCase().includes(selectedKab)) return false;
+                if (selectedTek && !item.teknisi.toLowerCase().includes(selectedTek)) return false;
+                if (search) {
+                    const match = item.id.toLowerCase().includes(search) ||
+                                  item.nama.toLowerCase().includes(search) ||
+                                  item.teknisi.toLowerCase().includes(search) ||
+                                  item.kab.toLowerCase().includes(search) ||
+                                  item.prov.toLowerCase().includes(search) ||
+                                  item.pic.toLowerCase().includes(search) ||
+                                  item.telp.toLowerCase().includes(search);
+                    if (!match) return false;
+                }
+                return true;
+            });
+
+            // Group into tabs
+            currentFilteredData.installed = filtered.filter(i => i.isInstalled);
+            currentFilteredData.pending = filtered.filter(i => !i.isInstalled);
+            currentFilteredData.trouble = filtered.filter(i => i.isTrouble);
+
+            if (resetPage) {
+                currentPages.installed = 1;
+                currentPages.pending = 1;
+                currentPages.trouble = 1;
+            }
+
+            const total = filtered.length;
+            const installed = currentFilteredData.installed.length;
+            const pending = currentFilteredData.pending.length;
+            const trouble = currentFilteredData.trouble.length;
+
+            document.getElementById('total-unit').innerText = total;
+            document.getElementById('count-installed').innerText = installed;
+            document.getElementById('count-pending').innerText = pending;
+            document.getElementById('count-trouble').innerText = trouble;
+
+            const pctInstalled = total > 0 ? Math.round((installed / total) * 100) : 0;
+            const pctPending = total > 0 ? Math.round((pending / total) * 100) : 0;
+            
+            document.getElementById('pct-installed').innerText = `${pctInstalled}%`;
+            document.getElementById('pct-pending').innerText = `${pctPending}%`;
+            
+            document.getElementById('bar-installed').style.width = `${pctInstalled}%`;
+            document.getElementById('bar-pending').style.width = `${pctPending}%`;
+
+            document.getElementById('tab-count-installed').innerText = installed;
+            document.getElementById('tab-count-pending').innerText = pending;
+            document.getElementById('tab-count-trouble').innerText = trouble;
+            document.getElementById('filter-result-count').innerText = total;
+
+            const activeSources = dataSources.filter(s => s.rows && s.rows.length > 1).length;
+            document.getElementById('total-sources').innerText = `${activeSources} Spreadsheet`;
+
+            const troubleDot = document.getElementById('trouble-status-dot');
+            const troubleDesc = document.getElementById('trouble-desc');
+            if (trouble > 0) {
+                troubleDot.className = 'w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0';
+                troubleDesc.innerText = `${trouble} butuh perhatian`;
+                troubleDesc.className = 'truncate text-rose-600 font-semibold';
+            } else {
+                troubleDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shrink-0';
+                troubleDesc.innerText = 'Semua lancar';
+                troubleDesc.className = 'truncate text-slate-500';
+            }
+
+            renderAllTables();
+            renderPagination();
+        }
+
+        function resetFilters() {
+            document.getElementById('global-search').value = '';
+            document.getElementById('filter-tim').value = '';
+            document.getElementById('filter-provinsi').value = '';
+            document.getElementById('filter-kab').value = '';
+            document.getElementById('filter-teknisi').value = '';
+            selectedProvinceFilter = '';
+            selectedTimFilter = '';
+            activeProvinceTab = 'ALL';
+            applyAllFilters(true);
+            renderProvinceTeamCards();
+        }
+
+        function getPagedItems(list, page) {
+            const total = list.length;
+            if (total === 0) {
+                return { rows: [], startIdx: 0, endIdx: 0, total: 0, currentPage: 1, totalPages: 1 };
+            }
+            if (pageSize === 'all') {
+                return { rows: list, startIdx: 0, endIdx: total, total: total, currentPage: 1, totalPages: 1 };
+            }
+            const maxPage = Math.max(1, Math.ceil(total / pageSize));
+            const safePage = Math.min(Math.max(1, page), maxPage);
+            const startIdx = (safePage - 1) * pageSize;
+            const endIdx = Math.min(startIdx + pageSize, total);
+            return {
+                rows: list.slice(startIdx, endIdx),
+                startIdx: startIdx,
+                endIdx: endIdx,
+                total: total,
+                currentPage: safePage,
+                totalPages: maxPage
+            };
+        }
+
+        function renderAllTables() {
+            const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
+            renderInstalledTable(inst.rows, inst.startIdx);
+
+            const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
+            renderPendingTable(pend.rows, pend.startIdx);
+
+            const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
+            renderTroubleTable(troub.rows, troub.startIdx);
+        }
+
+        function changePage(newPage) {
+            const activeList = currentFilteredData[activeTab] || [];
+            const maxPage = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(activeList.length / pageSize));
+            if (newPage < 1 || newPage > maxPage) return;
+            currentPages[activeTab] = newPage;
+            
+            if (activeTab === 'installed') {
+                const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
+                renderInstalledTable(inst.rows, inst.startIdx);
+            } else if (activeTab === 'pending') {
+                const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
+                renderPendingTable(pend.rows, pend.startIdx);
+            } else if (activeTab === 'trouble') {
+                const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
+                renderTroubleTable(troub.rows, troub.startIdx);
+            }
+            renderPagination();
+
+            const tableCard = document.getElementById('table-card-container');
+            if (tableCard) {
+                tableCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function changePageSize(val) {
+            pageSize = val === 'all' ? 'all' : parseInt(val, 10);
+            currentPages.installed = 1;
+            currentPages.pending = 1;
+            currentPages.trouble = 1;
+            renderAllTables();
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const activeList = currentFilteredData[activeTab] || [];
+            const total = activeList.length;
+            const pInfo = getPagedItems(activeList, currentPages[activeTab]);
+
+            const rangeEl = document.getElementById('pagination-range');
+            const totalEl = document.getElementById('pagination-total');
+            const pageInfoEl = document.getElementById('pagination-page-info');
+            const buttonsContainer = document.getElementById('pagination-buttons');
+
+            totalEl.textContent = total;
+
+            if (total === 0) {
+                rangeEl.textContent = '0 - 0';
+                if (pageInfoEl) pageInfoEl.textContent = 'Halaman 1 dari 1';
+                buttonsContainer.innerHTML = '';
+                return;
+            }
+
+            const startNum = pInfo.startIdx + 1;
+            const endNum = pInfo.endIdx;
+            rangeEl.textContent = `${startNum} - ${endNum}`;
+
+            const curr = pInfo.currentPage;
+            const totalPages = pInfo.totalPages;
+
+            if (pageInfoEl) {
+                pageInfoEl.textContent = `Halaman ${curr} dari ${totalPages}`;
+            }
+
+            if (totalPages <= 1) {
+                buttonsContainer.innerHTML = `<span class="text-slate-400 text-xs italic font-medium">Semua data pada halaman ini</span>`;
+                return;
+            }
+
+            let html = '';
+
+            // Tombol Prev (hanya jika sudah di halaman 2 atau lebih)
+            if (curr > 1) {
+                html += `
+                    <button onclick="changePage(${curr - 1})" 
+                            class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer">
+                        <span>&larr; Prev</span>
+                    </button>
+                `;
+            }
+
+            // Tombol Next (halaman berikutnya)
+            if (curr < totalPages) {
+                html += `
+                    <button onclick="changePage(${curr + 1})" 
+                            class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <span>Next</span>
+                        <span>&rarr;</span>
+                    </button>
+                `;
+            } else {
+                html += `
+                    <span class="px-3 py-1.5 bg-slate-100 text-slate-500 rounded-xl text-xs font-semibold">
+                        ✓ Halaman Terakhir
+                    </span>
+                `;
+            }
+
+            buttonsContainer.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function getTimBadge(code) {
+            if (!code) return '<span class="text-slate-300 font-mono text-xs">-</span>';
+            const c = code.toUpperCase();
+            let cls = 'badge-team-other';
+            let name = TIM_NAME_MAP[c] ? `${c} &middot; ${TIM_NAME_MAP[c]}` : `Tim ${c}`;
+            if (c === 'M') cls = 'badge-team-m';
+            if (c === 'Y') cls = 'badge-team-y';
+            if (c === 'R') cls = 'badge-team-r';
+            return `<span class="badge-pill ${cls}">${name}</span>`;
+        }
+
+        function setMobileViewMode(mode) {
+            mobileViewMode = mode;
+            const btnCard = document.getElementById('btn-view-card');
+            const btnTable = document.getElementById('btn-view-table');
+
+            const wrappers = [
+                document.getElementById('installed-table-wrapper'),
+                document.getElementById('pending-table-wrapper'),
+                document.getElementById('trouble-table-wrapper')
+            ];
+            const cardContainers = [
+                document.getElementById('installed-mobile-cards'),
+                document.getElementById('pending-mobile-cards'),
+                document.getElementById('trouble-mobile-cards')
+            ];
+
+            if (mode === 'cards') {
+                if (btnCard) btnCard.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition';
+                if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-lg text-slate-600 transition';
+                wrappers.forEach(w => {
+                    if (w) {
+                        w.classList.add('hidden', 'md:block');
+                        w.classList.remove('block');
+                    }
+                });
+                cardContainers.forEach(c => c && c.classList.remove('hidden'));
+            } else {
+                if (btnCard) btnCard.className = 'px-2.5 py-1 rounded-lg text-slate-600 transition';
+                if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-2xs transition';
+                wrappers.forEach(w => {
+                    if (w) {
+                        w.classList.remove('hidden');
+                        w.classList.add('block');
+                    }
+                });
+                cardContainers.forEach(c => c && c.classList.add('hidden'));
+            }
+        }
+
+        function renderInstalledTable(items, startIdx = 0) {
+            const tbody = document.getElementById('installed-table-body');
+            const mobileContainer = document.getElementById('installed-mobile-cards');
+            const empty = document.getElementById('installed-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((row, idx) => `
+                <tr class="hover:bg-emerald-50/40 transition-colors">
+                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3 px-3.5 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
+                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3 px-3.5 whitespace-nowrap">
+                        <div class="font-bold text-slate-800">${escapeHtml(row.pic || '-')}</div>
+                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-[11px] font-mono text-slate-500 hover:text-blue-600 transition flex items-center gap-1">📞 ${escapeHtml(row.telp)}</a>` : ''}
+                    </td>
+                    <td class="py-3 px-3.5 text-center whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Terpasang</span>
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((row, idx) => `
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
+                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span>Terpasang</span>
+                            </span>
+                        </div>
+
+                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        
+                        <div class="text-[11px] text-slate-500 font-medium mb-3 flex items-center gap-1">
+                            <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-2.5 border-t border-slate-100">
+                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teknisi & Tim</div>
+                                <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.teknisi)}</div>
+                                <div class="mt-1">${getTimBadge(row.timCode)}</div>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">PIC Sekolah</div>
+                                    <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.pic || '-')}</div>
+                                </div>
+                                ${row.telp ? `
+                                    <a href="tel:${escapeHtml(row.telp)}" class="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-extrabold shadow-2xs transition">
+                                        📞 Hubungi
+                                    </a>
+                                ` : '<span class="text-[10px] text-slate-400 mt-1 italic">Tanpa nomor</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderPendingTable(items, startIdx = 0) {
+            const tbody = document.getElementById('pending-table-body');
+            const mobileContainer = document.getElementById('pending-mobile-cards');
+            const empty = document.getElementById('pending-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((row, idx) => `
+                <tr class="hover:bg-amber-50/40 transition-colors">
+                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3 px-3.5 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
+                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3 px-3.5 whitespace-nowrap">
+                        <div class="font-bold text-slate-800">${escapeHtml(row.pic || '-')}</div>
+                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-[11px] font-mono text-slate-500 hover:text-blue-600 transition flex items-center gap-1">📞 ${escapeHtml(row.telp)}</a>` : ''}
+                    </td>
+                    <td class="py-3 px-3.5 text-center whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span>Belum Pasang</span>
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((row, idx) => `
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
+                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span>Belum Pasang</span>
+                            </span>
+                        </div>
+
+                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        
+                        <div class="text-[11px] text-slate-500 font-medium mb-3 flex items-center gap-1">
+                            <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-2.5 border-t border-slate-100">
+                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teknisi & Tim</div>
+                                <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.teknisi)}</div>
+                                <div class="mt-1">${getTimBadge(row.timCode)}</div>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">PIC Sekolah</div>
+                                    <div class="font-bold text-slate-800 text-xs truncate">${escapeHtml(row.pic || '-')}</div>
+                                </div>
+                                ${row.telp ? `
+                                    <a href="tel:${escapeHtml(row.telp)}" class="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-extrabold shadow-2xs transition">
+                                        📞 Hubungi
+                                    </a>
+                                ` : '<span class="text-[10px] text-slate-400 mt-1 italic">Tanpa nomor</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderTroubleTable(items, startIdx = 0) {
+            const tbody = document.getElementById('trouble-table-body');
+            const mobileContainer = document.getElementById('trouble-mobile-cards');
+            const empty = document.getElementById('trouble-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((row, idx) => `
+                <tr class="hover:bg-rose-50/40 transition-colors">
+                    <td class="py-3 px-3.5 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3 px-3.5 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3 px-3.5 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.kab)}</td>
+                    <td class="py-3 px-3.5 text-slate-600 whitespace-nowrap">${escapeHtml(row.prov)}</td>
+                    <td class="py-3 px-3.5 whitespace-nowrap">
+                        <div class="font-semibold text-slate-800">${escapeHtml(row.teknisi)}</div>
+                        <div class="text-[11px] text-slate-500">PIC: ${escapeHtml(row.pic)}</div>
+                    </td>
+                    <td class="py-3 px-3.5 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3 px-5">
+                        <div class="text-xs text-rose-800 bg-rose-50 p-3 rounded-xl border border-rose-200 font-medium">
+                            ${escapeHtml(row.kendala)}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((row, idx) => `
+                    <div class="bg-white rounded-2xl p-4 border border-rose-200 shadow-2xs transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">#${startIdx + idx + 1}</span>
+                                <span class="text-xs font-mono font-black text-blue-700">${escapeHtml(row.id)}</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                <span>Kendala</span>
+                            </span>
+                        </div>
+
+                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <div class="text-[11px] text-slate-500 font-medium mb-2.5">
+                            📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)} &middot; 👤 ${escapeHtml(row.teknisi)}
+                        </div>
+
+                        <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 font-medium mb-2.5">
+                            <div class="text-[10px] font-bold text-rose-700 uppercase tracking-wider mb-0.5">Detail Kendala:</div>
+                            ${escapeHtml(row.kendala)}
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="text-slate-500 text-[11px]">PIC: <strong class="text-slate-800">${escapeHtml(row.pic || '-')}</strong></span>
+                            ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg font-bold text-[10px] hover:bg-rose-200 transition">📞 Hubungi</a>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ========================================================
+        // TAB CONTROLLER
+        // ========================================================
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('installed-section').classList.add('hidden');
+            document.getElementById('pending-section').classList.add('hidden');
+            document.getElementById('trouble-section').classList.add('hidden');
+
+            const btnInstalled = document.getElementById('tab-installed');
+            const btnPending = document.getElementById('tab-pending');
+            const btnTrouble = document.getElementById('tab-trouble');
+
+            // Reset active styles
+            const normalCls = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2';
+            [btnInstalled, btnPending, btnTrouble].forEach(btn => {
+                if (btn) btn.className = normalCls;
+            });
+
+            if (tab === 'installed') {
+                document.getElementById('installed-section').classList.remove('hidden');
+                btnInstalled.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-sm';
+            } else if (tab === 'pending') {
+                document.getElementById('pending-section').classList.remove('hidden');
+                btnPending.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-amber-700 shadow-sm';
+            } else if (tab === 'trouble') {
+                document.getElementById('trouble-section').classList.remove('hidden');
+                btnTrouble.className = 'px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-rose-700 shadow-sm';
+            }
+
+            renderPagination();
+        }
+
+        // ========================================================
+        // AUTO REFRESH
+        // ========================================================
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const dot = document.getElementById('auto-pulse-dot');
+            const text = document.getElementById('auto-status-text');
+            if (autoRefreshEnabled) {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                text.innerText = '30s';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+                text.innerText = 'Jeda';
+            }
+        }
+
+        setInterval(() => {
+            if (autoRefreshEnabled) fetchAllData({ silent: true });
+        }, AUTO_REFRESH_INTERVAL_MS);
+
+        // ========================================================
+        // INIT ONLOAD
+        // ========================================================
+        window.onload = function () {
+            setupDragDrop();
+            loadSavedSources();
+            fetchAllData({ silent: false });
+        };
+    </script>
+</body>
+</html>
