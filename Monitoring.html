@@ -97,6 +97,66 @@
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(8px);
         }
+        /* =============================================
+           PRINT STYLES (Cetak Laporan untuk Atasan)
+           ============================================= */
+        @media print {
+            /* Sembunyikan elemen yang tidak perlu dicetak */
+            header .flex.items-center.gap-1\\.5,
+            #auto-toggle,
+            #guide-banner button,
+            #source-modal,
+            #loading-overlay,
+            #fetch-error-banner button,
+            .cursor-pointer[onclick*="openSourceManager"],
+            button[onclick*="fetchAllData"],
+            button[onclick*="generateShareLink"],
+            button[onclick*="window.print"],
+            button[onclick*="toggleAutoRefresh"],
+            #analytics-content-container button,
+            .btn-mode-unit, .btn-mode-school,
+            #btn-mode-unit, #btn-mode-school,
+            [id*="btn-reset"], [id*="btn-view"],
+            [id*="btn-toggle"],
+            #global-search,
+            .filter-row,
+            select,
+            [id^="filter-"] {
+                display: none !important;
+            }
+
+            /* Header cetak lebih ringkas */
+            header {
+                position: static !important;
+                background: #1e293b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Hilangkan shadow & overflow untuk print */
+            .metric-card {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                break-inside: avoid;
+            }
+
+            /* Progress bar & badge harus cetak dengan warna */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Tabel tidak terpotong di halaman */
+            table, tr, td, th { break-inside: avoid; }
+
+            /* Ukuran font sedikit lebih kecil untuk muat di kertas */
+            body { font-size: 11px !important; }
+
+            /* Sembunyikan tombol navigasi tabel */
+            #pagination-row,
+            [id*="pagination"],
+            .table-scroll { overflow: visible !important; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -133,6 +193,22 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
                         <span class="hidden sm:inline">Bagikan</span>
+                    </button>
+
+                    <!-- Cetak Laporan (Print untuk Atasan) -->
+                    <button onclick="window.print()" title="Cetak Laporan untuk Atasan (Ctrl+P)" class="h-9 bg-emerald-500/80 hover:bg-emerald-400/80 active:bg-emerald-600/80 border border-emerald-400/40 text-white px-2.5 sm:px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span class="hidden sm:inline">Cetak Laporan</span>
+                    </button>
+
+                    <!-- Salin Laporan Ringkas (WA/Email ke Atasan) -->
+                    <button onclick="copyExecutiveReport()" title="Salin Ringkasan Laporan untuk WhatsApp Atasan" class="h-9 bg-blue-500/80 hover:bg-blue-400/80 active:bg-blue-600/80 border border-blue-400/40 text-white px-2.5 sm:px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        <span class="hidden md:inline">Salin Format WA</span>
                     </button>
 
                     <!-- Kelola Sumber Data (15+ Sheets) -->
@@ -254,6 +330,23 @@
                     <div id="csv-file-list" class="space-y-1.5 mt-2"></div>
                 </div>
 
+                <!-- Direct WhatsApp / URL Share Bar -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-200">
+                    <label class="text-xs font-bold text-emerald-950 flex items-center gap-1.5 block mb-1">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                        <span>Bagikan Seluruh Spreadsheet Ini ke Teman / Atasan</span>
+                    </label>
+                    <p class="text-xs text-emerald-800 mb-3">Kirim link ini agar teman/atasan yang membukanya langsung melihat seluruh spreadsheet yang Anda daftarkan.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="generateShareLink()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                            <span>📋 Salin Link Lengkap</span>
+                        </button>
+                        <button type="button" onclick="shareViaWhatsApp()" class="px-3.5 py-2 bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                            <span>📲 Kirim via WhatsApp</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Share Config & Export -->
                 <div class="bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
                     <label class="text-xs font-bold text-slate-800 block mb-1">Simpan & Bagikan Konfigurasi</label>
@@ -282,39 +375,84 @@
         </div>
     </div>
 
+    <!-- Share Success Modal Dialog -->
+    <div id="share-success-modal" class="hidden fixed inset-0 z-50 modal-blur flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 border border-slate-200 animate-in fade-in zoom-in duration-150">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900" id="share-modal-title">Link Berhasil Disalin!</h3>
+                <p id="share-success-desc" class="text-xs text-slate-600 mt-1">Kirim link ini ke WhatsApp teman atau atasan Anda agar mereka langsung melihat seluruh spreadsheet yang Anda masukkan.</p>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-4">
+                <p class="text-[11px] font-mono text-slate-700 break-all select-all font-semibold" id="share-success-url"></p>
+            </div>
+            <div class="space-y-2">
+                <button onclick="shareViaWhatsApp()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.073.043.419-.101.824z"/></svg>
+                    <span>Kirim via WhatsApp</span>
+                </button>
+                <button onclick="copyShareUrlAgain()" class="w-full py-2.5 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs sm:text-sm font-bold border border-blue-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                    <span>📋 Salin Ulang Link</span>
+                </button>
+                <button onclick="closeShareSuccessModal()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Container (Max Width 1600px for Super Clean Desktop + Mobile View) -->
     <main class="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 flex-1">
         
-        <!-- 4 Executive Stat Cards (Responsive 2x2 on Mobile, 4 Cols on Desktop) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
+        <!-- 4 Executive Stat Cards (Interactive, Click to Filter/View) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-5 sm:mb-6">
             
-            <!-- Card 1: Total Unit -->
-            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
+            <!-- Card 1: Total Unit & Sekolah -->
+            <div onclick="resetAllFiltersAndScroll()" title="Klik untuk menampilkan seluruh data tabel" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit</p>
-                        <h2 id="total-unit" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0</h2>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit IFP</p>
+                            <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Perangkat</span>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="total-unit" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-slate-500">Unit</span>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                     </div>
                 </div>
-                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
-                    <span id="total-sources" class="truncate font-medium">1 Spreadsheet</span>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-1.5 text-slate-700 font-bold">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+                        <span id="total-schools">0 Sekolah / Lokasi</span>
+                    </span>
+                    <span class="text-[11px] text-blue-600 font-bold group-hover:underline flex items-center gap-0.5">
+                        Lihat Semua &darr;
+                    </span>
                 </div>
             </div>
 
             <!-- Card 2: Terpasang -->
-            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
+            <div onclick="switchTabAndScroll('installed')" title="Klik untuk membuka tabel unit yang sudah selesai terpasang" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
-                        <h2 id="count-installed" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">0</h2>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Tuntas</span>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-installed" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-emerald-600">Unit</span>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -322,7 +460,7 @@
                 </div>
                 <div class="mt-3 pt-2.5 border-t border-slate-100">
                     <div class="flex justify-between items-center text-xs font-semibold text-emerald-700 mb-1.5">
-                        <span>Progress Selesai</span>
+                        <span id="schools-installed">0 Sekolah Selesai</span>
                         <span id="pct-installed" class="font-bold">0%</span>
                     </div>
                     <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -332,13 +470,19 @@
             </div>
 
             <!-- Card 3: Belum Pasang -->
-            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
+            <div onclick="switchTabAndScroll('pending')" title="Klik untuk membuka tabel antrean unit yang belum pasang" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
-                        <h2 id="count-pending" class="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1">0</h2>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Antrean</span>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-pending" class="text-2xl sm:text-3xl font-extrabold text-amber-500">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-amber-600">Unit</span>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-9-9" />
                         </svg>
@@ -346,7 +490,7 @@
                 </div>
                 <div class="mt-3 pt-2.5 border-t border-slate-100">
                     <div class="flex justify-between items-center text-xs font-semibold text-amber-700 mb-1.5">
-                        <span>Dalam Antrean</span>
+                        <span id="schools-pending">0 Sekolah Menunggu</span>
                         <span id="pct-pending" class="font-bold">0%</span>
                     </div>
                     <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -356,24 +500,68 @@
             </div>
 
             <!-- Card 4: Trouble / Kendala -->
-            <div class="metric-card p-4 sm:p-5 flex flex-col justify-between">
+            <div onclick="switchTabAndScroll('trouble')" title="Klik untuk membuka tabel unit yang mengalami kendala" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-rose-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
-                        <h2 id="count-trouble" class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1">0</h2>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
+                            <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Trouble</span>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-trouble" class="text-2xl sm:text-3xl font-extrabold text-rose-600">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-rose-600">Unit</span>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                 </div>
-                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
-                    <span id="trouble-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                    <span id="trouble-desc" class="truncate font-medium">Semua lancar</span>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-1.5 text-slate-700 font-bold">
+                        <span id="trouble-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                        <span id="schools-trouble">0 Sekolah Terkendala</span>
+                    </span>
+                    <span id="trouble-desc" class="truncate text-slate-400 font-medium">Semua lancar</span>
                 </div>
             </div>
 
+        </div>
+
+        <!-- Sync & Reading Guide Callout (Solves User Misunderstanding) -->
+        <div id="guide-banner" class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-slate-50 border border-blue-200/80 shadow-xs flex items-start gap-3.5 transition-all">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs text-base">
+                💡
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                    <h3 class="text-xs sm:text-sm font-extrabold text-blue-950 flex items-center gap-2">
+                        <span>Panduan Sinkronisasi: Memahami "Jumlah Unit" vs "Jumlah Sekolah"</span>
+                    </h3>
+                    <button onclick="toggleGuideBanner()" class="text-slate-400 hover:text-slate-600 text-xs font-bold px-2 py-0.5 rounded-lg hover:bg-white/60 transition cursor-pointer" title="Sembunyikan penjelasan ini">
+                        Sembunyikan ✕
+                    </button>
+                </div>
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Di Google Spreadsheet Anda, <strong>setiap baris adalah 1 Unit IFP</strong> yang memiliki nomor <em>ID Transaksi</em> unik. 
+                    Sebuah sekolah dapat menerima lebih dari 1 unit (misalnya <strong>SD SANTO YOSEPH 1</strong> menerima <strong>5 Unit IFP</strong>, <strong>SD NEGERI 2 PETAK</strong> menerima <strong>3 Unit IFP</strong>). 
+                    Sehingga total <strong id="guide-unit-count" class="text-blue-800">27 baris di spreadsheet = 27 Unit IFP</strong> yang tersebar di <strong id="guide-school-count" class="text-blue-800">7 Sekolah / Titik Lokasi</strong>.
+                </p>
+                <div class="mt-2.5 flex items-center gap-3 text-xs flex-wrap font-semibold">
+                    <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-lg">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                        <span>Selesai: <strong id="guide-installed-stat">9 Unit (2 Sekolah)</strong></span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-amber-700 bg-amber-100/80 px-2.5 py-1 rounded-lg">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                        <span>Belum: <strong id="guide-pending-stat">18 Unit (5 Sekolah)</strong></span>
+                    </span>
+                    <span class="text-slate-500 font-normal">
+                        Gunakan tombol di atas tabel untuk beralih antara <strong>Mode Rincian Unit</strong> dan <strong>Mode Rekap Sekolah</strong>.
+                    </span>
+                </div>
+            </div>
         </div>
 
         <!-- ======================================================== -->
@@ -518,9 +706,11 @@
             </div>
         </div>
 
-        <!-- Segmented Tabs & Mobile View Switcher -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
-            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-2xl grid grid-cols-3 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full sm:w-auto">
+        <!-- Segmented Tabs & View Mode Controls -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
+            
+            <!-- Left: Status Tabs (Terpasang, Belum, Kendala) -->
+            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-2xl grid grid-cols-3 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full md:w-auto">
                 <button onclick="switchTab('installed')" id="tab-installed" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-xs cursor-pointer">
                     <span class="truncate">Terpasang</span>
                     <span id="tab-count-installed" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
@@ -535,9 +725,25 @@
                 </button>
             </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm text-slate-500 font-medium">
-                <div>Total: <strong id="filter-result-count" class="text-slate-900 font-bold">0</strong> unit</div>
-                <!-- View Mode Switcher for Smartphone -->
+            <!-- Right: View Switcher (Unit vs Sekolah) + Result Count -->
+            <div class="flex flex-wrap items-center justify-between md:justify-end gap-2.5 text-xs sm:text-sm text-slate-600 font-medium">
+                
+                <!-- Toggle Mode: Rincian Unit vs Rekap Sekolah -->
+                <div class="inline-flex bg-slate-200/80 p-0.5 sm:p-1 rounded-xl text-xs font-bold border border-slate-300/40">
+                    <button id="btn-mode-unit" onclick="setTableViewMode('unit')" class="px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-xs transition font-bold cursor-pointer" title="Lihat setiap baris per unit IFP & ID Transaksi">
+                        🖥️ Rincian Unit (<span id="count-view-unit">0</span>)
+                    </button>
+                    <button id="btn-mode-school" onclick="setTableViewMode('school')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition font-semibold cursor-pointer" title="Lihat ringkasan terkelompok per sekolah / titik lokasi">
+                        🏫 Rekap Sekolah (<span id="count-view-school">0</span>)
+                    </button>
+                </div>
+
+                <!-- Result Badge -->
+                <div class="bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700">
+                    Total: <strong id="filter-result-count" class="text-blue-700 font-bold">0</strong> Unit (<strong id="filter-result-schools" class="text-slate-900 font-bold">0</strong> Sekolah)
+                </div>
+
+                <!-- Mobile cards vs table toggle -->
                 <div class="md:hidden inline-flex bg-slate-200/80 p-0.5 rounded-xl text-xs font-bold border border-slate-300/40">
                     <button id="btn-view-card" onclick="setMobileViewMode('cards')" class="px-2.5 py-1 rounded-lg bg-white text-blue-700 shadow-xs transition cursor-pointer">
                         📱 Kartu
@@ -557,7 +763,7 @@
                 <!-- Desktop Table View -->
                 <div id="installed-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        <thead id="installed-table-thead" class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
                                 <th class="py-3.5 px-4 w-12 text-center">No.</th>
                                 <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
@@ -591,7 +797,7 @@
                 <!-- Desktop Table View -->
                 <div id="pending-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        <thead id="pending-table-thead" class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
                                 <th class="py-3.5 px-4 w-12 text-center">No.</th>
                                 <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
@@ -625,7 +831,7 @@
                 <!-- Desktop Table View -->
                 <div id="trouble-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
                     <table class="w-full text-left min-w-[1000px] divide-y divide-slate-100">
-                        <thead class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        <thead id="trouble-table-thead" class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
                                 <th class="py-3.5 px-4 w-12 text-center">No.</th>
                                 <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
@@ -696,6 +902,8 @@
         let autoRefreshEnabled = true;
 
         let allRecords = [];
+        let allSchools = [];
+        let tableViewMode = 'unit'; // 'unit' (27 baris unit) or 'school' (7 baris sekolah)
         let activeTab = 'installed';
         let selectedProvinceFilter = '';
         let selectedTimFilter = '';
@@ -716,6 +924,11 @@
             pending: [],
             trouble: []
         };
+        let currentFilteredSchools = {
+            installed: [],
+            pending: [],
+            trouble: []
+        };
 
         const TIM_NAME_MAP = {
             'M': 'Mattew',
@@ -723,15 +936,39 @@
             'R': 'Rabil'
         };
 
+        function toggleGuideBanner() {
+            const banner = document.getElementById('guide-banner');
+            if (banner) {
+                banner.classList.toggle('hidden');
+            }
+        }
+
         // ========================================================
         // INITIALIZATION & SOURCES
         // ========================================================
+        function updateBrowserUrlWithSources() {
+            try {
+                const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+                const base = window.location.href.split('?')[0];
+                if (sheets.length > 0) {
+                    const sourcesParam = sheets.map(s => s.id + (s.sheet ? ':' + s.sheet : '')).join(',');
+                    const newUrl = `${base}?sources=${encodeURIComponent(sourcesParam)}`;
+                    window.history.replaceState(null, '', newUrl);
+                } else {
+                    window.history.replaceState(null, '', base);
+                }
+            } catch (e) {
+                console.warn('Gagal update browser URL state:', e);
+            }
+        }
+
         function loadSavedSources() {
-            // 1. Cek parameter dari Share Link URL
+            // 1. Cek parameter dari Share Link URL (Prioritas Utama untuk Device Lain)
             const urlSources = loadFromURLParams();
             if (urlSources && urlSources.length > 0) {
                 dataSources = urlSources;
                 saveSources();
+                updateBrowserUrlWithSources();
                 return;
             }
 
@@ -747,6 +984,7 @@
                             hash: ''
                         }));
                         sourceIdCounter = dataSources.length;
+                        updateBrowserUrlWithSources();
                         return;
                     }
                 }
@@ -764,6 +1002,7 @@
                 rows: [],
                 hash: ''
             }];
+            updateBrowserUrlWithSources();
         }
 
         function saveSources() {
@@ -776,6 +1015,7 @@
                     sourceId: s.sourceId
                 }));
                 localStorage.setItem('ifp_sources_v3', JSON.stringify(toSave));
+                updateBrowserUrlWithSources();
             } catch (e) {
                 console.warn('Gagal menyimpan sources:', e);
             }
@@ -837,6 +1077,7 @@
             document.getElementById('new-sheet-name').value = '';
             renderSpreadsheetList();
             updateSourceStatus();
+            saveSources();
         }
 
         function addBatchSpreadsheets() {
@@ -870,9 +1111,10 @@
             document.getElementById('batch-spreadsheet-input').value = '';
             renderSpreadsheetList();
             updateSourceStatus();
+            saveSources();
 
             if (addedCount > 0) {
-                alert(`✅ Berhasil menambahkan ${addedCount} spreadsheet baru!\n\nKlik "Simpan & Terapkan" di bawah untuk memuat dan menggabungkan semua data.`);
+                alert(`✅ Berhasil menambahkan ${addedCount} spreadsheet baru!\n\nKlik "Simpan & Terapkan" di bawah untuk memuat dan menyinkronkan link.`);
             } else {
                 alert('Semua link yang ditempel sudah ada dalam daftar.');
             }
@@ -883,6 +1125,7 @@
             renderSpreadsheetList();
             renderCSVFileList();
             updateSourceStatus();
+            saveSources();
         }
 
         function removeAllSpreadsheets() {
@@ -890,6 +1133,7 @@
                 dataSources = dataSources.filter(s => s.type !== 'spreadsheet');
                 renderSpreadsheetList();
                 updateSourceStatus();
+                saveSources();
             }
         }
 
@@ -960,6 +1204,8 @@
                     });
                     renderCSVFileList();
                     updateSourceStatus();
+                    // Langsung proses & tampilkan data CSV yang baru dimuat
+                    processAllSources();
                 };
                 reader.readAsText(file);
             });
@@ -1006,26 +1252,77 @@
             saveSources();
             closeSourceManager();
             fetchAllData({ silent: false });
+
+            // Tampilkan dialog pop-up link berbagi agar pengguna bisa langsung kirim ke teman
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+            if (sheets.length > 0) {
+                const shareUrl = buildShareUrl();
+                showShareSuccessModal(shareUrl, sheets.length, "Daftar Spreadsheet Berhasil Diperbarui!");
+            }
         }
 
         // ========================================================
-        // SHARING & CONFIG EXPORT
+        // SHARING & CONFIG EXPORT (0% APPS SCRIPT - 100% AUTO URL SYNC)
         // ========================================================
+        function buildShareUrl() {
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+            const base = window.location.href.split('?')[0];
+            if (sheets.length === 0) return base;
+            const sourcesParam = sheets.map(s => {
+                let part = s.id;
+                if (s.sheet) part += ':' + s.sheet;
+                return part;
+            }).join(',');
+            return `${base}?sources=${encodeURIComponent(sourcesParam)}`;
+        }
+
         function generateShareLink() {
             const sheets = dataSources.filter(s => s.type === 'spreadsheet');
             if (sheets.length === 0) {
                 alert('Tidak ada spreadsheet untuk dibagikan');
                 return;
             }
-            const base = window.location.href.split('?')[0];
-            const sourcesParam = sheets.map(s => s.id + (s.sheet ? ':' + s.sheet : '')).join(',');
-            const shareUrl = `${base}?sources=${encodeURIComponent(sourcesParam)}`;
+            const shareUrl = buildShareUrl();
 
             navigator.clipboard.writeText(shareUrl).then(() => {
-                alert('✅ Link Berhasil Disalin ke Clipboard!\n\nKirim link ini ke rekan kerja agar langsung melihat dashboard yang sama.');
+                showShareSuccessModal(shareUrl, sheets.length, "Link Berhasil Disalin!");
             }).catch(() => {
-                prompt('Salin link ini:', shareUrl);
+                showShareSuccessModal(shareUrl, sheets.length, "Link Siap Dibagikan!");
             });
+        }
+
+        function showShareSuccessModal(url, count, title = "Link Berhasil Disalin!") {
+            const modal = document.getElementById('share-success-modal');
+            const titleEl = document.getElementById('share-modal-title');
+            const descEl = document.getElementById('share-success-desc');
+            const urlEl = document.getElementById('share-success-url');
+
+            if (titleEl) titleEl.innerText = title;
+            if (descEl) descEl.innerText = `Link ini sudah memuat seluruh ${count} spreadsheet (termasuk yang baru Anda tambahkan). Kirim link ini ke teman/atasan agar di HP mereka langsung otomatis muncul seluruh spreadsheet yang sama.`;
+            if (urlEl) urlEl.innerText = url;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeShareSuccessModal() {
+            const modal = document.getElementById('share-success-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function copyShareUrlAgain() {
+            const url = buildShareUrl();
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ Link berhasil disalin ulang ke clipboard!\n\nSilakan paste (Ctrl+V) ke chat WhatsApp teman atau atasan Anda.');
+            }).catch(() => {
+                prompt('Salin link ini:', url);
+            });
+        }
+
+        function shareViaWhatsApp() {
+            const sheets = dataSources.filter(s => s.type === 'spreadsheet');
+            const shareUrl = buildShareUrl();
+            const msg = `*IFP Installation Monitoring Dashboard*\n📊 Menampilkan ${sheets.length} Spreadsheet Wilayah Terupdate.\n\nBuka link dashboard ini:\n${shareUrl}`;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
         }
 
         function loadFromURLParams() {
@@ -1035,13 +1332,15 @@
                 const entries = decodeURIComponent(sourcesParam).split(',');
                 const list = [];
                 entries.forEach((entry, idx) => {
-                    const [id, sheet] = entry.split(':');
-                    if (id && id.trim()) {
+                    const parts = entry.split(':');
+                    const id = (parts[0] || '').trim();
+                    const sheet = (parts[1] || '').trim();
+                    if (id) {
                         list.push({
                             type: 'spreadsheet',
-                            id: id.trim(),
-                            sheet: (sheet || '').trim(),
-                            label: 'Spreadsheet ' + (idx + 1),
+                            id: id,
+                            sheet: sheet,
+                            label: 'Spreadsheet ' + (idx + 1) + ' (' + id.substring(0, 8) + '...)',
                             sourceId: sourceIdCounter++,
                             rows: [],
                             hash: ''
@@ -1106,32 +1405,41 @@
         }
 
         // ========================================================
-        // FETCHING GOOGLE SPREADSHEETS
+        // FETCHING GOOGLE SPREADSHEETS (ANTI-CACHE & REAL-TIME)
         // ========================================================
         async function fetchSpreadsheetData(source) {
-            let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=out:csv`;
+            // Anti-cache buster: pastikan selalu data paling baru detik itu juga di semua device
+            let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=out:csv&_t=${Date.now()}`;
             if (source.sheet && source.sheet.trim()) {
                 url += `&sheet=${encodeURIComponent(source.sheet.trim())}`;
             }
 
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const response = await fetch(url, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status} – pastikan spreadsheet sudah dibagikan publik ("Anyone with the link can view")`);
                 const csvData = await response.text();
                 source.rows = parseCSV(csvData);
+                if (source.rows.length <= 1) {
+                    console.warn(`Spreadsheet [${source.label || source.id}] berhasil dimuat tapi tidak ada baris data. Periksa nama tab (sheet) atau izin akses.`);
+                }
             } catch (err) {
                 console.error(`Gagal memuat spreadsheet [${source.id}]:`, err);
+                source.rows = [];
+                source._error = err.message;
             }
         }
 
         function parseCSV(csvText) {
             if (!csvText) return [];
-            return csvText.split(/\r?\n/).map(line => {
-                if (!line || line.trim() === '') return [];
+            const rows = csvText.split(/\r?\n/).map(line => {
+                if (!line || line.trim() === '') return null;
                 return line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(cell => {
                     return cell.replace(/^"|"$/g, '').trim();
                 });
-            }).filter(r => r.length > 0);
+            }).filter(r => r !== null && r.length > 0);
+
+            // Buang baris yang semua kolomnya kosong (export GSpreadsheet sering punya trailing empty cols)
+            return rows.filter(r => r.some(cell => cell !== ''));
         }
 
         async function fetchAllData(opts = { silent: false }) {
@@ -1147,6 +1455,10 @@
                 const spreadsheetSources = dataSources.filter(s => s.type === 'spreadsheet');
                 await Promise.all(spreadsheetSources.map(s => fetchSpreadsheetData(s)));
 
+                // Tampilkan notif jika ada spreadsheet yang gagal dimuat
+                const failed = spreadsheetSources.filter(s => s._error);
+                showFetchErrorBanner(failed);
+
                 processAllSources();
                 document.getElementById('last-updated').innerText = new Date().toLocaleTimeString('id-ID');
             } catch (error) {
@@ -1157,32 +1469,74 @@
             }
         }
 
+        function showFetchErrorBanner(failedSources) {
+            let banner = document.getElementById('fetch-error-banner');
+            if (failedSources.length === 0) {
+                if (banner) banner.remove();
+                return;
+            }
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'fetch-error-banner';
+                banner.className = 'mx-3 sm:mx-6 lg:mx-8 mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-300 flex items-start gap-3';
+                // Masukkan setelah header, sebelum main
+                const main = document.querySelector('main');
+                if (main) main.prepend(banner);
+            }
+            banner.innerHTML = `
+                <span class="text-xl leading-none mt-0.5">⚠️</span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-extrabold text-amber-900">Gagal memuat ${failedSources.length} spreadsheet</p>
+                    ${failedSources.map(s => `<p class="text-xs text-amber-800 mt-0.5 font-medium">• <strong>${escapeHtml(s.label || s.id)}</strong>: ${escapeHtml(s._error || 'Unknown error')}</p>`).join('')}
+                    <p class="text-xs text-amber-700 mt-1.5 font-semibold">💡 Pastikan spreadsheet sudah dibagikan: <em>File → Share → Anyone with the link → Viewer</em></p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-amber-600 hover:text-amber-900 font-bold text-xs px-2 py-0.5 rounded cursor-pointer">✕</button>
+            `;
+        }
+
         // ========================================================
         // SMART COLUMN DETECTION & MERGING
         // ========================================================
+        // ========================================================
+        // SMART COLUMN DETECTION & MERGING
+        // ========================================================
+        function normalizeTimCode(val) {
+            if (!val) return '';
+            const s = String(val).trim().toUpperCase();
+            if (s === 'M' || s.includes('MATTEW') || s.includes('MATHEW')) return 'M';
+            if (s === 'Y' || s.includes('YUDI')) return 'Y';
+            if (s === 'R' || s.includes('RABIL')) return 'R';
+            return s;
+        }
+
         function detectColumns(headers, sampleRows) {
             const norm = headers.map(h => (h || '').toLowerCase().trim());
             
             let idIdx = norm.findIndex(h => h.includes('id transaksi') || h.includes('npsn') || h.includes('trans. id') || h === 'id unit');
             if (idIdx === -1) idIdx = norm.findIndex(h => h === 'id' || h.includes('transaksi'));
 
-            let namaIdx = norm.findIndex(h => (h.includes('nama sekolah') || h.includes('sekolah') || h.includes('nama unit')) && !h.includes('teknisi') && !h.includes('pic'));
+            let namaIdx = norm.findIndex(h => (h.includes('nama sekolah') || h.includes('sekolah') || h.includes('nama unit')) && !h.includes('teknisi') && !h.includes('pic') && !h.includes('koordinator'));
             if (namaIdx === -1) namaIdx = norm.findIndex(h => h === 'nama');
 
-            let teknisiIdx = norm.findIndex(h => h.includes('nama teknisi') || h.includes('teknisi'));
-            let kabIdx = norm.findIndex(h => h.includes('kab/kota') || h.includes('kabupaten') || h.includes('kota'));
-            let provIdx = norm.findIndex(h => h.includes('provinsi') || h.includes('prov'));
-            let picIdx = norm.findIndex(h => h.includes('nama pic') || h === 'pic');
+            let teknisiIdx = norm.findIndex(h => h.includes('nama teknisi') || h.includes('teknisi') || h.includes('petugas'));
+            let kabIdx = norm.findIndex(h => h.includes('kab/kota') || h.includes('kabupaten/kota') || h.includes('kabupaten') || h.includes('kota'));
+            let provIdx = norm.findIndex(h => h.includes('provinsi') || h.includes('propinsi') || h.includes('prov'));
+            let picIdx = norm.findIndex(h => h.includes('nama pic') || h.includes('pic sekolah') || h === 'pic');
             let telpIdx = norm.findIndex(h => h.includes('no pic') || h.includes('telp pic') || h.includes('no telp') || h.includes('telp'));
-            let timIdx = norm.findIndex(h => h.includes('tim') || h.includes('group') || h.includes('handler') || h.includes('koordinator'));
-            let statusIdx = norm.findIndex(h => h.includes('status') || h.includes('selesai') || h.includes('terpasang') || h.includes('instalasi'));
-            let kendalaIdx = norm.findIndex(h => h.includes('kendala') || h.includes('keterangan') || h.includes('catatan') || h.includes('masalah'));
+            
+            // Prioritaskan nama koordinator / tim ketimbang kode
+            let timIdx = norm.findIndex(h => (h.includes('nama koordinator') || h === 'tim' || h === 'group' || h.includes('handler')) && !h.includes('kode') && !h.includes('telp'));
+            if (timIdx === -1) timIdx = norm.findIndex(h => h.includes('tim') || h.includes('group') || h.includes('koordinator'));
+            
+            let statusIdx = norm.findIndex(h => h.includes('status progress') || h.includes('status') || h.includes('selesai') || h.includes('terpasang') || h.includes('instalasi'));
+            let kendalaIdx = norm.findIndex(h => h.includes('keterangan kendala') || h.includes('kendala') || h.includes('keterangan') || h.includes('catatan') || h.includes('masalah'));
+            let qtyIdx = norm.findIndex(h => h.includes('jumlah unit') || h.includes('total unit') || h.includes('qty') || h.includes('banyak unit'));
 
             if (sampleRows && sampleRows.length > 0) {
                 if (statusIdx === -1) {
                     for (let c = 0; c < headers.length; c++) {
                         const val = (sampleRows[0][c] || '').toLowerCase().trim();
-                        if (val === 'false' || val === 'true') {
+                        if (val === 'false' || val === 'true' || val.includes('selesai') || val.includes('pasang')) {
                             statusIdx = c;
                             break;
                         }
@@ -1191,7 +1545,7 @@
                 if (timIdx === -1) {
                     for (let c = 0; c < headers.length; c++) {
                         const val = (sampleRows[0][c] || '').trim().toUpperCase();
-                        if (c !== statusIdx && (val === 'M' || val === 'Y' || val === 'R')) {
+                        if (c !== statusIdx && (val === 'M' || val === 'Y' || val === 'R' || val.includes('MATTEW') || val.includes('YUDI') || val.includes('RABIL'))) {
                             timIdx = c;
                             break;
                         }
@@ -1209,14 +1563,15 @@
             if (statusIdx === -1) statusIdx = 8;
             if (timIdx === -1) timIdx = 9;
 
-            return { idIdx, namaIdx, teknisiIdx, kabIdx, provIdx, picIdx, telpIdx, timIdx, statusIdx, kendalaIdx };
+            return { idIdx, namaIdx, teknisiIdx, kabIdx, provIdx, picIdx, telpIdx, timIdx, statusIdx, kendalaIdx, qtyIdx };
         }
 
         function isItemInstalled(val) {
             if (!val) return false;
             const v = String(val).trim().toLowerCase();
-            if (v === 'true' || v === '1' || v === 'yes' || v === 'ya' || v === 'selesai' || v === 'installed') return true;
+            if (v === 'true' || v === '1' || v === 'yes' || v === 'ya' || v === 'selesai' || v === 'installed' || v === 'terpasang' || v === 'sudah' || v === 'done' || v === 'ok') return true;
             if (v.includes('instalasi') && v.includes('selesai')) return true;
+            if (v.includes('selesai') || v.includes('terpasang') || v.includes('sudah pasang')) return true;
             return false;
         }
 
@@ -1250,8 +1605,12 @@
                     const pic = (row[cols.picIdx] || '').trim();
                     const telp = (row[cols.telpIdx] || '').trim();
                     const rawStatus = row[cols.statusIdx] || '';
-                    const timCode = (row[cols.timIdx] || '').trim().toUpperCase();
-                    const kendala = cols.kendalaIdx !== -1 ? (row[cols.kendalaIdx] || '').trim() : '';
+                    const rawTim = (row[cols.timIdx] || '').trim();
+                    const timCode = normalizeTimCode(rawTim);
+                    
+                    const rawKendala = cols.kendalaIdx !== -1 ? (row[cols.kendalaIdx] || '').trim() : '';
+                    const hasTrouble = rawKendala.length > 1 && rawKendala !== '-' && !rawKendala.toLowerCase().includes('lancar') && !rawKendala.toLowerCase().includes('tidak ada');
+                    const kendala = hasTrouble ? rawKendala : '';
 
                     const installed = isItemInstalled(rawStatus);
 
@@ -1270,15 +1629,70 @@
                         pic: pic,
                         telp: telp,
                         timCode: timCode,
-                        timName: TIM_NAME_MAP[timCode] ? `${timCode} · ${TIM_NAME_MAP[timCode]}` : timCode,
+                        timName: TIM_NAME_MAP[timCode] ? `Tim ${TIM_NAME_MAP[timCode]} (${timCode})` : (timCode ? `Tim ${timCode}` : '-'),
                         status: installed ? 'Terpasang' : 'Belum Pasang',
                         isInstalled: installed,
                         kendala: kendala,
-                        isTrouble: kendala.length > 1,
+                        isTrouble: hasTrouble,
                         source: source.label || source.id
                     });
                 }
             });
+
+            // Agregasi Data Per Sekolah (Menghubungkan Jumlah Unit dengan Sekolah)
+            allSchools = [];
+            const schoolMap = {};
+            const schoolCounters = {};
+
+            // Pass 1: Hitung total unit & status per sekolah
+            allRecords.forEach(item => {
+                const sKey = (item.nama || item.id || '').trim().toLowerCase();
+                if (!schoolMap[sKey]) {
+                    schoolMap[sKey] = {
+                        name: item.nama || item.id,
+                        totalUnits: 0,
+                        installedUnits: 0,
+                        pendingUnits: 0,
+                        troubleUnits: 0,
+                        kab: item.kab,
+                        prov: item.prov,
+                        wilayah: item.wilayah,
+                        teknisi: item.teknisi,
+                        timCode: item.timCode,
+                        timName: item.timName,
+                        pic: item.pic,
+                        telp: item.telp,
+                        source: item.source,
+                        items: []
+                    };
+                }
+                schoolMap[sKey].totalUnits++;
+                if (item.isInstalled) schoolMap[sKey].installedUnits++;
+                else schoolMap[sKey].pendingUnits++;
+                if (item.isTrouble) schoolMap[sKey].troubleUnits++;
+                schoolMap[sKey].items.push(item);
+            });
+
+            // Pass 2: Berikan nomor urut unit per sekolah (misal: Unit 1 dari 3)
+            allRecords.forEach(item => {
+                const sKey = (item.nama || item.id || '').trim().toLowerCase();
+                const sInfo = schoolMap[sKey];
+                schoolCounters[sKey] = (schoolCounters[sKey] || 0) + 1;
+                item.unitIndex = schoolCounters[sKey];
+                item.schoolTotalUnits = sInfo ? sInfo.totalUnits : 1;
+                item.schoolInstalledUnits = sInfo ? sInfo.installedUnits : 0;
+            });
+
+            allSchools = Object.values(schoolMap).map(s => {
+                const pct = s.totalUnits > 0 ? Math.round((s.installedUnits / s.totalUnits) * 100) : 0;
+                return {
+                    ...s,
+                    pct: pct,
+                    isFullyInstalled: s.installedUnits === s.totalUnits && s.totalUnits > 0,
+                    isPending: s.pendingUnits > 0,
+                    isTrouble: s.troubleUnits > 0
+                };
+            }).sort((a, b) => b.totalUnits - a.totalUnits);
 
             populateFilterOptions(timSet, provSet, kabSet, teknisiSet);
             renderSourceChips();
@@ -1331,11 +1745,12 @@
             }
             container.innerHTML = active.map(s => {
                 const count = s.rows.length - 1;
+                const schoolsCount = new Set(allRecords.filter(r => r.source === (s.label || s.id)).map(r => r.nama.toLowerCase())).size;
                 return `
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 text-white border border-white/20 whitespace-nowrap">
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span>${s.label}</span>
-                        <span class="bg-white/20 px-1.5 py-0.5 rounded text-xs font-mono">${count} unit</span>
+                        <span class="bg-white/20 px-1.5 py-0.5 rounded text-xs font-mono">${count} Unit · ${schoolsCount} Sekolah</span>
                     </span>
                 `;
             }).join('');
@@ -1345,7 +1760,7 @@
         // PROVINCE & TEAM PROGRESS CARDS LOGIC
         // ========================================================
         
-        // 1. Hitung Statistik Per Provinsi
+        // 1. Hitung Statistik Per Provinsi (Unit & Sekolah Sinkron)
         function computeProvinceStats() {
             const provMap = {};
             allRecords.forEach(item => {
@@ -1358,7 +1773,8 @@
                         pending: 0,
                         trouble: 0,
                         teams: new Set(),
-                        teknisiSet: new Set()
+                        teknisiSet: new Set(),
+                        schoolsMap: {}
                     };
                 }
                 provMap[prov].total++;
@@ -1366,12 +1782,17 @@
                 else provMap[prov].pending++;
                 if (item.isTrouble) provMap[prov].trouble++;
 
-                if (item.timCode) {
-                    provMap[prov].teams.add(item.timCode);
+                if (item.timCode) provMap[prov].teams.add(item.timCode);
+                if (item.teknisi && item.teknisi !== '-') provMap[prov].teknisiSet.add(item.teknisi);
+
+                const sKey = (item.nama || item.id || '').trim().toLowerCase();
+                if (!provMap[prov].schoolsMap[sKey]) {
+                    provMap[prov].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0 };
                 }
-                if (item.teknisi && item.teknisi !== '-') {
-                    provMap[prov].teknisiSet.add(item.teknisi);
-                }
+                provMap[prov].schoolsMap[sKey].total++;
+                if (item.isInstalled) provMap[prov].schoolsMap[sKey].installed++;
+                else provMap[prov].schoolsMap[sKey].pending++;
+                if (item.isTrouble) provMap[prov].schoolsMap[sKey].trouble++;
             });
 
             return Object.values(provMap).map(p => {
@@ -1380,19 +1801,28 @@
                     const order = { 'M': 1, 'Y': 2, 'R': 3 };
                     return (order[a] || 99) - (order[b] || 99);
                 });
+                const schoolEntries = Object.values(p.schoolsMap);
+                const schoolsCount = schoolEntries.length;
+                const schoolsInstalledCount = schoolEntries.filter(s => s.installed === s.total && s.total > 0).length;
+                const schoolsPendingCount = schoolEntries.filter(s => s.pending > 0).length;
+                const schoolsTroubleCount = schoolEntries.filter(s => s.trouble > 0).length;
+
                 return {
                     ...p,
                     pct: pct,
                     timList: timList,
-                    teknisiArr: Array.from(p.teknisiSet)
+                    teknisiArr: Array.from(p.teknisiSet),
+                    schoolsCount: schoolsCount,
+                    schoolsInstalledCount: schoolsInstalledCount,
+                    schoolsPendingCount: schoolsPendingCount,
+                    schoolsTroubleCount: schoolsTroubleCount
                 };
             }).sort((a, b) => b.total - a.total);
         }
 
-        // 2. Hitung Statistik Per Tim Lapangan
+        // 2. Hitung Statistik Per Tim Lapangan (Unit & Sekolah Sinkron)
         function computeTeamStats() {
             const teamMap = {};
-            // Default slot untuk Tim M, Y, R
             ['M', 'Y', 'R'].forEach(code => {
                 teamMap[code] = {
                     timCode: code,
@@ -1402,13 +1832,13 @@
                     pending: 0,
                     trouble: 0,
                     provinces: new Set(),
-                    teknisiSet: new Set()
+                    teknisiSet: new Set(),
+                    schoolsMap: {}
                 };
             });
 
             allRecords.forEach(item => {
-                const rawTim = (item.timCode || '').trim().toUpperCase();
-                const code = rawTim || 'OTHER';
+                const code = item.timCode || 'OTHER';
                 if (!teamMap[code]) {
                     teamMap[code] = {
                         timCode: code,
@@ -1418,7 +1848,8 @@
                         pending: 0,
                         trouble: 0,
                         provinces: new Set(),
-                        teknisiSet: new Set()
+                        teknisiSet: new Set(),
+                        schoolsMap: {}
                     };
                 }
                 teamMap[code].total++;
@@ -1426,21 +1857,36 @@
                 else teamMap[code].pending++;
                 if (item.isTrouble) teamMap[code].trouble++;
 
-                if (item.prov && item.prov !== '-') {
-                    teamMap[code].provinces.add(item.prov.trim());
+                if (item.prov && item.prov !== '-') teamMap[code].provinces.add(item.prov.trim());
+                if (item.teknisi && item.teknisi !== '-') teamMap[code].teknisiSet.add(item.teknisi);
+
+                const sKey = (item.nama || item.id || '').trim().toLowerCase();
+                if (!teamMap[code].schoolsMap[sKey]) {
+                    teamMap[code].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0 };
                 }
-                if (item.teknisi && item.teknisi !== '-') {
-                    teamMap[code].teknisiSet.add(item.teknisi);
-                }
+                teamMap[code].schoolsMap[sKey].total++;
+                if (item.isInstalled) teamMap[code].schoolsMap[sKey].installed++;
+                else teamMap[code].schoolsMap[sKey].pending++;
+                if (item.isTrouble) teamMap[code].schoolsMap[sKey].trouble++;
             });
 
             return Object.values(teamMap).map(t => {
                 const pct = t.total > 0 ? Math.round((t.installed / t.total) * 100) : 0;
+                const schoolEntries = Object.values(t.schoolsMap);
+                const schoolsCount = schoolEntries.length;
+                const schoolsInstalledCount = schoolEntries.filter(s => s.installed === s.total && s.total > 0).length;
+                const schoolsPendingCount = schoolEntries.filter(s => s.pending > 0).length;
+                const schoolsTroubleCount = schoolEntries.filter(s => s.trouble > 0).length;
+
                 return {
                     ...t,
                     pct: pct,
                     provincesArr: Array.from(t.provinces),
-                    teknisiArr: Array.from(t.teknisiSet)
+                    teknisiArr: Array.from(t.teknisiSet),
+                    schoolsCount: schoolsCount,
+                    schoolsInstalledCount: schoolsInstalledCount,
+                    schoolsPendingCount: schoolsPendingCount,
+                    schoolsTroubleCount: schoolsTroubleCount
                 };
             }).filter(t => t.total > 0 || ['M', 'Y', 'R'].includes(t.timCode)).sort((a, b) => {
                 const order = { 'M': 1, 'Y': 2, 'R': 3 };
@@ -1517,7 +1963,7 @@
                                 <h4 class="font-bold text-slate-900 text-sm sm:text-base truncate group-hover:text-blue-600 transition">
                                     📍 ${escapeHtml(p.prov)}
                                 </h4>
-                                <span class="text-xs text-slate-500 font-medium">${p.timList.length} Tim Bertugas</span>
+                                <span class="text-xs text-slate-500 font-medium">${p.schoolsCount} Sekolah &middot; ${p.timList.length} Tim</span>
                             </div>
                             <div class="text-right shrink-0">
                                 <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${pctBadgeClass}">
@@ -1531,19 +1977,22 @@
                             <div class="h-full rounded-full transition-all duration-500 bg-blue-600" style="width: ${p.pct}%"></div>
                         </div>
 
-                        <!-- 3 Clear Metric Columns (No tiny font) -->
+                        <!-- 3 Clear Metric Columns (Menampilkan Unit & Sekolah Sinkron) -->
                         <div class="grid grid-cols-3 gap-2 text-center mb-3.5 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
                             <div>
-                                <div class="text-xs font-medium text-slate-500">Total</div>
-                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${p.total}</div>
+                                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total</div>
+                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${p.total} <span class="text-xs font-normal text-slate-500">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-slate-500 mt-0.5">${p.schoolsCount} Sekolah</div>
                             </div>
                             <div>
-                                <div class="text-xs font-medium text-emerald-600">Selesai</div>
-                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${p.installed}</div>
+                                <div class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Selesai</div>
+                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${p.installed} <span class="text-xs font-normal text-emerald-600">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-emerald-700 mt-0.5">${p.schoolsInstalledCount} Sekolah</div>
                             </div>
                             <div>
-                                <div class="text-xs font-medium text-amber-600">Belum</div>
-                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${p.pending}</div>
+                                <div class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Belum</div>
+                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${p.pending} <span class="text-xs font-normal text-amber-600">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-amber-700 mt-0.5">${p.schoolsPendingCount} Sekolah</div>
                             </div>
                         </div>
 
@@ -1651,7 +2100,7 @@
                                         ${escapeHtml(team.timName)}
                                     </h4>
                                     <span class="text-xs text-slate-500 font-medium flex items-center gap-1 truncate" title="${escapeHtml(provStr)}">
-                                        📍 ${escapeHtml(provStr)}
+                                        📍 ${escapeHtml(provStr)} &middot; ${team.schoolsCount} Sekolah
                                     </span>
                                 </div>
                             </div>
@@ -1667,19 +2116,22 @@
                             <div class="h-full rounded-full transition-all duration-500 ${themeBar}" style="width: ${team.pct}%"></div>
                         </div>
 
-                        <!-- 3 Clear Metric Columns (No tiny font) -->
+                        <!-- 3 Clear Metric Columns (Menampilkan Unit & Sekolah Sinkron) -->
                         <div class="grid grid-cols-3 gap-2 text-center mb-3.5 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
                             <div>
-                                <div class="text-xs font-medium text-slate-500">Total</div>
-                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${team.total}</div>
+                                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total</div>
+                                <div class="text-sm sm:text-base font-extrabold text-slate-800 font-mono">${team.total} <span class="text-xs font-normal text-slate-500">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-slate-500 mt-0.5">${team.schoolsCount} Sekolah</div>
                             </div>
                             <div>
-                                <div class="text-xs font-medium text-emerald-600">Selesai</div>
-                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${team.installed}</div>
+                                <div class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Selesai</div>
+                                <div class="text-sm sm:text-base font-extrabold text-emerald-600 font-mono">${team.installed} <span class="text-xs font-normal text-emerald-600">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-emerald-700 mt-0.5">${team.schoolsInstalledCount} Sekolah</div>
                             </div>
                             <div>
-                                <div class="text-xs font-medium text-amber-600">Belum</div>
-                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${team.pending}</div>
+                                <div class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Belum</div>
+                                <div class="text-sm sm:text-base font-extrabold text-amber-600 font-mono">${team.pending} <span class="text-xs font-normal text-amber-600">Unit</span></div>
+                                <div class="text-[11px] font-semibold text-amber-700 mt-0.5">${team.schoolsPendingCount} Sekolah</div>
                             </div>
                         </div>
 
@@ -1700,7 +2152,6 @@
                             }
                         </div>
                     </div>
-                `;
             }).join('');
         }
 
@@ -1880,10 +2331,55 @@
                 return true;
             });
 
-            // Group into tabs
+            // Group into tabs (Unit Level)
             currentFilteredData.installed = filtered.filter(i => i.isInstalled);
             currentFilteredData.pending = filtered.filter(i => !i.isInstalled);
             currentFilteredData.trouble = filtered.filter(i => i.isTrouble);
+
+            // Group into Schools (School Level)
+            const filteredSchoolMap = {};
+            filtered.forEach(item => {
+                const sKey = (item.nama || item.id || '').trim().toLowerCase();
+                if (!filteredSchoolMap[sKey]) {
+                    filteredSchoolMap[sKey] = {
+                        name: item.nama || item.id,
+                        totalUnits: 0,
+                        installedUnits: 0,
+                        pendingUnits: 0,
+                        troubleUnits: 0,
+                        kab: item.kab,
+                        prov: item.prov,
+                        wilayah: item.wilayah,
+                        teknisi: item.teknisi,
+                        timCode: item.timCode,
+                        timName: item.timName,
+                        pic: item.pic,
+                        telp: item.telp,
+                        source: item.source,
+                        items: []
+                    };
+                }
+                filteredSchoolMap[sKey].totalUnits++;
+                if (item.isInstalled) filteredSchoolMap[sKey].installedUnits++;
+                else filteredSchoolMap[sKey].pendingUnits++;
+                if (item.isTrouble) filteredSchoolMap[sKey].troubleUnits++;
+                filteredSchoolMap[sKey].items.push(item);
+            });
+
+            const filteredSchoolsList = Object.values(filteredSchoolMap).map(s => {
+                const pct = s.totalUnits > 0 ? Math.round((s.installedUnits / s.totalUnits) * 100) : 0;
+                return {
+                    ...s,
+                    pct: pct,
+                    isFullyInstalled: s.installedUnits === s.totalUnits && s.totalUnits > 0,
+                    isPending: s.pendingUnits > 0,
+                    isTrouble: s.troubleUnits > 0
+                };
+            }).sort((a, b) => b.totalUnits - a.totalUnits);
+
+            currentFilteredSchools.installed = filteredSchoolsList.filter(s => s.installedUnits > 0);
+            currentFilteredSchools.pending = filteredSchoolsList.filter(s => s.pendingUnits > 0);
+            currentFilteredSchools.trouble = filteredSchoolsList.filter(s => s.troubleUnits > 0);
 
             if (resetPage) {
                 currentPages.installed = 1;
@@ -1896,40 +2392,111 @@
             const pending = currentFilteredData.pending.length;
             const trouble = currentFilteredData.trouble.length;
 
-            document.getElementById('total-unit').innerText = total;
-            document.getElementById('count-installed').innerText = installed;
-            document.getElementById('count-pending').innerText = pending;
-            document.getElementById('count-trouble').innerText = trouble;
+            const totalSchools = filteredSchoolsList.length;
+            const schoolsInstalled = filteredSchoolsList.filter(s => s.isFullyInstalled).length;
+            const schoolsPending = filteredSchoolsList.filter(s => s.isPending).length;
+            const schoolsTrouble = filteredSchoolsList.filter(s => s.isTrouble).length;
+
+            // Update Executive Stat Cards
+            const totalUnitEl = document.getElementById('total-unit');
+            if (totalUnitEl) totalUnitEl.innerText = total;
+
+            const totalSchoolsEl = document.getElementById('total-schools');
+            if (totalSchoolsEl) totalSchoolsEl.innerText = `${totalSchools} Sekolah / Lokasi`;
+
+            const countInstalledEl = document.getElementById('count-installed');
+            if (countInstalledEl) countInstalledEl.innerText = installed;
+
+            const schoolsInstalledEl = document.getElementById('schools-installed');
+            if (schoolsInstalledEl) schoolsInstalledEl.innerText = `${schoolsInstalled} Sekolah Selesai`;
+
+            const countPendingEl = document.getElementById('count-pending');
+            if (countPendingEl) countPendingEl.innerText = pending;
+
+            const schoolsPendingEl = document.getElementById('schools-pending');
+            if (schoolsPendingEl) schoolsPendingEl.innerText = `${schoolsPending} Sekolah Menunggu`;
+
+            const countTroubleEl = document.getElementById('count-trouble');
+            if (countTroubleEl) countTroubleEl.innerText = trouble;
+
+            const schoolsTroubleEl = document.getElementById('schools-trouble');
+            if (schoolsTroubleEl) schoolsTroubleEl.innerText = `${schoolsTrouble} Sekolah Terkendala`;
 
             const pctInstalled = total > 0 ? Math.round((installed / total) * 100) : 0;
             const pctPending = total > 0 ? Math.round((pending / total) * 100) : 0;
             
-            document.getElementById('pct-installed').innerText = `${pctInstalled}%`;
-            document.getElementById('pct-pending').innerText = `${pctPending}%`;
-            
-            document.getElementById('bar-installed').style.width = `${pctInstalled}%`;
-            document.getElementById('bar-pending').style.width = `${pctPending}%`;
+            const pctInstalledEl = document.getElementById('pct-installed');
+            if (pctInstalledEl) pctInstalledEl.innerText = `${pctInstalled}%`;
 
-            document.getElementById('tab-count-installed').innerText = installed;
-            document.getElementById('tab-count-pending').innerText = pending;
-            document.getElementById('tab-count-trouble').innerText = trouble;
-            document.getElementById('filter-result-count').innerText = total;
+            const pctPendingEl = document.getElementById('pct-pending');
+            if (pctPendingEl) pctPendingEl.innerText = `${pctPending}%`;
+            
+            const barInstalledEl = document.getElementById('bar-installed');
+            if (barInstalledEl) barInstalledEl.style.width = `${pctInstalled}%`;
+
+            const barPendingEl = document.getElementById('bar-pending');
+            if (barPendingEl) barPendingEl.style.width = `${pctPending}%`;
+
+            // Update Guide Banner stats
+            const guideUnitEl = document.getElementById('guide-unit-count');
+            if (guideUnitEl) guideUnitEl.innerText = `${total} baris di spreadsheet = ${total} Unit IFP`;
+
+            const guideSchoolEl = document.getElementById('guide-school-count');
+            if (guideSchoolEl) guideSchoolEl.innerText = `${totalSchools} Sekolah / Titik Lokasi`;
+
+            const guideInstEl = document.getElementById('guide-installed-stat');
+            if (guideInstEl) guideInstEl.innerText = `${installed} Unit (${schoolsInstalled} Sekolah)`;
+
+            const guidePendEl = document.getElementById('guide-pending-stat');
+            if (guidePendEl) guidePendEl.innerText = `${pending} Unit (${schoolsPending} Sekolah)`;
+
+            // Update View Switcher Badges
+            const countViewUnitEl = document.getElementById('count-view-unit');
+            if (countViewUnitEl) countViewUnitEl.innerText = total;
+
+            const countViewSchoolEl = document.getElementById('count-view-school');
+            if (countViewSchoolEl) countViewSchoolEl.innerText = totalSchools;
+
+            // Tab Count Badges (Dynamic based on tableViewMode)
+            const tabInstEl = document.getElementById('tab-count-installed');
+            const tabPendEl = document.getElementById('tab-count-pending');
+            const tabTroubEl = document.getElementById('tab-count-trouble');
+
+            if (tableViewMode === 'school') {
+                if (tabInstEl) tabInstEl.innerText = currentFilteredSchools.installed.length;
+                if (tabPendEl) tabPendEl.innerText = currentFilteredSchools.pending.length;
+                if (tabTroubEl) tabTroubEl.innerText = currentFilteredSchools.trouble.length;
+            } else {
+                if (tabInstEl) tabInstEl.innerText = installed;
+                if (tabPendEl) tabPendEl.innerText = pending;
+                if (tabTroubEl) tabTroubEl.innerText = trouble;
+            }
+
+            const filterResultCountEl = document.getElementById('filter-result-count');
+            if (filterResultCountEl) filterResultCountEl.innerText = total;
+
+            const filterResultSchoolsEl = document.getElementById('filter-result-schools');
+            if (filterResultSchoolsEl) filterResultSchoolsEl.innerText = totalSchools;
 
             const activeSources = dataSources.filter(s => s.rows && s.rows.length > 1).length;
-            document.getElementById('total-sources').innerText = `${activeSources} Spreadsheet`;
+            const totalSourcesEl = document.getElementById('total-sources');
+            if (totalSourcesEl) totalSourcesEl.innerText = `${activeSources} Spreadsheet`;
 
             const troubleDot = document.getElementById('trouble-status-dot');
             const troubleDesc = document.getElementById('trouble-desc');
-            if (trouble > 0) {
-                troubleDot.className = 'w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0';
-                troubleDesc.innerText = `${trouble} butuh perhatian`;
-                troubleDesc.className = 'truncate text-rose-600 font-semibold';
-            } else {
-                troubleDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shrink-0';
-                troubleDesc.innerText = 'Semua lancar';
-                troubleDesc.className = 'truncate text-slate-500';
+            if (troubleDot && troubleDesc) {
+                if (trouble > 0) {
+                    troubleDot.className = 'w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0';
+                    troubleDesc.innerText = `${trouble} butuh perhatian`;
+                    troubleDesc.className = 'truncate text-rose-600 font-semibold';
+                } else {
+                    troubleDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shrink-0';
+                    troubleDesc.innerText = 'Semua lancar';
+                    troubleDesc.className = 'truncate text-slate-500';
+                }
             }
 
+            renderTheads();
             renderActiveFiltersBar();
             renderAllTables();
             renderPagination();
@@ -2000,16 +2567,95 @@
         }
 
         function resetFilters() {
-            document.getElementById('global-search').value = '';
-            document.getElementById('filter-tim').value = '';
-            document.getElementById('filter-provinsi').value = '';
-            document.getElementById('filter-kab').value = '';
-            document.getElementById('filter-teknisi').value = '';
+            const search = document.getElementById('global-search');
+            if (search) search.value = '';
+            const tim = document.getElementById('filter-tim');
+            if (tim) tim.value = '';
+            const prov = document.getElementById('filter-provinsi');
+            if (prov) prov.value = '';
+            const kab = document.getElementById('filter-kab');
+            if (kab) kab.value = '';
+            const tek = document.getElementById('filter-teknisi');
+            if (tek) tek.value = '';
             selectedProvinceFilter = '';
             selectedTimFilter = '';
             activeProvinceTab = 'ALL';
             applyAllFilters(true);
             renderAllProgressCards();
+        }
+
+        function resetAllFiltersAndScroll() {
+            resetFilters();
+            const tableCard = document.getElementById('table-card-container');
+            if (tableCard) {
+                tableCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function switchTabAndScroll(tab) {
+            switchTab(tab);
+            const tableCard = document.getElementById('table-card-container');
+            if (tableCard) {
+                tableCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function copyExecutiveReport() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            const totalUnits = allRecords.length;
+            const installedUnits = allRecords.filter(r => r.isInstalled).length;
+            const pendingUnits = allRecords.filter(r => !r.isInstalled).length;
+            const troubleUnits = allRecords.filter(r => r.isTrouble).length;
+            const pctInstalled = totalUnits > 0 ? Math.round((installedUnits / totalUnits) * 100) : 0;
+            const pctPending = totalUnits > 0 ? Math.round((pendingUnits / totalUnits) * 100) : 0;
+            
+            const totalSchools = allSchools.length;
+            const schoolsComplete = allSchools.filter(s => s.isFullyInstalled).length;
+            const schoolsPending = allSchools.filter(s => s.isPending).length;
+
+            let report = `*LAPORAN MONITORING INSTALASI IFP*\n`;
+            report += `📅 Update: ${dateStr}, ${timeStr} WITA\n`;
+            report += `------------------------------------\n\n`;
+            report += `📊 *RINGKASAN EKSEKUTIF:*\n`;
+            report += `• Total Alokasi: *${totalUnits} Unit IFP* (${totalSchools} Titik Sekolah)\n`;
+            report += `• Selesai Terpasang: *${installedUnits} Unit* (${pctInstalled}%) — ${schoolsComplete} Sekolah Tuntas\n`;
+            report += `• Belum Terpasang: *${pendingUnits} Unit* (${pctPending}%) — ${schoolsPending} Sekolah Antrean\n`;
+            report += `• Kendala Lapangan: *${troubleUnits} Unit*\n\n`;
+
+            report += `🏫 *PROGRES PER SEKOLAH (${totalSchools} Lokasi):*\n`;
+            allSchools.forEach((s, idx) => {
+                const icon = s.isFullyInstalled ? '✅' : (s.installedUnits > 0 ? '🔄' : '⏳');
+                report += `${idx + 1}. ${icon} *${s.name}*\n`;
+                report += `   Alokasi: ${s.installedUnits}/${s.totalUnits} Unit (${s.pct}%) | PIC: ${s.pic || '-'} (${s.telp || '-'})\n`;
+                report += `   Tim: ${s.timCode || '-'} | Teknisi: ${s.teknisi || '-'}\n`;
+            });
+
+            const mCount = allRecords.filter(r => r.timCode === 'M').length;
+            const yCount = allRecords.filter(r => r.timCode === 'Y').length;
+            const rCount = allRecords.filter(r => r.timCode === 'R').length;
+
+            report += `\n👥 *PROGRES TIM PELAKSANA:*\n`;
+            if (mCount > 0) {
+                const mInst = allRecords.filter(r => r.timCode === 'M' && r.isInstalled).length;
+                report += `• Tim Mattew (M): ${mInst}/${mCount} Unit (${Math.round(mInst / mCount * 100)}%)\n`;
+            }
+            if (yCount > 0) {
+                const yInst = allRecords.filter(r => r.timCode === 'Y' && r.isInstalled).length;
+                report += `• Tim Yudi (Y): ${yInst}/${yCount} Unit (${Math.round(yInst / yCount * 100)}%)\n`;
+            }
+            if (rCount > 0) {
+                const rInst = allRecords.filter(r => r.timCode === 'R' && r.isInstalled).length;
+                report += `• Tim Rabil (R): ${rInst}/${rCount} Unit (${Math.round(rInst / rCount * 100)}%)\n`;
+            }
+
+            navigator.clipboard.writeText(report).then(() => {
+                alert('✅ Laporan WhatsApp Berhasil Disalin ke Clipboard!\n\nAnda dapat langsung mem-paste (Ctrl+V) ke grup WhatsApp atau chat atasan.');
+            }).catch(() => {
+                prompt('Salin teks laporan ini untuk atasan:', report);
+            });
         }
 
         function getPagedItems(list, page) {
@@ -2034,32 +2680,207 @@
             };
         }
 
+        function setTableViewMode(mode) {
+            tableViewMode = mode;
+            const btnUnit = document.getElementById('btn-mode-unit');
+            const btnSchool = document.getElementById('btn-mode-school');
+
+            if (mode === 'school') {
+                if (btnSchool) btnSchool.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition font-bold cursor-pointer';
+                if (btnUnit) btnUnit.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition font-semibold cursor-pointer';
+            } else {
+                if (btnUnit) btnUnit.className = 'px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-xs transition font-bold cursor-pointer';
+                if (btnSchool) btnSchool.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition font-semibold cursor-pointer';
+            }
+
+            // Sync tab counts to the current mode
+            const tabInstEl = document.getElementById('tab-count-installed');
+            const tabPendEl = document.getElementById('tab-count-pending');
+            const tabTroubEl = document.getElementById('tab-count-trouble');
+            if (mode === 'school') {
+                if (tabInstEl) tabInstEl.innerText = currentFilteredSchools.installed.length;
+                if (tabPendEl) tabPendEl.innerText = currentFilteredSchools.pending.length;
+                if (tabTroubEl) tabTroubEl.innerText = currentFilteredSchools.trouble.length;
+            } else {
+                if (tabInstEl) tabInstEl.innerText = currentFilteredData.installed.length;
+                if (tabPendEl) tabPendEl.innerText = currentFilteredData.pending.length;
+                if (tabTroubEl) tabTroubEl.innerText = currentFilteredData.trouble.length;
+            }
+
+            renderTheads();
+            renderAllTables();
+            renderPagination();
+        }
+
+        function filterSchoolUnits(nameOrBtn) {
+            // Bisa dipanggil dengan nama sekolah langsung (string) atau dari tombol (melalui data-school)
+            let schoolName = nameOrBtn;
+            if (nameOrBtn && typeof nameOrBtn === 'object') {
+                schoolName = nameOrBtn.getAttribute('data-school') || '';
+            }
+            const searchInput = document.getElementById('global-search');
+            if (searchInput) {
+                searchInput.value = schoolName;
+            }
+            setTableViewMode('unit');
+            applyAllFilters(true);
+            const tableContainer = document.getElementById('table-card-container');
+            if (tableContainer) {
+                tableContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Helper: encode string untuk atribut HTML (data-* dsb.)
+        function encodeAttr(str) {
+            return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+        }
+
+        function renderTheads() {
+            const theadInst = document.getElementById('installed-table-thead');
+            const theadPend = document.getElementById('pending-table-thead');
+            const theadTroub = document.getElementById('trouble-table-thead');
+
+            if (tableViewMode === 'school') {
+                if (theadInst) {
+                    theadInst.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
+                            <th class="py-3.5 px-4 w-36">Wilayah</th>
+                            <th class="py-3.5 px-4 w-40">Alokasi Unit IFP</th>
+                            <th class="py-3.5 px-4 w-44">Progres Pemasangan</th>
+                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
+                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
+                        </tr>
+                    `;
+                }
+                if (theadPend) {
+                    theadPend.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
+                            <th class="py-3.5 px-4 w-36">Wilayah</th>
+                            <th class="py-3.5 px-4 w-40">Alokasi Unit IFP</th>
+                            <th class="py-3.5 px-4 w-44">Status Antrean</th>
+                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
+                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
+                        </tr>
+                    `;
+                }
+                if (theadTroub) {
+                    theadTroub.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
+                            <th class="py-3.5 px-4 w-36">Wilayah</th>
+                            <th class="py-3.5 px-4 w-40">Alokasi Unit IFP</th>
+                            <th class="py-3.5 px-4 w-44">Detail Kendala</th>
+                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
+                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
+                        </tr>
+                    `;
+                }
+            } else {
+                if (theadInst) {
+                    theadInst.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
+                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
+                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                            <th class="py-3.5 px-4 w-32">Provinsi</th>
+                            <th class="py-3.5 px-4 w-40">Teknisi</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                            <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Status</th>
+                        </tr>
+                    `;
+                }
+                if (theadPend) {
+                    theadPend.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
+                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
+                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                            <th class="py-3.5 px-4 w-32">Provinsi</th>
+                            <th class="py-3.5 px-4 w-40">Teknisi</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                            <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Status</th>
+                        </tr>
+                    `;
+                }
+                if (theadTroub) {
+                    theadTroub.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
+                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
+                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                            <th class="py-3.5 px-4 w-32">Provinsi</th>
+                            <th class="py-3.5 px-4 w-40">Teknisi / PIC</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                            <th class="py-3.5 px-5">Detail Kendala</th>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
         function renderAllTables() {
-            const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
-            renderInstalledTable(inst.rows, inst.startIdx);
+            if (tableViewMode === 'school') {
+                const inst = getPagedItems(currentFilteredSchools.installed, currentPages.installed);
+                renderInstalledSchoolTable(inst.rows, inst.startIdx);
 
-            const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
-            renderPendingTable(pend.rows, pend.startIdx);
+                const pend = getPagedItems(currentFilteredSchools.pending, currentPages.pending);
+                renderPendingSchoolTable(pend.rows, pend.startIdx);
 
-            const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
-            renderTroubleTable(troub.rows, troub.startIdx);
+                const troub = getPagedItems(currentFilteredSchools.trouble, currentPages.trouble);
+                renderTroubleSchoolTable(troub.rows, troub.startIdx);
+            } else {
+                const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
+                renderInstalledTable(inst.rows, inst.startIdx);
+
+                const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
+                renderPendingTable(pend.rows, pend.startIdx);
+
+                const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
+                renderTroubleTable(troub.rows, troub.startIdx);
+            }
         }
 
         function changePage(newPage) {
-            const activeList = currentFilteredData[activeTab] || [];
+            const activeList = (tableViewMode === 'school' ? currentFilteredSchools[activeTab] : currentFilteredData[activeTab]) || [];
             const maxPage = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(activeList.length / pageSize));
             if (newPage < 1 || newPage > maxPage) return;
             currentPages[activeTab] = newPage;
             
-            if (activeTab === 'installed') {
-                const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
-                renderInstalledTable(inst.rows, inst.startIdx);
-            } else if (activeTab === 'pending') {
-                const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
-                renderPendingTable(pend.rows, pend.startIdx);
-            } else if (activeTab === 'trouble') {
-                const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
-                renderTroubleTable(troub.rows, troub.startIdx);
+            if (tableViewMode === 'school') {
+                if (activeTab === 'installed') {
+                    const inst = getPagedItems(currentFilteredSchools.installed, currentPages.installed);
+                    renderInstalledSchoolTable(inst.rows, inst.startIdx);
+                } else if (activeTab === 'pending') {
+                    const pend = getPagedItems(currentFilteredSchools.pending, currentPages.pending);
+                    renderPendingSchoolTable(pend.rows, pend.startIdx);
+                } else if (activeTab === 'trouble') {
+                    const troub = getPagedItems(currentFilteredSchools.trouble, currentPages.trouble);
+                    renderTroubleSchoolTable(troub.rows, troub.startIdx);
+                }
+            } else {
+                if (activeTab === 'installed') {
+                    const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
+                    renderInstalledTable(inst.rows, inst.startIdx);
+                } else if (activeTab === 'pending') {
+                    const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
+                    renderPendingTable(pend.rows, pend.startIdx);
+                } else if (activeTab === 'trouble') {
+                    const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
+                    renderTroubleTable(troub.rows, troub.startIdx);
+                }
             }
             renderPagination();
 
@@ -2079,7 +2900,7 @@
         }
 
         function renderPagination() {
-            const activeList = currentFilteredData[activeTab] || [];
+            const activeList = (tableViewMode === 'school' ? currentFilteredSchools[activeTab] : currentFilteredData[activeTab]) || [];
             const total = activeList.length;
             const pInfo = getPagedItems(activeList, currentPages[activeTab]);
 
@@ -2088,18 +2909,18 @@
             const pageInfoEl = document.getElementById('pagination-page-info');
             const buttonsContainer = document.getElementById('pagination-buttons');
 
-            totalEl.textContent = total;
+            if (totalEl) totalEl.textContent = `${total} ${tableViewMode === 'school' ? 'Sekolah' : 'Unit'}`;
 
             if (total === 0) {
-                rangeEl.textContent = '0 - 0';
+                if (rangeEl) rangeEl.textContent = '0 - 0';
                 if (pageInfoEl) pageInfoEl.textContent = 'Halaman 1 dari 1';
-                buttonsContainer.innerHTML = '';
+                if (buttonsContainer) buttonsContainer.innerHTML = '';
                 return;
             }
 
             const startNum = pInfo.startIdx + 1;
             const endNum = pInfo.endIdx;
-            rangeEl.textContent = `${startNum} - ${endNum}`;
+            if (rangeEl) rangeEl.textContent = `${startNum} - ${endNum}`;
 
             const curr = pInfo.currentPage;
             const totalPages = pInfo.totalPages;
@@ -2213,6 +3034,7 @@
             if (mobileContainer) mobileContainer.innerHTML = '';
 
             if (items.length === 0) {
+                empty.innerText = 'Tidak ada unit terpasang yang cocok dengan pencarian / filter.';
                 empty.classList.remove('hidden');
                 return;
             }
@@ -2222,7 +3044,15 @@
                 <tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
                     <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 leading-snug">${escapeHtml(row.nama)}</div>
+                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                            ${row.schoolTotalUnits > 1 ? `<span class="text-[10px] text-slate-400 font-medium">Alokasi ${row.schoolTotalUnits} Unit IFP</span>` : ''}
+                        </div>
+                    </td>
                     <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
                     <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
                     <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
@@ -2254,7 +3084,12 @@
                             </span>
                         </div>
 
-                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <h4 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(row.nama)}</h4>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                        </div>
                         
                         <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3 flex items-center gap-1.5">
                             <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
@@ -2293,6 +3128,7 @@
             if (mobileContainer) mobileContainer.innerHTML = '';
 
             if (items.length === 0) {
+                empty.innerText = 'Tidak ada sekolah dalam antrean belum pasang (Semua telah selesai!).';
                 empty.classList.remove('hidden');
                 return;
             }
@@ -2302,7 +3138,15 @@
                 <tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
                     <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 leading-snug">${escapeHtml(row.nama)}</div>
+                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                            ${row.schoolTotalUnits > 1 ? `<span class="text-[10px] text-slate-400 font-medium">Alokasi ${row.schoolTotalUnits} Unit IFP</span>` : ''}
+                        </div>
+                    </td>
                     <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
                     <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
                     <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
@@ -2334,7 +3178,12 @@
                             </span>
                         </div>
 
-                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <h4 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(row.nama)}</h4>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                        </div>
                         
                         <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3 flex items-center gap-1.5">
                             <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
@@ -2373,6 +3222,7 @@
             if (mobileContainer) mobileContainer.innerHTML = '';
 
             if (items.length === 0) {
+                empty.innerText = 'Tidak ada unit dengan kendala.';
                 empty.classList.remove('hidden');
                 return;
             }
@@ -2382,7 +3232,15 @@
                 <tr class="hover:bg-rose-50/40 transition-colors">
                     <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
                     <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
-                    <td class="py-3.5 px-4 font-bold text-slate-900">${escapeHtml(row.nama)}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 leading-snug">${escapeHtml(row.nama)}</div>
+                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                            ${row.schoolTotalUnits > 1 ? `<span class="text-[10px] text-slate-400 font-medium">Alokasi ${row.schoolTotalUnits} Unit IFP</span>` : ''}
+                        </div>
+                    </td>
                     <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
                     <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
@@ -2412,7 +3270,13 @@
                             </span>
                         </div>
 
-                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(row.nama)}</h4>
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <h4 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(row.nama)}</h4>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
+                        </div>
+
                         <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3">
                             📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)} &middot; 👤 ${escapeHtml(row.teknisi)}
                         </div>
@@ -2428,6 +3292,288 @@
                         </div>
                     </div>
                 `).join('');
+            }
+        }
+
+        // ========================================================
+        // RENDERING SCHOOL SUMMARY TABLES (REKAP SEKOLAH)
+        // ========================================================
+        function renderInstalledSchoolTable(items, startIdx = 0) {
+            const tbody = document.getElementById('installed-table-body');
+            const mobileContainer = document.getElementById('installed-mobile-cards');
+            const empty = document.getElementById('installed-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.innerText = 'Tidak ada sekolah terpasang yang cocok dengan pencarian / filter.';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((s, idx) => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(s.name)}</div>
+                        <div class="text-[11px] text-slate-500 font-mono mt-0.5">ID Pertama: ${s.items.length > 0 ? escapeHtml(s.items[0].id) : '-'}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-semibold text-slate-700">${escapeHtml(s.kab)}</div>
+                        <div class="text-xs text-slate-500">${escapeHtml(s.prov)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-extrabold text-blue-700 font-mono text-sm">${s.totalUnits} Unit IFP</div>
+                        <div class="text-[11px] font-semibold text-emerald-600">${s.installedUnits} Selesai ${s.pendingUnits > 0 ? `· ${s.pendingUnits} Belum` : ''}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full transition-all" style="width: ${s.pct}%"></div>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-emerald-700">${s.pct}%</span>
+                        </div>
+                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                            ✓ ${s.installedUnits} dari ${s.totalUnits} Unit Terpasang
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5 mb-1">${getTimBadge(s.timCode)}</div>
+                        <div class="text-xs font-semibold text-slate-800 truncate">👤 ${escapeHtml(s.teknisi)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(s.pic || '-')}</div>
+                        ${s.telp ? `<a href="tel:${escapeHtml(s.telp)}" class="text-xs font-mono text-emerald-700 hover:text-emerald-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(s.telp)}</a>` : ''}
+                    </td>
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition shadow-xs cursor-pointer" title="Lihat detail semua ${s.totalUnits} unit di sekolah ini">
+                            <span>Lihat ${s.totalUnits} Unit</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((s, idx) => `
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:border-emerald-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span>${s.pct}% Tuntas</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(s.name)}</h4>
+                        <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)}</div>
+
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 mb-3">
+                            <div class="flex justify-between items-center text-xs mb-1.5">
+                                <span class="font-bold text-slate-700">Alokasi: <strong class="text-blue-700 font-mono">${s.totalUnits} Unit IFP</strong></span>
+                                <span class="font-bold text-emerald-700 font-mono">${s.installedUnits} / ${s.totalUnits} Selesai</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full" style="width: ${s.pct}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+                            <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Teknisi & Tim</span>
+                                <div class="font-bold text-slate-800 truncate mt-0.5">${escapeHtml(s.teknisi)}</div>
+                                <div class="mt-1">${getTimBadge(s.timCode)}</div>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">PIC Sekolah</span>
+                                <div class="font-bold text-slate-800 truncate mt-0.5">${escapeHtml(s.pic || '-')}</div>
+                                ${s.telp ? `<div class="text-emerald-700 font-mono font-bold mt-1 truncate">📞 ${escapeHtml(s.telp)}</div>` : ''}
+                            </div>
+                        </div>
+
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span>Buka Rincian ${s.totalUnits} Unit IFP</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderPendingSchoolTable(items, startIdx = 0) {
+            const tbody = document.getElementById('pending-table-body');
+            const mobileContainer = document.getElementById('pending-mobile-cards');
+            const empty = document.getElementById('pending-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.innerText = 'Semua sekolah telah selesai terpasang!';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((s, idx) => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(s.name)}</div>
+                        <div class="text-[11px] text-slate-500 font-mono mt-0.5">ID Pertama: ${s.items.length > 0 ? escapeHtml(s.items[0].id) : '-'}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-semibold text-slate-700">${escapeHtml(s.kab)}</div>
+                        <div class="text-xs text-slate-500">${escapeHtml(s.prov)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-extrabold text-blue-700 font-mono text-sm">${s.totalUnits} Unit IFP</div>
+                        <div class="text-[11px] font-semibold text-amber-600">${s.pendingUnits} Belum Pasang ${s.installedUnits > 0 ? `· ${s.installedUnits} Selesai` : ''}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span>Menunggu (${s.pendingUnits} Unit)</span>
+                        </span>
+                        ${s.installedUnits > 0 ? `<div class="text-[11px] font-semibold text-emerald-600 mt-1">${s.installedUnits} dari ${s.totalUnits} sudah terpasang</div>` : ''}
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5 mb-1">${getTimBadge(s.timCode)}</div>
+                        <div class="text-xs font-semibold text-slate-800 truncate">👤 ${escapeHtml(s.teknisi)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(s.pic || '-')}</div>
+                        ${s.telp ? `<a href="tel:${escapeHtml(s.telp)}" class="text-xs font-mono text-blue-600 hover:text-blue-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(s.telp)}</a>` : ''}
+                    </td>
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition shadow-xs cursor-pointer" title="Lihat detail ${s.totalUnits} unit di sekolah ini">
+                            <span>Lihat ${s.totalUnits} Unit</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((s, idx) => `
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:border-amber-300 transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <span>Menunggu Pasang</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(s.name)}</h4>
+                        <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)}</div>
+
+                        <div class="p-3 bg-amber-50/50 rounded-xl border border-amber-100 mb-3 flex items-center justify-between text-xs">
+                            <span class="text-slate-600 font-medium">Alokasi Unit IFP:</span>
+                            <span class="font-extrabold text-blue-700 font-mono text-sm">${s.totalUnits} Unit (${s.pendingUnits} Belum)</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+                            <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Teknisi & Tim</span>
+                                <div class="font-bold text-slate-800 truncate mt-0.5">${escapeHtml(s.teknisi)}</div>
+                                <div class="mt-1">${getTimBadge(s.timCode)}</div>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">PIC Sekolah</span>
+                                <div class="font-bold text-slate-800 truncate mt-0.5">${escapeHtml(s.pic || '-')}</div>
+                                ${s.telp ? `<div class="text-blue-600 font-mono font-bold mt-1 truncate">📞 ${escapeHtml(s.telp)}</div>` : ''}
+                            </div>
+                        </div>
+
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span>Buka Rincian ${s.totalUnits} Unit IFP</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderTroubleSchoolTable(items, startIdx = 0) {
+            const tbody = document.getElementById('trouble-table-body');
+            const mobileContainer = document.getElementById('trouble-mobile-cards');
+            const empty = document.getElementById('trouble-empty');
+            tbody.innerHTML = '';
+            if (mobileContainer) mobileContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.innerText = 'Tidak ada sekolah dengan kendala.';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = items.map((s, idx) => {
+                const troubleItem = s.items.find(i => i.isTrouble);
+                const kendalaText = troubleItem ? troubleItem.kendala : 'Terkendala';
+                return `
+                    <tr class="hover:bg-rose-50/40 transition-colors">
+                        <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(s.name)}</div>
+                            <div class="text-[11px] text-slate-500 font-mono mt-0.5">ID Pertama: ${s.items.length > 0 ? escapeHtml(s.items[0].id) : '-'}</div>
+                        </td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <div class="font-semibold text-slate-700">${escapeHtml(s.kab)}</div>
+                            <div class="text-xs text-slate-500">${escapeHtml(s.prov)}</div>
+                        </td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <div class="font-extrabold text-blue-700 font-mono text-sm">${s.totalUnits} Unit IFP</div>
+                            <div class="text-[11px] font-semibold text-rose-600">${s.troubleUnits} Terkendala</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="text-xs text-rose-900 bg-rose-50 p-2.5 rounded-xl border border-rose-200 font-medium leading-relaxed">
+                                ${escapeHtml(kendalaText)}
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <div class="flex items-center gap-1.5 mb-1">${getTimBadge(s.timCode)}</div>
+                            <div class="text-xs font-semibold text-slate-800 truncate">👤 ${escapeHtml(s.teknisi)}</div>
+                        </td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <div class="font-bold text-slate-800 text-xs">${escapeHtml(s.pic || '-')}</div>
+                            ${s.telp ? `<a href="tel:${escapeHtml(s.telp)}" class="text-xs font-mono text-rose-600 hover:text-rose-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(s.telp)}</a>` : ''}
+                        </td>
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                            <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition shadow-xs cursor-pointer">
+                                <span>Lihat ${s.totalUnits} Unit</span>
+                                <span>&rarr;</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (mobileContainer) {
+                mobileContainer.innerHTML = items.map((s, idx) => {
+                    const troubleItem = s.items.find(i => i.isTrouble);
+                    const kendalaText = troubleItem ? troubleItem.kendala : 'Terkendala';
+                    return `
+                        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-rose-200 shadow-xs transition-all">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                    <span>Kendala Lapangan</span>
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(s.name)}</h4>
+                            <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)} &middot; Alokasi: ${s.totalUnits} Unit</div>
+
+                            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 font-medium mb-3 leading-relaxed">
+                                <div class="font-bold text-rose-700 uppercase tracking-wider text-[10px] mb-1">⚠️ Detail Kendala:</div>
+                                ${escapeHtml(kendalaText)}
+                            </div>
+
+                            <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>Buka Rincian ${s.totalUnits} Unit</span>
+                                <span>&rarr;</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
