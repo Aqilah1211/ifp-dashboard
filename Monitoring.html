@@ -1441,8 +1441,61 @@
         // ========================================================
         // FETCHING GOOGLE SPREADSHEETS (ANTI-CACHE & REAL-TIME)
         // ========================================================
+        function fetchSpreadsheetViaJsonp(source) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'gviz_callback_' + Math.random().toString(36).substring(2, 9);
+                let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=responseHandler:${callbackName}&_t=${Date.now()}`;
+                if (source.sheet && source.sheet.trim()) {
+                    url += `&sheet=${encodeURIComponent(source.sheet.trim())}`;
+                }
+
+                const script = document.createElement('script');
+                let timeoutId = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Timeout memuat spreadsheet'));
+                }, 10000);
+
+                function cleanup() {
+                    clearTimeout(timeoutId);
+                    if (window[callbackName]) delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+
+                window[callbackName] = function (data) {
+                    cleanup();
+                    try {
+                        if (!data || !data.table) {
+                            reject(new Error('Format data Google Spreadsheet tidak valid'));
+                            return;
+                        }
+                        const headers = (data.table.cols || []).map(col => (col ? (col.label || '') : ''));
+                        const rows = [headers];
+                        (data.table.rows || []).forEach(r => {
+                            if (!r || !r.c) return;
+                            const row = r.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v).trim() : '');
+                            rows.push(row);
+                        });
+                        resolve(rows.filter(r => r.some(cell => cell !== '')));
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+
+                script.onerror = function () {
+                    cleanup();
+                    reject(new Error('Gagal memuat script Google Sheets'));
+                };
+
+                script.src = url;
+                document.head.appendChild(script);
+            });
+        }
+
         async function fetchSpreadsheetData(source) {
-            // Anti-cache buster: pastikan selalu data paling baru detik itu juga di semua device
+            delete source._error;
+            let loaded = false;
+
+            // 1. Coba fetch CSV standar lebih dulu (untuk origin http/https)
             let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=out:csv&_t=${Date.now()}`;
             if (source.sheet && source.sheet.trim()) {
                 url += `&sheet=${encodeURIComponent(source.sheet.trim())}`;
@@ -1450,16 +1503,51 @@
 
             try {
                 const response = await fetch(url, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`HTTP ${response.status} – pastikan spreadsheet sudah dibagikan publik ("Anyone with the link can view")`);
-                const csvData = await response.text();
-                source.rows = parseCSV(csvData);
-                if (source.rows.length <= 1) {
-                    console.warn(`Spreadsheet [${source.label || source.id}] berhasil dimuat tapi tidak ada baris data. Periksa nama tab (sheet) atau izin akses.`);
+                if (response.ok) {
+                    const csvData = await response.text();
+                    const parsed = parseCSV(csvData);
+                    if (parsed && parsed.length > 1) {
+                        source.rows = parsed;
+                        loaded = true;
+                        try { localStorage.setItem('ifp_cache_' + source.id, JSON.stringify(parsed)); } catch (e) {}
+                    }
                 }
             } catch (err) {
-                console.error(`Gagal memuat spreadsheet [${source.id}]:`, err);
+                // Fetch CSV biasa bisa diblokir oleh CORS di file:/// origin
+                console.warn(`Fetch CSV gagal untuk [${source.id}], mencoba via JSONP (Bypass CORS):`, err.message);
+            }
+
+            // 2. Fallback JSONP: Bekerja sempurna di file:/// (double click di laptop) maupun http/https tanpa blokir CORS
+            if (!loaded) {
+                try {
+                    const rows = await fetchSpreadsheetViaJsonp(source);
+                    if (rows && rows.length > 1) {
+                        source.rows = rows;
+                        loaded = true;
+                        try { localStorage.setItem('ifp_cache_' + source.id, JSON.stringify(rows)); } catch (e) {}
+                    }
+                } catch (jsonpErr) {
+                    console.warn(`JSONP gagal untuk [${source.id}]:`, jsonpErr.message);
+                }
+            }
+
+            // 3. Fallback Cache Offline jika jaringan mati
+            if (!loaded) {
+                try {
+                    const cached = localStorage.getItem('ifp_cache_' + source.id);
+                    if (cached) {
+                        const parsed = JSON.parse(cached);
+                        if (parsed && parsed.length > 1) {
+                            source.rows = parsed;
+                            loaded = true;
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            if (!loaded) {
                 source.rows = [];
-                source._error = err.message;
+                source._error = 'Tidak dapat terhubung ke Google Sheets. Pastikan spreadsheet sudah dibagikan ("Anyone with the link can view").';
             }
         }
 
@@ -2207,6 +2295,7 @@
                             }
                         </div>
                     </div>
+                `;
             }).join('');
         }
 
@@ -2552,7 +2641,7 @@
             }
 
             const filterResultCountEl = document.getElementById('filter-result-count');
-            if (filterResultCountEl) filterResultCountEl.innerText = total;
+            if (filterResultCountEl) filterResultCountEl.innerText = validTotal;
 
             const filterResultSchoolsEl = document.getElementById('filter-result-schools');
             if (filterResultSchoolsEl) filterResultSchoolsEl.innerText = totalSchools;
