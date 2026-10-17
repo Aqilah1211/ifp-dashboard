@@ -211,13 +211,6 @@
                         <span class="hidden md:inline">Salin Format WA</span>
                     </button>
 
-                    <!-- Kelola Status Warna (Merah / Kuning) -->
-                    <button onclick="openTagManager()" title="Kelola Penandaan Unit Merah (Turn Over) & Kuning (Darurat)" class="h-9 bg-amber-500/20 hover:bg-amber-500/30 active:bg-amber-500/40 border border-amber-400/30 text-amber-200 px-2.5 sm:px-3 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
-                        <span>🏷️</span>
-                        <span class="hidden sm:inline">Status Warna</span>
-                        <span id="nav-tag-badge" class="bg-amber-400 text-slate-900 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold hidden">0</span>
-                    </button>
-
                     <!-- Kelola Sumber Data (15+ Sheets) -->
                     <button onclick="openSourceManager()" title="Kelola Sumber Spreadsheet & CSV" class="h-9 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/15 text-white px-2.5 sm:px-3 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -410,255 +403,130 @@
         </div>
     </div>
 
-    <!-- Modal Kelola Status Warna (Tag Manager: Merah & Kuning) -->
-    <div id="tag-manager-modal" class="hidden fixed inset-0 z-50 modal-blur flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150">
-            <!-- Modal Header -->
-            <div class="px-5 sm:px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-xl">🏷️</span>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900">Kelola Status Warna (Merah & Kuning)</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Atur unit Hangus Turn Over (Merah) & Darurat Instalasi (Kuning)</p>
-                    </div>
-                </div>
-                <button onclick="closeTagManager()" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-200 transition cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Modal Body (Scrollable) -->
-            <div class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
-                <!-- Info Alert -->
-                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                    <div class="flex items-start gap-2">
-                        <span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-0.5"></span>
-                        <p class="text-slate-700"><strong>Warna Merah (Hangus / Turn Over Kantor):</strong> Sudah ditarik kantor, <u>tidak dihitung</u> dalam total unit yang didapat.</p>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <span class="w-3 h-3 rounded-full bg-amber-500 shrink-0 mt-0.5"></span>
-                        <p class="text-slate-700"><strong>Warna Kuning (Darurat Instalasi):</strong> Prioritas darurat tertinggi, harus segera diselesaikan hari ini juga!</p>
-                    </div>
-                </div>
-
-                <!-- Bulk Input / Quick Paste -->
-                <div class="bg-blue-50/50 rounded-2xl p-4 border border-blue-100 space-y-3">
-                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">⚡ Penandaan Massal Cepat</h4>
-                    <p class="text-xs text-slate-600">Tempel daftar ID Transaksi / NPSN / Nama Sekolah (1 per baris):</p>
-                    <textarea id="tag-bulk-input" rows="3" placeholder="HI202600000018482&#10;HI202600000018483&#10;SD NEGERI 2 PETAK..." class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="applyBulkTag('turnover')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
-                            <span>🔴 Tandai Sebagai Turn Over (Merah)</span>
-                        </button>
-                        <button type="button" onclick="applyBulkTag('darurat')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
-                            <span>🟡 Tandai Sebagai Darurat (Kuning)</span>
-                        </button>
-                        <button type="button" onclick="applyBulkTag('normal')" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
-                            <span>⚪ Reset ke Normal</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- List of Currently Tagged Units -->
-                <div>
-                    <div class="flex justify-between items-center mb-2.5">
-                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700">Daftar Unit Bertanda Khusus Saat Ini</label>
-                        <button type="button" onclick="clearAllCustomTags()" class="text-xs text-rose-600 hover:text-rose-800 font-bold transition cursor-pointer">
-                            Reset Semua Tag
-                        </button>
-                    </div>
-                    <div id="tag-manager-list" class="space-y-2 max-h-56 overflow-y-auto pr-1 table-scroll">
-                        <!-- Dynamic list of tagged units -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="px-5 sm:px-6 py-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
-                <button type="button" onclick="closeTagManager()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">
-                    Selesai & Terapkan
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content Container (Max Width 1600px for Super Clean Desktop + Mobile View) -->
     <main class="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 flex-1">
-
-        <!-- Executive Emergency Alert Banner (Shown when Yellow Units Exist) -->
-        <div id="emergency-alert-strip" class="hidden mb-5 p-3.5 sm:p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shrink-0 animate-bounce">
-                    ⚡
-                </div>
-                <div>
-                    <h4 class="text-xs sm:text-sm font-extrabold text-amber-950 flex items-center gap-2">
-                        <span>DARURAT INSTALASI:</span>
-                        <span id="strip-emergency-count" class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full text-xs font-mono font-black">0 Unit</span>
-                        <span>Harus Selesai Hari Ini Juga!</span>
-                    </h4>
-                    <p class="text-xs text-amber-800 mt-0.5 font-medium">Unit berwarna kuning merupakan instruksi prioritas tinggi. Segera selesaikan instalasi hari ini.</p>
-                </div>
-            </div>
-            <button onclick="switchTabAndScroll('emergency')" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl text-xs font-extrabold transition shadow-xs whitespace-nowrap cursor-pointer flex items-center gap-1.5">
-                <span>Lihat Antrean Darurat</span>
-                <span>&rarr;</span>
-            </button>
-        </div>
         
-        <!-- 6 Executive Stat Cards (Interactive, Click to Filter/View) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 mb-5 sm:mb-6">
+        <!-- 4 Executive Stat Cards (Interactive, Click to Filter/View) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-5 sm:mb-6">
             
-            <!-- Card 1: Unit yang Didapat (Net Valid) -->
-            <div onclick="resetAllFiltersAndScroll()" title="Klik untuk menampilkan seluruh data tabel" class="metric-card p-4 flex flex-col justify-between cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group">
+            <!-- Card 1: Total Unit & Sekolah -->
+            <div onclick="resetAllFiltersAndScroll()" title="Klik untuk menampilkan seluruh data tabel" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Unit Didapat</p>
-                            <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-1.5 py-0.2 rounded">Target</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit IFP</p>
+                            <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Perangkat</span>
+                            <span id="turnover-pill-top" class="hidden bg-rose-100 hover:bg-rose-200 text-rose-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded border border-rose-200/60 cursor-pointer transition" onclick="event.stopPropagation(); switchTabAndScroll('turnover');" title="Klik untuk lihat unit Turn Over">
+                                🚫 <span id="count-turnover-pill">0</span> Turn Over
+                            </span>
                         </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="total-unit" class="text-2xl font-extrabold text-blue-700">0</h2>
-                            <span class="text-xs font-semibold text-slate-500">Unit</span>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="total-unit" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-slate-500">Unit</span>
                         </div>
                     </div>
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        🎯
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
                     </div>
                 </div>
-                <div class="mt-2.5 pt-2 border-t border-slate-100 text-xs">
-                    <span id="total-schools" class="font-bold text-slate-700 block truncate">0 Sekolah</span>
-                    <span id="footnote-turnover" class="text-[10px] text-slate-400 font-semibold block truncate mt-0.5">(0 Hangus TO)</span>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-1.5 text-slate-700 font-bold">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+                        <span id="total-schools">0 Sekolah / Lokasi</span>
+                    </span>
+                    <span class="text-[11px] text-blue-600 font-bold group-hover:underline flex items-center gap-0.5">
+                        Lihat Semua &darr;
+                    </span>
                 </div>
             </div>
 
             <!-- Card 2: Terpasang -->
-            <div onclick="switchTabAndScroll('installed')" title="Klik untuk membuka tabel unit yang sudah selesai terpasang" class="metric-card p-4 flex flex-col justify-between cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group">
+            <div onclick="switchTabAndScroll('installed')" title="Klik untuk membuka tabel unit yang sudah selesai terpasang" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Terpasang</p>
-                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-1.5 py-0.2 rounded">Tuntas</span>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Selesai Pasang</p>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Tuntas</span>
                         </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="count-installed" class="text-2xl font-extrabold text-emerald-600">0</h2>
-                            <span class="text-xs font-semibold text-emerald-600">Unit</span>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-installed" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-emerald-600">Unit</span>
                         </div>
                     </div>
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        ✓
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
                 </div>
-                <div class="mt-2.5 pt-2 border-t border-slate-100">
-                    <div class="flex justify-between items-center text-[11px] font-semibold text-emerald-700 mb-1">
-                        <span id="schools-installed" class="truncate">0 Sekolah</span>
+                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                    <div class="flex justify-between items-center text-xs font-semibold text-emerald-700 mb-1.5">
+                        <span id="schools-installed">0 Sekolah Selesai</span>
                         <span id="pct-installed" class="font-bold">0%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div id="bar-installed" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 3: Belum Pasang (Antrean Aktif) -->
-            <div onclick="switchTabAndScroll('pending')" title="Klik untuk membuka tabel antrean unit yang belum pasang" class="metric-card p-4 flex flex-col justify-between cursor-pointer hover:border-slate-400 hover:shadow-md transition-all group">
+            <!-- Card 3: Belum Pasang -->
+            <div onclick="switchTabAndScroll('pending')" title="Klik untuk membuka tabel antrean unit yang belum pasang" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
-                            <span class="bg-slate-200 text-slate-700 text-[10px] font-extrabold px-1.5 py-0.2 rounded">Antrean</span>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Pasang</p>
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Antrean</span>
                         </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="count-pending" class="text-2xl font-extrabold text-slate-700">0</h2>
-                            <span class="text-xs font-semibold text-slate-500">Unit</span>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-pending" class="text-2xl sm:text-3xl font-extrabold text-amber-500">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-amber-600">Unit</span>
                         </div>
                     </div>
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 group-hover:bg-slate-700 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        ⏳
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-9-9" />
+                        </svg>
                     </div>
                 </div>
-                <div class="mt-2.5 pt-2 border-t border-slate-100">
-                    <div class="flex justify-between items-center text-[11px] font-semibold text-slate-600 mb-1">
-                        <span id="schools-pending" class="truncate">0 Sekolah</span>
+                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                    <div class="flex justify-between items-center text-xs font-semibold text-amber-700 mb-1.5">
+                        <span id="schools-pending">0 Sekolah Menunggu</span>
                         <span id="pct-pending" class="font-bold">0%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="bar-pending" class="h-full bg-slate-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="bar-pending" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 4: Darurat Instalasi (Warna Kuning) -->
-            <div onclick="switchTabAndScroll('emergency')" title="Klik untuk membuka daftar unit darurat yang wajib selesai hari ini" class="metric-card p-4 flex flex-col justify-between cursor-pointer border-amber-300 bg-amber-50/40 hover:border-amber-500 hover:bg-amber-50 hover:shadow-md transition-all group">
+            <!-- Card 4: Trouble / Kendala -->
+            <div onclick="switchTabAndScroll('trouble')" title="Klik untuk membuka tabel unit yang mengalami kendala" class="metric-card p-4 sm:p-5 flex flex-col justify-between cursor-pointer hover:border-rose-400 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Darurat</p>
-                            <span class="bg-amber-200 text-amber-900 text-[10px] font-extrabold px-1.5 py-0.2 rounded animate-pulse">Hari Ini</span>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Kendala</p>
+                            <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded">Trouble</span>
                         </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="count-emergency" class="text-2xl font-extrabold text-amber-600">0</h2>
-                            <span class="text-xs font-semibold text-amber-700">Unit</span>
-                        </div>
-                    </div>
-                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        ⚡
-                    </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-amber-200/60 text-xs">
-                    <span id="schools-emergency" class="font-bold text-amber-800 block truncate">0 Sekolah</span>
-                    <span class="text-[10px] text-amber-600 font-bold block truncate mt-0.5">Wajib Beres Hari Ini!</span>
-                </div>
-            </div>
-
-            <!-- Card 5: Hangus / Turn Over Kantor (Warna Merah) -->
-            <div onclick="switchTabAndScroll('turnover')" title="Klik untuk membuka daftar unit yang sudah hangus turn over oleh kantor" class="metric-card p-4 flex flex-col justify-between cursor-pointer border-rose-200 bg-rose-50/30 hover:border-rose-400 hover:bg-rose-50 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-rose-800">Turn Over</p>
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-1.5 py-0.2 rounded">Hangus</span>
-                        </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="count-turnover" class="text-2xl font-extrabold text-rose-600">0</h2>
-                            <span class="text-xs font-semibold text-rose-700">Unit</span>
+                        <div class="flex items-baseline gap-1.5 mt-1">
+                            <h2 id="count-trouble" class="text-2xl sm:text-3xl font-extrabold text-rose-600">0</h2>
+                            <span class="text-xs sm:text-sm font-semibold text-rose-600">Unit</span>
                         </div>
                     </div>
-                    <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        🚫
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
                     </div>
                 </div>
-                <div class="mt-2.5 pt-2 border-t border-rose-200/60 text-xs">
-                    <span id="schools-turnover" class="font-bold text-rose-800 block truncate">0 Sekolah</span>
-                    <span class="text-[10px] text-rose-600 font-semibold block truncate mt-0.5">Tidak Dihitung Didapat</span>
-                </div>
-            </div>
-
-            <!-- Card 6: Trouble / Kendala -->
-            <div onclick="switchTabAndScroll('trouble')" title="Klik untuk membuka tabel unit yang mengalami kendala" class="metric-card p-4 flex flex-col justify-between cursor-pointer hover:border-rose-400 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Kendala</p>
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-1.5 py-0.2 rounded">Trouble</span>
-                        </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <h2 id="count-trouble" class="text-2xl font-extrabold text-rose-600">0</h2>
-                            <span class="text-xs font-semibold text-rose-600">Unit</span>
-                        </div>
-                    </div>
-                    <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition flex items-center justify-center shrink-0 text-sm">
-                        ⚠️
-                    </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-slate-100 text-xs">
-                    <span class="flex items-center gap-1 text-slate-700 font-bold truncate">
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-1.5 text-slate-700 font-bold">
                         <span id="trouble-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                        <span id="schools-trouble" class="truncate">0 Sekolah</span>
+                        <span id="schools-trouble">0 Sekolah Terkendala</span>
                     </span>
-                    <span id="trouble-desc" class="truncate text-slate-400 font-medium text-[10px] block mt-0.5">Semua lancar</span>
+                    <span id="trouble-desc" class="truncate text-slate-400 font-medium">Semua lancar</span>
                 </div>
             </div>
 
@@ -844,27 +712,23 @@
         <!-- Segmented Tabs & View Mode Controls -->
         <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
             
-            <!-- Left: Status Tabs (Terpasang, Belum, Darurat, Turn Over, Kendala) -->
-            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-2xl flex flex-wrap gap-1 sm:gap-1.5 border border-slate-300/40 w-full md:w-auto">
-                <button onclick="switchTab('installed')" id="tab-installed" class="px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-emerald-700 shadow-xs cursor-pointer">
+            <!-- Left: Status Tabs (Terpasang, Belum, Kendala, Turn Over) -->
+            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-2xl grid grid-cols-2 sm:inline-flex gap-1 sm:gap-1.5 border border-slate-300/40 w-full md:w-auto">
+                <button onclick="switchTab('installed')" id="tab-installed" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-emerald-700 shadow-xs cursor-pointer">
                     <span class="truncate">Terpasang</span>
                     <span id="tab-count-installed" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
-                <button onclick="switchTab('pending')" id="tab-pending" class="px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span class="truncate">Belum Pasang</span>
+                <button onclick="switchTab('pending')" id="tab-pending" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
+                    <span class="truncate">Belum</span>
                     <span id="tab-count-pending" class="bg-slate-300/70 text-slate-700 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
-                <button onclick="switchTab('emergency')" id="tab-emergency" class="px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-semibold text-amber-800 hover:text-amber-950 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-amber-300/40 bg-amber-100/60">
-                    <span class="truncate">🚨 Darurat Hari Ini</span>
-                    <span id="tab-count-emergency" class="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
-                </button>
-                <button onclick="switchTab('turnover')" id="tab-turnover" class="px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-800 hover:text-rose-950 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-rose-300/40 bg-rose-100/60">
-                    <span class="truncate">🚫 Turn Over (Hangus)</span>
-                    <span id="tab-count-turnover" class="bg-rose-300 text-rose-950 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
-                </button>
-                <button onclick="switchTab('trouble')" id="tab-trouble" class="px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <button onclick="switchTab('trouble')" id="tab-trouble" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                     <span class="truncate">Kendala</span>
                     <span id="tab-count-trouble" class="bg-slate-300/70 text-slate-700 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
+                </button>
+                <button onclick="switchTab('turnover')" id="tab-turnover" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
+                    <span class="truncate">Turn Over</span>
+                    <span id="tab-count-turnover" class="bg-slate-300/70 text-slate-700 px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0">0</span>
                 </button>
             </div>
 
@@ -969,88 +833,6 @@
                 </div>
             </div>
 
-            <!-- Table: Darurat (Emergency / Kuning) -->
-            <div id="emergency-section" class="hidden">
-                <div class="p-3 bg-amber-50 border-b border-amber-200 text-amber-950 text-xs font-bold flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">⚡</span>
-                        <span>DAFTAR UNIT WARNA KUNING: Instalasi darurat berprioritas tinggi yang wajib diselesaikan hari ini juga!</span>
-                    </div>
-                    <span class="text-[11px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-extrabold uppercase">Prioritas Hari Ini</span>
-                </div>
-                <!-- Desktop Table View -->
-                <div id="emergency-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
-                    <table class="w-full text-left min-w-[1020px] divide-y divide-amber-100">
-                        <thead id="emergency-table-thead" class="bg-amber-100/70 text-amber-900 text-xs font-bold uppercase tracking-wider">
-                            <tr>
-                                <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                                <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
-                                <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
-                                <th class="py-3.5 px-4 w-36">Kab / Kota</th>
-                                <th class="py-3.5 px-4 w-32">Provinsi</th>
-                                <th class="py-3.5 px-4 w-40">Teknisi</th>
-                                <th class="py-3.5 px-4 w-32 text-center">Tim</th>
-                                <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
-                                <th class="py-3.5 px-4 w-40 text-center">Status / Aksi Tag</th>
-                            </tr>
-                        </thead>
-                        <tbody id="emergency-table-body" class="divide-y divide-amber-100 text-xs sm:text-sm">
-                            <!-- rows rendered dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Mobile Card Feed -->
-                <div id="emergency-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-amber-50/30">
-                    <!-- cards rendered dynamically -->
-                </div>
-
-                <div id="emergency-empty" class="hidden py-16 text-center text-slate-400 text-sm">
-                    🎉 Tidak ada unit darurat. Semua instalasi hari ini berjalan normal!
-                </div>
-            </div>
-
-            <!-- Table: Turn Over / Hangus (Merah) -->
-            <div id="turnover-section" class="hidden">
-                <div class="p-3 bg-rose-50 border-b border-rose-200 text-rose-950 text-xs font-bold flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">🚫</span>
-                        <span>DAFTAR UNIT WARNA MERAH: Unit hangus dialihkan ke Turn Over oleh kantor &mdash; <u>TIDAK TERMASUK</u> dalam Unit yang Didapat.</span>
-                    </div>
-                    <span class="text-[11px] bg-rose-200 text-rose-900 px-2 py-0.5 rounded font-extrabold uppercase">Dikecualikan dari Target</span>
-                </div>
-                <!-- Desktop Table View -->
-                <div id="turnover-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
-                    <table class="w-full text-left min-w-[1020px] divide-y divide-rose-100">
-                        <thead id="turnover-table-thead" class="bg-rose-100/70 text-rose-900 text-xs font-bold uppercase tracking-wider">
-                            <tr>
-                                <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                                <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
-                                <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah</th>
-                                <th class="py-3.5 px-4 w-36">Kab / Kota</th>
-                                <th class="py-3.5 px-4 w-32">Provinsi</th>
-                                <th class="py-3.5 px-4 w-40">Teknisi</th>
-                                <th class="py-3.5 px-4 w-32 text-center">Tim</th>
-                                <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
-                                <th class="py-3.5 px-4 w-40 text-center">Status / Aksi Tag</th>
-                            </tr>
-                        </thead>
-                        <tbody id="turnover-table-body" class="divide-y divide-rose-100 text-xs sm:text-sm">
-                            <!-- rows rendered dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Mobile Card Feed -->
-                <div id="turnover-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-rose-50/30">
-                    <!-- cards rendered dynamically -->
-                </div>
-
-                <div id="turnover-empty" class="hidden py-16 text-center text-slate-400 text-sm">
-                    Tidak ada unit hangus / turn over kantor.
-                </div>
-            </div>
-
             <!-- Table: Kendala (Trouble) -->
             <div id="trouble-section" class="hidden">
                 <!-- Desktop Table View -->
@@ -1081,6 +863,30 @@
 
                 <div id="trouble-empty" class="hidden py-16 text-center text-slate-400 text-sm">
                     🎉 Tidak ada kendala teknis yang dilaporkan. Semua instalasi berjalan normal!
+                </div>
+            </div>
+
+            <!-- Table: Turn Over (Hangus) -->
+            <div id="turnover-section" class="hidden">
+                <!-- Desktop Table View -->
+                <div id="turnover-table-wrapper" class="overflow-x-auto table-scroll hidden md:block">
+                    <table class="w-full text-left min-w-[1020px] divide-y divide-slate-100">
+                        <thead id="turnover-table-thead" class="bg-slate-50/90 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                            <!-- rows rendered dynamically -->
+                        </thead>
+                        <tbody id="turnover-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                            <!-- rows rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card Feed -->
+                <div id="turnover-mobile-cards" class="md:hidden p-3.5 space-y-3 bg-slate-50/50">
+                    <!-- cards rendered dynamically -->
+                </div>
+
+                <div id="turnover-empty" class="hidden py-16 text-center text-slate-400 text-sm">
+                    Tidak ada unit turn over / hangus kantor.
                 </div>
             </div>
 
@@ -1142,149 +948,21 @@
         let currentPages = {
             installed: 1,
             pending: 1,
-            emergency: 1,
-            turnover: 1,
-            trouble: 1
+            trouble: 1,
+            turnover: 1
         };
         let currentFilteredData = {
             installed: [],
             pending: [],
-            emergency: [],
-            turnover: [],
-            trouble: []
+            trouble: [],
+            turnover: []
         };
         let currentFilteredSchools = {
             installed: [],
             pending: [],
-            emergency: [],
-            turnover: [],
-            trouble: []
+            trouble: [],
+            turnover: []
         };
-
-        const CUSTOM_TAGS_STORAGE_KEY = 'ifp_unit_color_tags_v1';
-
-        function getSavedCustomTags() {
-            try {
-                const raw = localStorage.getItem(CUSTOM_TAGS_STORAGE_KEY);
-                return raw ? JSON.parse(raw) : {};
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function saveCustomTag(idOrKey, tag) {
-            try {
-                const tags = getSavedCustomTags();
-                if (!tag || tag === 'normal') {
-                    delete tags[idOrKey];
-                } else {
-                    tags[idOrKey] = tag;
-                }
-                localStorage.setItem(CUSTOM_TAGS_STORAGE_KEY, JSON.stringify(tags));
-            } catch (e) {
-                console.warn('Gagal menyimpan custom tag:', e);
-            }
-        }
-
-        function batchSaveCustomTags(keys, tag) {
-            try {
-                const tags = getSavedCustomTags();
-                keys.forEach(k => {
-                    const clean = (k || '').trim();
-                    if (!clean) return;
-                    if (!tag || tag === 'normal') {
-                        delete tags[clean];
-                        delete tags[clean.toLowerCase()];
-                    } else {
-                        tags[clean] = tag;
-                    }
-                });
-                localStorage.setItem(CUSTOM_TAGS_STORAGE_KEY, JSON.stringify(tags));
-            } catch (e) {
-                console.warn('Gagal menyimpan batch tags:', e);
-            }
-        }
-
-        function clearAllCustomTags() {
-            if (!confirm('Apakah Anda yakin ingin menghapus semua penandaan warna khusus (Merah & Kuning)?')) return;
-            localStorage.removeItem(CUSTOM_TAGS_STORAGE_KEY);
-            processAllSources();
-            renderTagManagerList();
-        }
-
-        function cycleUnitTag(idVal) {
-            const tags = getSavedCustomTags();
-            const current = tags[idVal] || (allRecords.find(r => r.id === idVal) || {}).tag || 'normal';
-            let next = 'normal';
-            if (current === 'normal') next = 'darurat';
-            else if (current === 'darurat') next = 'turnover';
-            else if (current === 'turnover') next = 'normal';
-
-            saveCustomTag(idVal, next);
-            processAllSources();
-        }
-
-        function openTagManager() {
-            const modal = document.getElementById('tag-manager-modal');
-            if (modal) {
-                renderTagManagerList();
-                modal.classList.remove('hidden');
-            }
-        }
-
-        function closeTagManager() {
-            const modal = document.getElementById('tag-manager-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function applyBulkTag(targetTag) {
-            const input = document.getElementById('tag-bulk-input').value;
-            if (!input || !input.trim()) {
-                alert('Silakan masukkan minimal satu ID Transaksi / NPSN / Nama Sekolah.');
-                return;
-            }
-            const lines = input.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-            batchSaveCustomTags(lines, targetTag);
-            document.getElementById('tag-bulk-input').value = '';
-            processAllSources();
-            renderTagManagerList();
-            alert(`Berhasil menandai ${lines.length} entri sebagai: ${targetTag === 'turnover' ? 'Turn Over (Merah)' : (targetTag === 'darurat' ? 'Darurat (Kuning)' : 'Normal')}!`);
-        }
-
-        function renderTagManagerList() {
-            const container = document.getElementById('tag-manager-list');
-            if (!container) return;
-            const tagged = allRecords.filter(r => r.isTurnOver || r.isEmergency);
-            const badge = document.getElementById('nav-tag-badge');
-            if (badge) {
-                if (tagged.length > 0) {
-                    badge.innerText = tagged.length;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-            }
-
-            if (tagged.length === 0) {
-                container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Belum ada unit yang ditandai sebagai Turn Over (Merah) atau Darurat (Kuning). Gunakan input di atas atau klik tombol ⚙️ di tabel untuk menandai baris.</div>';
-                return;
-            }
-
-            container.innerHTML = tagged.map(r => `
-                <div class="flex items-center justify-between p-2.5 rounded-xl border ${r.isTurnOver ? 'bg-rose-50/70 border-rose-200' : 'bg-amber-50/70 border-amber-200'} text-xs">
-                    <div class="min-w-0 pr-2">
-                        <div class="font-bold text-slate-900 truncate">${escapeHtml(r.nama)}</div>
-                        <div class="font-mono text-slate-500 text-[11px] truncate">${escapeHtml(r.id)} &middot; ${escapeHtml(r.wilayah)}</div>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.isTurnOver ? 'bg-rose-200 text-rose-900' : 'bg-amber-200 text-amber-950'}">
-                            ${r.isTurnOver ? 'Turn Over (Merah)' : 'Darurat (Kuning)'}
-                        </span>
-                        <button onclick="saveCustomTag('${escapeHtml(r.id)}', 'normal'); processAllSources(); renderTagManagerList();" class="text-slate-400 hover:text-rose-600 font-bold px-1.5 py-0.5 rounded cursor-pointer" title="Hapus tag">&times;</button>
-                    </div>
-                </div>
-            `).join('');
-        }
 
         const TIM_NAME_MAP = {
             'M': 'Mattew',
@@ -1764,25 +1442,7 @@
         // FETCHING GOOGLE SPREADSHEETS (ANTI-CACHE & REAL-TIME)
         // ========================================================
         async function fetchSpreadsheetData(source) {
-            // 1. Cek apakah sumber data adalah Google Apps Script Web App
-            if (source.id && (source.id.startsWith('http') && source.id.includes('script.google.com'))) {
-                try {
-                    const response = await fetch(source.id, { cache: 'no-store' });
-                    if (!response.ok) throw new Error(`HTTP ${response.status} – pastikan GAS web app di-deploy dengan akses "Anyone"`);
-                    const data = await response.json();
-                    source.rows = data.rows || [];
-                    source.tags = data.tags || [];
-                    source.backgrounds = data.backgrounds || [];
-                    return;
-                } catch (err) {
-                    console.error(`Gagal memuat GAS [${source.id}]:`, err);
-                    source.rows = [];
-                    source._error = err.message;
-                    return;
-                }
-            }
-
-            // 2. Default: Google Sheets GViz CSV (Anti-cache buster: pastikan selalu data paling baru detik itu juga)
+            // Anti-cache buster: pastikan selalu data paling baru detik itu juga di semua device
             let url = `https://docs.google.com/spreadsheets/d/${source.id}/gviz/tq?tqx=out:csv&_t=${Date.now()}`;
             if (source.sheet && source.sheet.trim()) {
                 url += `&sheet=${encodeURIComponent(source.sheet.trim())}`;
@@ -1955,7 +1615,6 @@
             const provSet = new Set();
             const kabSet = new Set();
             const teknisiSet = new Set();
-            const customTags = getSavedCustomTags();
 
             dataSources.forEach(source => {
                 const rows = source.rows;
@@ -1984,32 +1643,18 @@
                     const timCode = normalizeTimCode(rawTim);
                     
                     const rawKendala = cols.kendalaIdx !== -1 ? (row[cols.kendalaIdx] || '').trim() : '';
-                    const hasTrouble = rawKendala.length > 1 && rawKendala !== '-' && !rawKendala.toLowerCase().includes('lancar') && !rawKendala.toLowerCase().includes('tidak ada');
+                    
+                    // Deteksi Turn Over / Hangus:
+                    // 1. Dari Google Apps Script (source.tags) jika cell merah
+                    // 2. Dari kata kunci di baris/kolom ("turn over", "turnover", "hangus", "to kantor", "batal")
+                    const rowFullText = row.join(' ').toLowerCase();
+                    const isGasTurnover = source.tags && source.tags[i] === 'turnover';
+                    const isTextTurnover = /turn\s*over|turnover|hangus|to\s*kantor|batal/i.test(rowFullText);
+                    const isTurnOver = isGasTurnover || isTextTurnover;
+
+                    const hasTrouble = !isTurnOver && rawKendala.length > 1 && rawKendala !== '-' && !rawKendala.toLowerCase().includes('lancar') && !rawKendala.toLowerCase().includes('tidak ada');
                     const kendala = hasTrouble ? rawKendala : '';
 
-                    // Deteksi Tag Khusus:
-                    // 1. Dari localStorage pengguna (prioritas utama manual tag)
-                    let tag = customTags[idVal] || customTags[namaSekolah.toLowerCase()] || '';
-
-                    // 2. Dari metadata Google Apps Script (source.tags)
-                    if (!tag && source.tags && source.tags[i]) {
-                        if (source.tags[i] === 'turnover' || source.tags[i] === 'darurat') {
-                            tag = source.tags[i];
-                        }
-                    }
-
-                    // 3. Deteksi otomatis dari kata kunci di seluruh sel baris (misal CSV polos)
-                    if (!tag) {
-                        const rowFullText = row.join(' ').toLowerCase();
-                        if (/turn\s*over|turnover|hangus|to\s*kantor|batal/i.test(rowFullText)) {
-                            tag = 'turnover';
-                        } else if (/darurat|urgent|hari\s*ini|today|segera|prioritas/i.test(rowFullText)) {
-                            tag = 'darurat';
-                        }
-                    }
-
-                    const isTurnOver = tag === 'turnover';
-                    const isEmergency = tag === 'darurat';
                     const installed = isTurnOver ? false : isItemInstalled(rawStatus);
 
                     if (timCode) timSet.add(timCode);
@@ -2028,13 +1673,11 @@
                         telp: telp,
                         timCode: timCode,
                         timName: TIM_NAME_MAP[timCode] ? `Tim ${TIM_NAME_MAP[timCode]} (${timCode})` : (timCode ? `Tim ${timCode}` : '-'),
-                        status: isTurnOver ? 'Hangus (Turn Over Kantor)' : (installed ? 'Terpasang' : (isEmergency ? 'Darurat (Hari Ini)' : 'Belum Pasang')),
+                        status: isTurnOver ? 'Turn Over' : (installed ? 'Terpasang' : 'Belum Pasang'),
                         isInstalled: installed,
                         isTurnOver: isTurnOver,
-                        isEmergency: isEmergency,
-                        tag: tag || 'normal',
                         kendala: kendala,
-                        isTrouble: hasTrouble && !isTurnOver,
+                        isTrouble: hasTrouble,
                         source: source.label || source.id
                     });
                 }
@@ -2053,8 +1696,7 @@
                         name: item.nama || item.id,
                         totalUnits: 0,      // Unit yang didapat (tidak termasuk turn over)
                         grossUnits: 0,      // Total semua baris
-                        turnOverUnits: 0,   // Unit merah turn over
-                        emergencyUnits: 0,  // Unit kuning darurat
+                        turnOverUnits: 0,   // Unit turn over
                         installedUnits: 0,
                         pendingUnits: 0,
                         troubleUnits: 0,
@@ -2077,7 +1719,6 @@
                     schoolMap[sKey].totalUnits++;
                     if (item.isInstalled) schoolMap[sKey].installedUnits++;
                     else schoolMap[sKey].pendingUnits++;
-                    if (item.isEmergency) schoolMap[sKey].emergencyUnits++;
                     if (item.isTrouble) schoolMap[sKey].troubleUnits++;
                 }
                 schoolMap[sKey].items.push(item);
@@ -2092,7 +1733,6 @@
                 item.schoolTotalUnits = sInfo ? (sInfo.totalUnits > 0 ? sInfo.totalUnits : sInfo.grossUnits) : 1;
                 item.schoolInstalledUnits = sInfo ? sInfo.installedUnits : 0;
                 item.schoolTurnOverUnits = sInfo ? sInfo.turnOverUnits : 0;
-                item.schoolEmergencyUnits = sInfo ? sInfo.emergencyUnits : 0;
             });
 
             allSchools = Object.values(schoolMap).map(s => {
@@ -2102,11 +1742,10 @@
                     pct: pct,
                     isFullyInstalled: s.installedUnits === s.totalUnits && s.totalUnits > 0,
                     isPending: s.pendingUnits > 0,
-                    isEmergency: s.emergencyUnits > 0,
                     isTurnOver: s.turnOverUnits > 0,
                     isTrouble: s.troubleUnits > 0
                 };
-            }).sort((a, b) => b.totalUnits - a.totalUnits);
+            }).sort((a, b) => (b.totalUnits || b.grossUnits) - (a.totalUnits || a.grossUnits));
 
             populateFilterOptions(timSet, provSet, kabSet, teknisiSet);
             renderSourceChips();
@@ -2178,14 +1817,12 @@
         function computeProvinceStats() {
             const provMap = {};
             allRecords.forEach(item => {
+                if (item.isTurnOver) return;
                 const prov = item.prov && item.prov !== '-' ? item.prov.trim() : 'Lainnya';
                 if (!provMap[prov]) {
                     provMap[prov] = {
                         prov: prov,
                         total: 0,
-                        grossTotal: 0,
-                        turnover: 0,
-                        emergency: 0,
                         installed: 0,
                         pending: 0,
                         trouble: 0,
@@ -2194,33 +1831,22 @@
                         schoolsMap: {}
                     };
                 }
-                provMap[prov].grossTotal++;
-                if (item.isTurnOver) {
-                    provMap[prov].turnover++;
-                } else {
-                    provMap[prov].total++;
-                    if (item.isInstalled) provMap[prov].installed++;
-                    else provMap[prov].pending++;
-                    if (item.isEmergency) provMap[prov].emergency++;
-                    if (item.isTrouble) provMap[prov].trouble++;
-                }
+                provMap[prov].total++;
+                if (item.isInstalled) provMap[prov].installed++;
+                else provMap[prov].pending++;
+                if (item.isTrouble) provMap[prov].trouble++;
 
                 if (item.timCode) provMap[prov].teams.add(item.timCode);
                 if (item.teknisi && item.teknisi !== '-') provMap[prov].teknisiSet.add(item.teknisi);
 
                 const sKey = (item.nama || item.id || '').trim().toLowerCase();
                 if (!provMap[prov].schoolsMap[sKey]) {
-                    provMap[prov].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0, turnover: 0, emergency: 0 };
+                    provMap[prov].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0 };
                 }
-                if (item.isTurnOver) {
-                    provMap[prov].schoolsMap[sKey].turnover++;
-                } else {
-                    provMap[prov].schoolsMap[sKey].total++;
-                    if (item.isInstalled) provMap[prov].schoolsMap[sKey].installed++;
-                    else provMap[prov].schoolsMap[sKey].pending++;
-                    if (item.isEmergency) provMap[prov].schoolsMap[sKey].emergency++;
-                    if (item.isTrouble) provMap[prov].schoolsMap[sKey].trouble++;
-                }
+                provMap[prov].schoolsMap[sKey].total++;
+                if (item.isInstalled) provMap[prov].schoolsMap[sKey].installed++;
+                else provMap[prov].schoolsMap[sKey].pending++;
+                if (item.isTrouble) provMap[prov].schoolsMap[sKey].trouble++;
             });
 
             return Object.values(provMap).map(p => {
@@ -2230,11 +1856,9 @@
                     return (order[a] || 99) - (order[b] || 99);
                 });
                 const schoolEntries = Object.values(p.schoolsMap);
-                const schoolsCount = schoolEntries.filter(s => s.total > 0).length || schoolEntries.length;
+                const schoolsCount = schoolEntries.length;
                 const schoolsInstalledCount = schoolEntries.filter(s => s.installed === s.total && s.total > 0).length;
                 const schoolsPendingCount = schoolEntries.filter(s => s.pending > 0).length;
-                const schoolsEmergencyCount = schoolEntries.filter(s => s.emergency > 0).length;
-                const schoolsTurnOverCount = schoolEntries.filter(s => s.turnover > 0).length;
                 const schoolsTroubleCount = schoolEntries.filter(s => s.trouble > 0).length;
 
                 return {
@@ -2245,8 +1869,6 @@
                     schoolsCount: schoolsCount,
                     schoolsInstalledCount: schoolsInstalledCount,
                     schoolsPendingCount: schoolsPendingCount,
-                    schoolsEmergencyCount: schoolsEmergencyCount,
-                    schoolsTurnOverCount: schoolsTurnOverCount,
                     schoolsTroubleCount: schoolsTroubleCount
                 };
             }).sort((a, b) => b.total - a.total);
@@ -2260,9 +1882,6 @@
                     timCode: code,
                     timName: `Tim ${TIM_NAME_MAP[code] || code} (${code})`,
                     total: 0,
-                    grossTotal: 0,
-                    turnover: 0,
-                    emergency: 0,
                     installed: 0,
                     pending: 0,
                     trouble: 0,
@@ -2273,15 +1892,13 @@
             });
 
             allRecords.forEach(item => {
+                if (item.isTurnOver) return;
                 const code = item.timCode || 'OTHER';
                 if (!teamMap[code]) {
                     teamMap[code] = {
                         timCode: code,
                         timName: TIM_NAME_MAP[code] ? `Tim ${TIM_NAME_MAP[code]} (${code})` : (code === 'OTHER' ? 'Tim Belum Ditentukan' : `Tim ${code}`),
                         total: 0,
-                        grossTotal: 0,
-                        turnover: 0,
-                        emergency: 0,
                         installed: 0,
                         pending: 0,
                         trouble: 0,
@@ -2290,43 +1907,30 @@
                         schoolsMap: {}
                     };
                 }
-                teamMap[code].grossTotal++;
-                if (item.isTurnOver) {
-                    teamMap[code].turnover++;
-                } else {
-                    teamMap[code].total++;
-                    if (item.isInstalled) teamMap[code].installed++;
-                    else teamMap[code].pending++;
-                    if (item.isEmergency) teamMap[code].emergency++;
-                    if (item.isTrouble) teamMap[code].trouble++;
-                }
+                teamMap[code].total++;
+                if (item.isInstalled) teamMap[code].installed++;
+                else teamMap[code].pending++;
+                if (item.isTrouble) teamMap[code].trouble++;
 
                 if (item.prov && item.prov !== '-') teamMap[code].provinces.add(item.prov.trim());
                 if (item.teknisi && item.teknisi !== '-') teamMap[code].teknisiSet.add(item.teknisi);
 
                 const sKey = (item.nama || item.id || '').trim().toLowerCase();
                 if (!teamMap[code].schoolsMap[sKey]) {
-                    teamMap[code].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0, turnover: 0, emergency: 0 };
+                    teamMap[code].schoolsMap[sKey] = { total: 0, installed: 0, pending: 0, trouble: 0 };
                 }
-                if (item.isTurnOver) {
-                    teamMap[code].schoolsMap[sKey].turnover++;
-                } else {
-                    teamMap[code].schoolsMap[sKey].total++;
-                    if (item.isInstalled) teamMap[code].schoolsMap[sKey].installed++;
-                    else teamMap[code].schoolsMap[sKey].pending++;
-                    if (item.isEmergency) teamMap[code].schoolsMap[sKey].emergency++;
-                    if (item.isTrouble) teamMap[code].schoolsMap[sKey].trouble++;
-                }
+                teamMap[code].schoolsMap[sKey].total++;
+                if (item.isInstalled) teamMap[code].schoolsMap[sKey].installed++;
+                else teamMap[code].schoolsMap[sKey].pending++;
+                if (item.isTrouble) teamMap[code].schoolsMap[sKey].trouble++;
             });
 
             return Object.values(teamMap).map(t => {
                 const pct = t.total > 0 ? Math.round((t.installed / t.total) * 100) : 0;
                 const schoolEntries = Object.values(t.schoolsMap);
-                const schoolsCount = schoolEntries.filter(s => s.total > 0).length || schoolEntries.length;
+                const schoolsCount = schoolEntries.length;
                 const schoolsInstalledCount = schoolEntries.filter(s => s.installed === s.total && s.total > 0).length;
                 const schoolsPendingCount = schoolEntries.filter(s => s.pending > 0).length;
-                const schoolsEmergencyCount = schoolEntries.filter(s => s.emergency > 0).length;
-                const schoolsTurnOverCount = schoolEntries.filter(s => s.turnover > 0).length;
                 const schoolsTroubleCount = schoolEntries.filter(s => s.trouble > 0).length;
 
                 return {
@@ -2337,11 +1941,9 @@
                     schoolsCount: schoolsCount,
                     schoolsInstalledCount: schoolsInstalledCount,
                     schoolsPendingCount: schoolsPendingCount,
-                    schoolsEmergencyCount: schoolsEmergencyCount,
-                    schoolsTurnOverCount: schoolsTurnOverCount,
                     schoolsTroubleCount: schoolsTroubleCount
                 };
-            }).filter(t => t.total > 0 || t.turnover > 0 || ['M', 'Y', 'R'].includes(t.timCode)).sort((a, b) => {
+            }).filter(t => t.total > 0 || ['M', 'Y', 'R'].includes(t.timCode)).sort((a, b) => {
                 const order = { 'M': 1, 'Y': 2, 'R': 3 };
                 const ordA = order[a.timCode] || 99;
                 const ordB = order[b.timCode] || 99;
@@ -2787,9 +2389,8 @@
             // Group into tabs (Unit Level)
             currentFilteredData.installed = filtered.filter(i => i.isInstalled && !i.isTurnOver);
             currentFilteredData.pending = filtered.filter(i => !i.isInstalled && !i.isTurnOver);
-            currentFilteredData.emergency = filtered.filter(i => i.isEmergency && !i.isTurnOver && !i.isInstalled);
-            currentFilteredData.turnover = filtered.filter(i => i.isTurnOver);
             currentFilteredData.trouble = filtered.filter(i => i.isTrouble && !i.isTurnOver);
+            currentFilteredData.turnover = filtered.filter(i => i.isTurnOver);
 
             // Group into Schools (School Level)
             const filteredSchoolMap = {};
@@ -2801,7 +2402,6 @@
                         totalUnits: 0,
                         grossUnits: 0,
                         turnOverUnits: 0,
-                        emergencyUnits: 0,
                         installedUnits: 0,
                         pendingUnits: 0,
                         troubleUnits: 0,
@@ -2824,7 +2424,6 @@
                     filteredSchoolMap[sKey].totalUnits++;
                     if (item.isInstalled) filteredSchoolMap[sKey].installedUnits++;
                     else filteredSchoolMap[sKey].pendingUnits++;
-                    if (item.isEmergency) filteredSchoolMap[sKey].emergencyUnits++;
                     if (item.isTrouble) filteredSchoolMap[sKey].troubleUnits++;
                 }
                 filteredSchoolMap[sKey].items.push(item);
@@ -2837,74 +2436,61 @@
                     pct: pct,
                     isFullyInstalled: s.installedUnits === s.totalUnits && s.totalUnits > 0,
                     isPending: s.pendingUnits > 0,
-                    isEmergency: s.emergencyUnits > 0,
                     isTurnOver: s.turnOverUnits > 0,
                     isTrouble: s.troubleUnits > 0
                 };
-            }).sort((a, b) => b.totalUnits - a.totalUnits);
+            }).sort((a, b) => (b.totalUnits || b.grossUnits) - (a.totalUnits || a.grossUnits));
 
             currentFilteredSchools.installed = filteredSchoolsList.filter(s => s.installedUnits > 0);
             currentFilteredSchools.pending = filteredSchoolsList.filter(s => s.pendingUnits > 0);
-            currentFilteredSchools.emergency = filteredSchoolsList.filter(s => s.emergencyUnits > 0);
-            currentFilteredSchools.turnover = filteredSchoolsList.filter(s => s.turnOverUnits > 0);
             currentFilteredSchools.trouble = filteredSchoolsList.filter(s => s.troubleUnits > 0);
+            currentFilteredSchools.turnover = filteredSchoolsList.filter(s => s.turnOverUnits > 0);
 
             if (resetPage) {
                 currentPages.installed = 1;
                 currentPages.pending = 1;
-                currentPages.emergency = 1;
-                currentPages.turnover = 1;
                 currentPages.trouble = 1;
+                currentPages.turnover = 1;
             }
 
-            const grossTotal = filtered.length;
+            const validTotal = filtered.filter(i => !i.isTurnOver).length;
             const turnover = currentFilteredData.turnover.length;
-            const targetValid = grossTotal - turnover; // UNIT YANG DIDAPAT (Tidak termasuk yang hangus)
             const installed = currentFilteredData.installed.length;
             const pending = currentFilteredData.pending.length;
-            const emergency = currentFilteredData.emergency.length;
             const trouble = currentFilteredData.trouble.length;
 
-            const totalSchools = filteredSchoolsList.filter(s => s.totalUnits > 0).length;
+            const validSchoolsList = filteredSchoolsList.filter(s => s.totalUnits > 0);
+            const totalSchools = validSchoolsList.length || filteredSchoolsList.length;
             const schoolsInstalled = filteredSchoolsList.filter(s => s.isFullyInstalled).length;
             const schoolsPending = filteredSchoolsList.filter(s => s.isPending).length;
-            const schoolsEmergency = filteredSchoolsList.filter(s => s.isEmergency).length;
-            const schoolsTurnOver = filteredSchoolsList.filter(s => s.isTurnOver).length;
             const schoolsTrouble = filteredSchoolsList.filter(s => s.isTrouble).length;
 
             // Update Executive Stat Cards
             const totalUnitEl = document.getElementById('total-unit');
-            if (totalUnitEl) totalUnitEl.innerText = targetValid;
+            if (totalUnitEl) totalUnitEl.innerText = validTotal;
 
             const totalSchoolsEl = document.getElementById('total-schools');
-            if (totalSchoolsEl) totalSchoolsEl.innerText = `${totalSchools} Sekolah Didapat`;
+            if (totalSchoolsEl) totalSchoolsEl.innerText = `${totalSchools} Sekolah / Lokasi`;
 
-            const footnoteTurnoverEl = document.getElementById('footnote-turnover');
-            if (footnoteTurnoverEl) footnoteTurnoverEl.innerText = `(${turnover} Hangus TO Tidak Dihitung)`;
+            const toPillTop = document.getElementById('turnover-pill-top');
+            const toCountPill = document.getElementById('count-turnover-pill');
+            if (toPillTop && toCountPill) {
+                toCountPill.innerText = turnover;
+                if (turnover > 0) toPillTop.classList.remove('hidden');
+                else toPillTop.classList.add('hidden');
+            }
 
             const countInstalledEl = document.getElementById('count-installed');
             if (countInstalledEl) countInstalledEl.innerText = installed;
 
             const schoolsInstalledEl = document.getElementById('schools-installed');
-            if (schoolsInstalledEl) schoolsInstalledEl.innerText = `${schoolsInstalled} Sekolah Tuntas`;
+            if (schoolsInstalledEl) schoolsInstalledEl.innerText = `${schoolsInstalled} Sekolah Selesai`;
 
             const countPendingEl = document.getElementById('count-pending');
             if (countPendingEl) countPendingEl.innerText = pending;
 
             const schoolsPendingEl = document.getElementById('schools-pending');
-            if (schoolsPendingEl) schoolsPendingEl.innerText = `${schoolsPending} Sekolah Antrean`;
-
-            const countEmergencyEl = document.getElementById('count-emergency');
-            if (countEmergencyEl) countEmergencyEl.innerText = emergency;
-
-            const schoolsEmergencyEl = document.getElementById('schools-emergency');
-            if (schoolsEmergencyEl) schoolsEmergencyEl.innerText = `${schoolsEmergency} Sekolah`;
-
-            const countTurnOverEl = document.getElementById('count-turnover');
-            if (countTurnOverEl) countTurnOverEl.innerText = turnover;
-
-            const schoolsTurnOverEl = document.getElementById('schools-turnover');
-            if (schoolsTurnOverEl) schoolsTurnOverEl.innerText = `${schoolsTurnOver} Sekolah`;
+            if (schoolsPendingEl) schoolsPendingEl.innerText = `${schoolsPending} Sekolah Menunggu`;
 
             const countTroubleEl = document.getElementById('count-trouble');
             if (countTroubleEl) countTroubleEl.innerText = trouble;
@@ -2912,20 +2498,8 @@
             const schoolsTroubleEl = document.getElementById('schools-trouble');
             if (schoolsTroubleEl) schoolsTroubleEl.innerText = `${schoolsTrouble} Sekolah Terkendala`;
 
-            // Emergency Alert Strip
-            const alertStrip = document.getElementById('emergency-alert-strip');
-            const alertCount = document.getElementById('strip-emergency-count');
-            if (alertStrip && alertCount) {
-                if (emergency > 0) {
-                    alertCount.innerText = `${emergency} Unit`;
-                    alertStrip.classList.remove('hidden');
-                } else {
-                    alertStrip.classList.add('hidden');
-                }
-            }
-
-            const pctInstalled = targetValid > 0 ? Math.round((installed / targetValid) * 100) : 0;
-            const pctPending = targetValid > 0 ? Math.round((pending / targetValid) * 100) : 0;
+            const pctInstalled = validTotal > 0 ? Math.round((installed / validTotal) * 100) : 0;
+            const pctPending = validTotal > 0 ? Math.round((pending / validTotal) * 100) : 0;
             
             const pctInstalledEl = document.getElementById('pct-installed');
             if (pctInstalledEl) pctInstalledEl.innerText = `${pctInstalled}%`;
@@ -2941,7 +2515,7 @@
 
             // Update Guide Banner stats
             const guideUnitEl = document.getElementById('guide-unit-count');
-            if (guideUnitEl) guideUnitEl.innerText = `${targetValid} Unit IFP Didapat (${turnover} Hangus TO)`;
+            if (guideUnitEl) guideUnitEl.innerText = `${validTotal} Unit IFP (Didapat)`;
 
             const guideSchoolEl = document.getElementById('guide-school-count');
             if (guideSchoolEl) guideSchoolEl.innerText = `${totalSchools} Sekolah / Titik Lokasi`;
@@ -2954,7 +2528,7 @@
 
             // Update View Switcher Badges
             const countViewUnitEl = document.getElementById('count-view-unit');
-            if (countViewUnitEl) countViewUnitEl.innerText = targetValid;
+            if (countViewUnitEl) countViewUnitEl.innerText = validTotal;
 
             const countViewSchoolEl = document.getElementById('count-view-school');
             if (countViewSchoolEl) countViewSchoolEl.innerText = totalSchools;
@@ -2962,26 +2536,23 @@
             // Tab Count Badges (Dynamic based on tableViewMode)
             const tabInstEl = document.getElementById('tab-count-installed');
             const tabPendEl = document.getElementById('tab-count-pending');
-            const tabEmergEl = document.getElementById('tab-count-emergency');
-            const tabTurnEl = document.getElementById('tab-count-turnover');
             const tabTroubEl = document.getElementById('tab-count-trouble');
+            const tabToEl = document.getElementById('tab-count-turnover');
 
             if (tableViewMode === 'school') {
                 if (tabInstEl) tabInstEl.innerText = currentFilteredSchools.installed.length;
                 if (tabPendEl) tabPendEl.innerText = currentFilteredSchools.pending.length;
-                if (tabEmergEl) tabEmergEl.innerText = currentFilteredSchools.emergency.length;
-                if (tabTurnEl) tabTurnEl.innerText = currentFilteredSchools.turnover.length;
                 if (tabTroubEl) tabTroubEl.innerText = currentFilteredSchools.trouble.length;
+                if (tabToEl) tabToEl.innerText = currentFilteredSchools.turnover.length;
             } else {
                 if (tabInstEl) tabInstEl.innerText = installed;
                 if (tabPendEl) tabPendEl.innerText = pending;
-                if (tabEmergEl) tabEmergEl.innerText = emergency;
-                if (tabTurnEl) tabTurnEl.innerText = turnover;
                 if (tabTroubEl) tabTroubEl.innerText = trouble;
+                if (tabToEl) tabToEl.innerText = turnover;
             }
 
             const filterResultCountEl = document.getElementById('filter-result-count');
-            if (filterResultCountEl) filterResultCountEl.innerText = targetValid;
+            if (filterResultCountEl) filterResultCountEl.innerText = total;
 
             const filterResultSchoolsEl = document.getElementById('filter-result-schools');
             if (filterResultSchoolsEl) filterResultSchoolsEl.innerText = totalSchools;
@@ -2995,7 +2566,7 @@
             if (troubleDot && troubleDesc) {
                 if (trouble > 0) {
                     troubleDot.className = 'w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0';
-                    troubleDesc.innerText = `${trouble} kendala`;
+                    troubleDesc.innerText = `${trouble} butuh perhatian`;
                     troubleDesc.className = 'truncate text-rose-600 font-semibold';
                 } else {
                     troubleDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shrink-0';
@@ -3113,17 +2684,16 @@
             const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             
-            const grossUnits = allRecords.length;
-            const turnOverUnits = allRecords.filter(r => r.isTurnOver).length;
-            const validTarget = grossUnits - turnOverUnits; // Target Unit yang Didapat (tidak termasuk turn over)
+            const totalUnits = allRecords.length;
+            const turnoverUnits = allRecords.filter(r => r.isTurnOver).length;
+            const validUnits = totalUnits - turnoverUnits;
             const installedUnits = allRecords.filter(r => r.isInstalled && !r.isTurnOver).length;
             const pendingUnits = allRecords.filter(r => !r.isInstalled && !r.isTurnOver).length;
-            const emergencyUnits = allRecords.filter(r => r.isEmergency && !r.isTurnOver && !r.isInstalled).length;
             const troubleUnits = allRecords.filter(r => r.isTrouble && !r.isTurnOver).length;
-            const pctInstalled = validTarget > 0 ? Math.round((installedUnits / validTarget) * 100) : 0;
-            const pctPending = validTarget > 0 ? Math.round((pendingUnits / validTarget) * 100) : 0;
+            const pctInstalled = validUnits > 0 ? Math.round((installedUnits / validUnits) * 100) : 0;
+            const pctPending = validUnits > 0 ? Math.round((pendingUnits / validUnits) * 100) : 0;
             
-            const totalSchools = allSchools.filter(s => s.totalUnits > 0).length;
+            const totalSchools = allSchools.length;
             const schoolsComplete = allSchools.filter(s => s.isFullyInstalled).length;
             const schoolsPending = allSchools.filter(s => s.isPending).length;
 
@@ -3131,22 +2701,18 @@
             report += `📅 Update: ${dateStr}, ${timeStr} WITA\n`;
             report += `------------------------------------\n\n`;
             report += `📊 *RINGKASAN EKSEKUTIF:*\n`;
-            report += `• Target Unit Didapat: *${validTarget} Unit IFP* (dari total ${grossUnits} data unit)\n`;
+            report += `• Target Unit Didapat: *${validUnits} Unit IFP* (${totalSchools} Titik Sekolah)\n`;
+            if (turnoverUnits > 0) {
+                report += `• Unit Turn Over (Hangus): *${turnoverUnits} Unit*\n`;
+            }
             report += `• Selesai Terpasang: *${installedUnits} Unit* (${pctInstalled}%) — ${schoolsComplete} Sekolah Tuntas\n`;
             report += `• Belum Terpasang: *${pendingUnits} Unit* (${pctPending}%) — ${schoolsPending} Sekolah Antrean\n`;
-            if (emergencyUnits > 0) {
-                report += `• 🚨 *Darurat Hari Ini (Kuning):* *${emergencyUnits} Unit* (Wajib Selesai Hari Ini!)\n`;
-            }
-            if (turnOverUnits > 0) {
-                report += `• 🚫 *Turn Over Kantor (Merah):* *${turnOverUnits} Unit* (Hangus — Tidak Dihitung Unit Didapat)\n`;
-            }
             report += `• Kendala Lapangan: *${troubleUnits} Unit*\n\n`;
 
             report += `🏫 *PROGRES PER SEKOLAH (${totalSchools} Lokasi):*\n`;
-            allSchools.filter(s => s.totalUnits > 0).forEach((s, idx) => {
-                const icon = s.isFullyInstalled ? '✅' : (s.installedUnits > 0 ? '🔄' : (s.isEmergency ? '⚡' : '⏳'));
-                const noteEmerg = s.isEmergency ? ' [🚨 DARURAT HARI INI]' : '';
-                report += `${idx + 1}. ${icon} *${s.name}*${noteEmerg}\n`;
+            allSchools.forEach((s, idx) => {
+                const icon = s.isFullyInstalled ? '✅' : (s.installedUnits > 0 ? '🔄' : '⏳');
+                report += `${idx + 1}. ${icon} *${s.name}*\n`;
                 report += `   Alokasi: ${s.installedUnits}/${s.totalUnits} Unit (${s.pct}%) | PIC: ${s.pic || '-'} (${s.telp || '-'})\n`;
                 report += `   Tim: ${s.timCode || '-'} | Teknisi: ${s.teknisi || '-'}\n`;
             });
@@ -3214,21 +2780,18 @@
             // Sync tab counts to the current mode
             const tabInstEl = document.getElementById('tab-count-installed');
             const tabPendEl = document.getElementById('tab-count-pending');
-            const tabEmergEl = document.getElementById('tab-count-emergency');
-            const tabTurnEl = document.getElementById('tab-count-turnover');
             const tabTroubEl = document.getElementById('tab-count-trouble');
+            const tabToEl = document.getElementById('tab-count-turnover');
             if (mode === 'school') {
                 if (tabInstEl) tabInstEl.innerText = currentFilteredSchools.installed.length;
                 if (tabPendEl) tabPendEl.innerText = currentFilteredSchools.pending.length;
-                if (tabEmergEl) tabEmergEl.innerText = currentFilteredSchools.emergency.length;
-                if (tabTurnEl) tabTurnEl.innerText = currentFilteredSchools.turnover.length;
                 if (tabTroubEl) tabTroubEl.innerText = currentFilteredSchools.trouble.length;
+                if (tabToEl) tabToEl.innerText = currentFilteredSchools.turnover.length;
             } else {
                 if (tabInstEl) tabInstEl.innerText = currentFilteredData.installed.length;
                 if (tabPendEl) tabPendEl.innerText = currentFilteredData.pending.length;
-                if (tabEmergEl) tabEmergEl.innerText = currentFilteredData.emergency.length;
-                if (tabTurnEl) tabTurnEl.innerText = currentFilteredData.turnover.length;
                 if (tabTroubEl) tabTroubEl.innerText = currentFilteredData.trouble.length;
+                if (tabToEl) tabToEl.innerText = currentFilteredData.turnover.length;
             }
 
             renderTheads();
@@ -3262,8 +2825,6 @@
         function renderTheads() {
             const theadInst = document.getElementById('installed-table-thead');
             const theadPend = document.getElementById('pending-table-thead');
-            const theadEmerg = document.getElementById('emergency-table-thead');
-            const theadTurn = document.getElementById('turnover-table-thead');
             const theadTroub = document.getElementById('trouble-table-thead');
 
             if (tableViewMode === 'school') {
@@ -3295,34 +2856,6 @@
                         </tr>
                     `;
                 }
-                if (theadEmerg) {
-                    theadEmerg.innerHTML = `
-                        <tr>
-                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
-                            <th class="py-3.5 px-4 w-36">Wilayah</th>
-                            <th class="py-3.5 px-4 w-40">Alokasi Darurat</th>
-                            <th class="py-3.5 px-4 w-44">Status Prioritas</th>
-                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
-                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
-                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
-                        </tr>
-                    `;
-                }
-                if (theadTurn) {
-                    theadTurn.innerHTML = `
-                        <tr>
-                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
-                            <th class="py-3.5 px-4 w-36">Wilayah</th>
-                            <th class="py-3.5 px-4 w-40">Unit Hangus TO</th>
-                            <th class="py-3.5 px-4 w-44">Keterangan Kantor</th>
-                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
-                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
-                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
-                        </tr>
-                    `;
-                }
                 if (theadTroub) {
                     theadTroub.innerHTML = `
                         <tr>
@@ -3331,6 +2864,21 @@
                             <th class="py-3.5 px-4 w-36">Wilayah</th>
                             <th class="py-3.5 px-4 w-40">Alokasi Unit IFP</th>
                             <th class="py-3.5 px-4 w-44">Detail Kendala</th>
+                            <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
+                            <th class="py-3.5 px-4 w-40">Kontak PIC</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
+                        </tr>
+                    `;
+                }
+                const theadTo = document.getElementById('turnover-table-thead');
+                if (theadTo) {
+                    theadTo.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 min-w-[220px]">Nama Sekolah / Titik Lokasi</th>
+                            <th class="py-3.5 px-4 w-36">Wilayah</th>
+                            <th class="py-3.5 px-4 w-40">Unit Turn Over</th>
+                            <th class="py-3.5 px-4 w-44">Keterangan</th>
                             <th class="py-3.5 px-4 w-44">Tim & Teknisi</th>
                             <th class="py-3.5 px-4 w-40">Kontak PIC</th>
                             <th class="py-3.5 px-4 w-32 text-center">Rincian</th>
@@ -3368,36 +2916,6 @@
                         </tr>
                     `;
                 }
-                if (theadEmerg) {
-                    theadEmerg.innerHTML = `
-                        <tr>
-                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
-                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
-                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
-                            <th class="py-3.5 px-4 w-32">Provinsi</th>
-                            <th class="py-3.5 px-4 w-40">Teknisi</th>
-                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
-                            <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
-                            <th class="py-3.5 px-4 w-36 text-center">Status / Aksi</th>
-                        </tr>
-                    `;
-                }
-                if (theadTurn) {
-                    theadTurn.innerHTML = `
-                        <tr>
-                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
-                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
-                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
-                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
-                            <th class="py-3.5 px-4 w-32">Provinsi</th>
-                            <th class="py-3.5 px-4 w-40">Teknisi</th>
-                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
-                            <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
-                            <th class="py-3.5 px-4 w-36 text-center">Status / Aksi</th>
-                        </tr>
-                    `;
-                }
                 if (theadTroub) {
                     theadTroub.innerHTML = `
                         <tr>
@@ -3412,6 +2930,22 @@
                         </tr>
                     `;
                 }
+                const theadTo = document.getElementById('turnover-table-thead');
+                if (theadTo) {
+                    theadTo.innerHTML = `
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">No.</th>
+                            <th class="py-3.5 px-4 w-44">ID Transaksi / NPSN</th>
+                            <th class="py-3.5 px-4 min-w-[200px]">Nama Sekolah & Alokasi Unit</th>
+                            <th class="py-3.5 px-4 w-36">Kab / Kota</th>
+                            <th class="py-3.5 px-4 w-32">Provinsi</th>
+                            <th class="py-3.5 px-4 w-40">Teknisi</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Tim</th>
+                            <th class="py-3.5 px-4 w-44">PIC & Kontak</th>
+                            <th class="py-3.5 px-4 w-32 text-center">Status</th>
+                        </tr>
+                    `;
+                }
             }
         }
 
@@ -3423,14 +2957,11 @@
                 const pend = getPagedItems(currentFilteredSchools.pending, currentPages.pending);
                 renderPendingSchoolTable(pend.rows, pend.startIdx);
 
-                const emerg = getPagedItems(currentFilteredSchools.emergency, currentPages.emergency);
-                renderEmergencySchoolTable(emerg.rows, emerg.startIdx);
-
-                const turn = getPagedItems(currentFilteredSchools.turnover, currentPages.turnover);
-                renderTurnOverSchoolTable(turn.rows, turn.startIdx);
-
                 const troub = getPagedItems(currentFilteredSchools.trouble, currentPages.trouble);
                 renderTroubleSchoolTable(troub.rows, troub.startIdx);
+
+                const to = getPagedItems(currentFilteredSchools.turnover, currentPages.turnover);
+                renderTurnOverSchoolTable(to.rows, to.startIdx);
             } else {
                 const inst = getPagedItems(currentFilteredData.installed, currentPages.installed);
                 renderInstalledTable(inst.rows, inst.startIdx);
@@ -3438,14 +2969,11 @@
                 const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
                 renderPendingTable(pend.rows, pend.startIdx);
 
-                const emerg = getPagedItems(currentFilteredData.emergency, currentPages.emergency);
-                renderEmergencyTable(emerg.rows, emerg.startIdx);
-
-                const turn = getPagedItems(currentFilteredData.turnover, currentPages.turnover);
-                renderTurnOverTable(turn.rows, turn.startIdx);
-
                 const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
                 renderTroubleTable(troub.rows, troub.startIdx);
+
+                const to = getPagedItems(currentFilteredData.turnover, currentPages.turnover);
+                renderTurnOverTable(to.rows, to.startIdx);
             }
         }
 
@@ -3462,15 +2990,12 @@
                 } else if (activeTab === 'pending') {
                     const pend = getPagedItems(currentFilteredSchools.pending, currentPages.pending);
                     renderPendingSchoolTable(pend.rows, pend.startIdx);
-                } else if (activeTab === 'emergency') {
-                    const emerg = getPagedItems(currentFilteredSchools.emergency, currentPages.emergency);
-                    renderEmergencySchoolTable(emerg.rows, emerg.startIdx);
-                } else if (activeTab === 'turnover') {
-                    const turn = getPagedItems(currentFilteredSchools.turnover, currentPages.turnover);
-                    renderTurnOverSchoolTable(turn.rows, turn.startIdx);
                 } else if (activeTab === 'trouble') {
                     const troub = getPagedItems(currentFilteredSchools.trouble, currentPages.trouble);
                     renderTroubleSchoolTable(troub.rows, troub.startIdx);
+                } else if (activeTab === 'turnover') {
+                    const to = getPagedItems(currentFilteredSchools.turnover, currentPages.turnover);
+                    renderTurnOverSchoolTable(to.rows, to.startIdx);
                 }
             } else {
                 if (activeTab === 'installed') {
@@ -3479,15 +3004,12 @@
                 } else if (activeTab === 'pending') {
                     const pend = getPagedItems(currentFilteredData.pending, currentPages.pending);
                     renderPendingTable(pend.rows, pend.startIdx);
-                } else if (activeTab === 'emergency') {
-                    const emerg = getPagedItems(currentFilteredData.emergency, currentPages.emergency);
-                    renderEmergencyTable(emerg.rows, emerg.startIdx);
-                } else if (activeTab === 'turnover') {
-                    const turn = getPagedItems(currentFilteredData.turnover, currentPages.turnover);
-                    renderTurnOverTable(turn.rows, turn.startIdx);
                 } else if (activeTab === 'trouble') {
                     const troub = getPagedItems(currentFilteredData.trouble, currentPages.trouble);
                     renderTroubleTable(troub.rows, troub.startIdx);
+                } else if (activeTab === 'turnover') {
+                    const to = getPagedItems(currentFilteredData.turnover, currentPages.turnover);
+                    renderTurnOverTable(to.rows, to.startIdx);
                 }
             }
             renderPagination();
@@ -3502,9 +3024,8 @@
             pageSize = val === 'all' ? 'all' : parseInt(val, 10);
             currentPages.installed = 1;
             currentPages.pending = 1;
-            currentPages.emergency = 1;
-            currentPages.turnover = 1;
             currentPages.trouble = 1;
+            currentPages.turnover = 1;
             renderAllTables();
             renderPagination();
         }
@@ -3602,16 +3123,14 @@
             const wrappers = [
                 document.getElementById('installed-table-wrapper'),
                 document.getElementById('pending-table-wrapper'),
-                document.getElementById('emergency-table-wrapper'),
-                document.getElementById('turnover-table-wrapper'),
-                document.getElementById('trouble-table-wrapper')
+                document.getElementById('trouble-table-wrapper'),
+                document.getElementById('turnover-table-wrapper')
             ];
             const cardContainers = [
                 document.getElementById('installed-mobile-cards'),
                 document.getElementById('pending-mobile-cards'),
-                document.getElementById('emergency-mobile-cards'),
-                document.getElementById('turnover-mobile-cards'),
-                document.getElementById('trouble-mobile-cards')
+                document.getElementById('trouble-mobile-cards'),
+                document.getElementById('turnover-mobile-cards')
             ];
 
             if (mode === 'cards') {
@@ -3680,9 +3199,6 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <span>Terpasang</span>
                         </span>
-                        <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="mt-1 text-[10px] text-slate-400 hover:text-blue-700 block mx-auto underline cursor-pointer" title="Klik untuk mengubah penandaan warna (Normal / Darurat Kuning / Turn Over Merah)">
-                            ${row.tag === 'turnover' ? '🔴 TO' : (row.tag === 'darurat' ? '🟡 Darurat' : '🏷️ Tag')}
-                        </button>
                     </td>
                 </tr>
             `).join('');
@@ -3695,13 +3211,10 @@
                                 <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
                                 <span class="text-xs sm:text-sm font-mono font-bold text-blue-700 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span>Terpasang</span>
-                                </span>
-                                <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="p-1 text-slate-400 hover:text-blue-600 text-xs rounded border border-slate-200 cursor-pointer" title="Ubah tag">🏷️</button>
-                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span>Terpasang</span>
+                            </span>
                         </div>
 
                         <div class="flex items-center gap-2 flex-wrap mb-1">
@@ -3755,24 +3268,15 @@
             empty.classList.add('hidden');
 
             tbody.innerHTML = items.map((row, idx) => `
-                <tr class="hover:bg-slate-50/80 transition-colors ${row.isEmergency ? 'bg-amber-50/30' : ''}">
-                    <td class="py-3.5 px-4 text-center font-mono ${row.isEmergency ? 'text-amber-800 font-bold' : 'text-slate-400 font-semibold'}">${startIdx + idx + 1}</td>
-                    <td class="py-3.5 px-4 font-mono font-bold ${row.isEmergency ? 'text-amber-900' : 'text-blue-700'} whitespace-nowrap">
-                        ${escapeHtml(row.id)}
-                        ${row.isEmergency ? `<span class="block text-[10px] text-amber-700 font-sans font-bold">⚡ PRIORITAS HARI INI</span>` : ''}
-                    </td>
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">${escapeHtml(row.id)}</td>
                     <td class="py-3.5 px-4">
                         <div class="font-bold text-slate-900 leading-snug">${escapeHtml(row.nama)}</div>
                         <div class="mt-1 flex items-center gap-1.5 flex-wrap">
-                            ${row.isEmergency ? `
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
-                                    🚨 Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1} (Wajib Selesai Hari Ini)
-                                </span>
-                            ` : `
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                    Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
-                                </span>
-                            `}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
+                            </span>
                             ${row.schoolTotalUnits > 1 ? `<span class="text-[10px] text-slate-400 font-medium">Alokasi ${row.schoolTotalUnits} Unit IFP</span>` : ''}
                         </div>
                     </td>
@@ -3785,51 +3289,31 @@
                         ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-xs font-mono text-blue-600 hover:text-blue-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(row.telp)}</a>` : ''}
                     </td>
                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                        ${row.isEmergency ? `
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 animate-pulse">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                <span>Darurat Hari Ini</span>
-                            </span>
-                        ` : `
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                <span>Belum Pasang</span>
-                            </span>
-                        `}
-                        <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="mt-1 text-[10px] text-slate-400 hover:text-blue-700 block mx-auto underline cursor-pointer" title="Ubah status warna (Normal / Darurat Kuning / Turn Over Merah)">
-                            ${row.tag === 'darurat' ? '🟡 Darurat' : (row.tag === 'turnover' ? '🔴 Turn Over' : '🏷️ Beri Warna')}
-                        </button>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span>Belum Pasang</span>
+                        </span>
                     </td>
                 </tr>
             `).join('');
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 border ${row.isEmergency ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200/90'} shadow-xs hover:border-amber-300 transition-all">
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:border-amber-300 transition-all">
                         <div class="flex items-center justify-between gap-2 mb-2.5">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
-                                <span class="text-xs sm:text-sm font-mono font-bold ${row.isEmergency ? 'text-amber-900 bg-amber-100 border border-amber-200' : 'text-blue-700 bg-blue-50/80 border border-blue-100'} px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
+                                <span class="text-xs sm:text-sm font-mono font-bold text-blue-700 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                ${row.isEmergency ? `
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-200 text-amber-950 border border-amber-400 animate-pulse">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-                                        <span>Darurat Hari Ini</span>
-                                    </span>
-                                ` : `
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                        <span>Belum Pasang</span>
-                                    </span>
-                                `}
-                                <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="p-1 text-slate-400 hover:text-amber-700 text-xs rounded border border-slate-200 cursor-pointer" title="Ubah tag">🏷️</button>
-                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span>Belum Pasang</span>
+                            </span>
                         </div>
 
                         <div class="flex items-center gap-2 flex-wrap mb-1">
                             <h4 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(row.nama)}</h4>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold ${row.isEmergency ? 'bg-amber-100 text-amber-950 border border-amber-300' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                                 Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
                             </span>
                         </div>
@@ -3837,13 +3321,6 @@
                         <div class="text-xs sm:text-sm text-slate-500 font-medium mb-3 flex items-center gap-1.5">
                             <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
                         </div>
-
-                        ${row.isEmergency ? `
-                            <div class="p-2.5 bg-amber-100/70 border border-amber-300 rounded-xl text-xs text-amber-950 font-bold mb-3 flex items-center gap-2">
-                                <span>⚡</span>
-                                <span>Darurat Instalasi: Wajib diselesaikan hari ini juga!</span>
-                            </div>
-                        ` : ''}
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-100">
                             <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
@@ -3860,7 +3337,7 @@
                         </div>
 
                         ${row.telp ? `
-                            <a href="tel:${escapeHtml(row.telp)}" class="mt-3 w-full py-2.5 px-4 ${row.isEmergency ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2">
+                            <a href="tel:${escapeHtml(row.telp)}" class="mt-3 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                 <span>Hubungi PIC: ${escapeHtml(row.telp)}</span>
                             </a>
@@ -4233,115 +3710,6 @@
             }
         }
 
-        // ========================================================
-        // RENDERING EMERGENCY (KUNING) & TURN OVER (MERAH) TABLES
-        // ========================================================
-        function renderEmergencyTable(items, startIdx = 0) {
-            const tbody = document.getElementById('emergency-table-body');
-            const mobileContainer = document.getElementById('emergency-mobile-cards');
-            const empty = document.getElementById('emergency-empty');
-            tbody.innerHTML = '';
-            if (mobileContainer) mobileContainer.innerHTML = '';
-
-            if (items.length === 0) {
-                empty.innerText = '🎉 Tidak ada unit darurat. Semua instalasi hari ini berjalan normal!';
-                empty.classList.remove('hidden');
-                return;
-            }
-            empty.classList.add('hidden');
-
-            tbody.innerHTML = items.map((row, idx) => `
-                <tr class="hover:bg-amber-50/60 transition-colors bg-amber-50/20">
-                    <td class="py-3.5 px-4 text-center font-mono text-amber-700 font-bold">${startIdx + idx + 1}</td>
-                    <td class="py-3.5 px-4 font-mono font-bold text-amber-900 whitespace-nowrap">
-                        ${escapeHtml(row.id)}
-                        <span class="block text-[10px] text-amber-700 font-sans font-bold">⚡ PRIORITAS HARI INI</span>
-                    </td>
-                    <td class="py-3.5 px-4">
-                        <div class="font-bold text-slate-900 leading-snug">${escapeHtml(row.nama)}</div>
-                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
-                                🚨 Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1} (Wajib Selesai Hari Ini)
-                            </span>
-                            ${row.schoolTotalUnits > 1 ? `<span class="text-[10px] text-slate-400 font-medium">Alokasi ${row.schoolTotalUnits} Unit IFP</span>` : ''}
-                        </div>
-                    </td>
-                    <td class="py-3.5 px-4 font-semibold text-slate-700 whitespace-nowrap">${escapeHtml(row.kab)}</td>
-                    <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
-                    <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
-                    <td class="py-3.5 px-4 text-center whitespace-nowrap">${getTimBadge(row.timCode)}</td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-bold text-slate-800">${escapeHtml(row.pic || '-')}</div>
-                        ${row.telp ? `<a href="tel:${escapeHtml(row.telp)}" class="text-xs font-mono text-amber-700 hover:text-amber-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(row.telp)}</a>` : ''}
-                    </td>
-                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 animate-pulse">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            <span>Darurat Hari Ini</span>
-                        </span>
-                        <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="mt-1 text-[11px] text-slate-500 hover:text-blue-700 underline block mx-auto cursor-pointer" title="Klik untuk mengubah penandaan warna">Ubah Status</button>
-                    </td>
-                </tr>
-            `).join('');
-
-            if (mobileContainer) {
-                mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-amber-50/40 rounded-2xl p-4 sm:p-5 border-2 border-amber-300 shadow-xs hover:border-amber-400 transition-all">
-                        <div class="flex items-center justify-between gap-2 mb-2.5">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-xs font-mono font-bold bg-amber-200 text-amber-950 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
-                                <span class="text-xs sm:text-sm font-mono font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-md">${escapeHtml(row.id)}</span>
-                            </div>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-200 text-amber-950 border border-amber-400 animate-pulse">
-                                <span class="w-2 h-2 rounded-full bg-amber-600"></span>
-                                <span>Darurat Hari Ini</span>
-                            </span>
-                        </div>
-
-                        <div class="flex items-center gap-2 flex-wrap mb-1">
-                            <h4 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(row.nama)}</h4>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300">
-                                Unit ${row.unitIndex || 1} dari ${row.schoolTotalUnits || 1}
-                            </span>
-                        </div>
-                        
-                        <div class="text-xs sm:text-sm text-slate-600 font-medium mb-3 flex items-center gap-1.5">
-                            <span>📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</span>
-                        </div>
-
-                        <div class="p-3 bg-amber-100/70 rounded-xl border border-amber-300 text-xs text-amber-950 font-bold mb-3 flex items-center gap-2">
-                            <span>⚡</span>
-                            <span>Instalasi Darurat: Wajib selesai dipasang hari ini juga!</span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-3 border-t border-amber-200/60">
-                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-white rounded-xl p-2.5 border border-amber-200">
-                                <span class="text-slate-500 font-medium">Teknisi:</span>
-                                <div class="flex items-center gap-1.5 truncate">
-                                    <span class="font-bold text-slate-800 truncate">${escapeHtml(row.teknisi)}</span>
-                                    ${getTimBadge(row.timCode)}
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between sm:justify-start gap-2 bg-white rounded-xl p-2.5 border border-amber-200">
-                                <span class="text-slate-500 font-medium">PIC:</span>
-                                <span class="font-bold text-slate-800 truncate">${escapeHtml(row.pic || '-')}</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 flex items-center gap-2">
-                            ${row.telp ? `
-                                <a href="tel:${escapeHtml(row.telp)}" class="flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                    <span>Hubungi PIC: ${escapeHtml(row.telp)}</span>
-                                </a>
-                            ` : ''}
-                            <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="py-2.5 px-3 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer" title="Ubah status">🏷️ Ubah</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
         function renderTurnOverTable(items, startIdx = 0) {
             const tbody = document.getElementById('turnover-table-body');
             const mobileContainer = document.getElementById('turnover-mobile-cards');
@@ -4350,150 +3718,59 @@
             if (mobileContainer) mobileContainer.innerHTML = '';
 
             if (items.length === 0) {
-                empty.innerText = 'Tidak ada unit hangus / turn over kantor.';
+                empty.innerText = 'Tidak ada unit turn over / hangus kantor.';
                 empty.classList.remove('hidden');
                 return;
             }
             empty.classList.add('hidden');
 
-            tbody.innerHTML = items.map((row, idx) => `
-                <tr class="hover:bg-rose-50/60 transition-colors bg-rose-50/20 text-slate-600">
-                    <td class="py-3.5 px-4 text-center font-mono text-rose-400 font-semibold">${startIdx + idx + 1}</td>
-                    <td class="py-3.5 px-4 font-mono font-semibold text-rose-800 whitespace-nowrap">
-                        <span class="line-through">${escapeHtml(row.id)}</span>
-                        <span class="block text-[10px] text-rose-600 font-sans font-bold">🚫 HANGUS TO KANTOR</span>
-                    </td>
+            tbody.innerHTML = items.map((r, idx) => `
+                <tr class="hover:bg-rose-50/40 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-slate-800 text-xs">${escapeHtml(r.id || '-')}</td>
                     <td class="py-3.5 px-4">
-                        <div class="font-bold text-slate-800 leading-snug line-through opacity-80">${escapeHtml(row.nama)}</div>
-                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                                🚫 Dikecualikan dari Target Unit Didapat
-                            </span>
-                        </div>
+                        <div class="font-bold text-slate-900 leading-snug">${escapeHtml(r.nama)}</div>
                     </td>
-                    <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap">${escapeHtml(row.kab)}</td>
-                    <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(row.prov)}</td>
-                    <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap">${escapeHtml(row.teknisi)}</td>
-                    <td class="py-3.5 px-4 text-center whitespace-nowrap opacity-70">${getTimBadge(row.timCode)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap text-slate-600">${escapeHtml(r.kab)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap text-slate-600">${escapeHtml(r.prov)}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap text-slate-700 font-medium">👤 ${escapeHtml(r.teknisi)}</td>
+                    <td class="py-3.5 px-4 text-center whitespace-nowrap">${getTimBadge(r.timCode)}</td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-semibold text-slate-700">${escapeHtml(row.pic || '-')}</div>
-                        ${row.telp ? `<span class="text-xs font-mono text-slate-400 mt-0.5 block">📞 ${escapeHtml(row.telp)}</span>` : ''}
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(r.pic || '-')}</div>
+                        ${r.telp ? `<a href="tel:${escapeHtml(r.telp)}" class="text-xs font-mono text-slate-500 hover:text-blue-600 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(r.telp)}</a>` : ''}
                     </td>
                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                            <span>Hangus TO</span>
+                        <span class="badge-pill bg-rose-100 text-rose-800 border border-rose-200">
+                            🚫 Turn Over
                         </span>
-                        <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="mt-1 text-[11px] text-blue-600 hover:text-blue-800 underline block mx-auto cursor-pointer" title="Klik untuk mengembalikan ke status normal atau darurat">Pulihkan / Ubah</button>
                     </td>
                 </tr>
             `).join('');
 
             if (mobileContainer) {
-                mobileContainer.innerHTML = items.map((row, idx) => `
-                    <div class="bg-rose-50/30 rounded-2xl p-4 sm:p-5 border border-rose-200 shadow-xs transition-all">
-                        <div class="flex items-center justify-between gap-2 mb-2.5">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-xs font-mono font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
-                                <span class="text-xs sm:text-sm font-mono font-bold text-rose-800 bg-white border border-rose-200 px-2 py-0.5 rounded-md line-through">${escapeHtml(row.id)}</span>
-                            </div>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                                <span>🚫 Hangus TO</span>
-                            </span>
-                        </div>
-
-                        <h4 class="font-bold text-slate-700 text-base leading-snug mb-1 line-through opacity-80">${escapeHtml(row.nama)}</h4>
-                        <div class="text-xs text-slate-500 font-medium mb-2.5">📍 ${escapeHtml(row.kab)}, ${escapeHtml(row.prov)}</div>
-
-                        <div class="p-3 bg-rose-100/70 border border-rose-200 rounded-xl text-xs text-rose-950 font-bold mb-3 flex items-center gap-2">
-                            <span>ℹ️</span>
-                            <span>Status Turn Over: Unit ini ditarik kembali oleh kantor dan TIDAK DIHITUNG dalam capaian unit didapat.</span>
-                        </div>
-
-                        <div class="flex items-center justify-between text-xs pt-3 border-t border-rose-200/60">
-                            <span class="text-slate-600">Teknisi: <strong class="text-slate-800">${escapeHtml(row.teknisi)}</strong></span>
-                            <button onclick="cycleUnitTag('${encodeAttr(row.id || row.nama)}')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-blue-700 rounded-xl font-bold text-xs shadow-xs transition cursor-pointer">
-                                Pulihkan / Ganti
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderEmergencySchoolTable(items, startIdx = 0) {
-            const tbody = document.getElementById('emergency-table-body');
-            const mobileContainer = document.getElementById('emergency-mobile-cards');
-            const empty = document.getElementById('emergency-empty');
-            tbody.innerHTML = '';
-            if (mobileContainer) mobileContainer.innerHTML = '';
-
-            if (items.length === 0) {
-                empty.innerText = 'Tidak ada sekolah dengan instalasi darurat hari ini.';
-                empty.classList.remove('hidden');
-                return;
-            }
-            empty.classList.add('hidden');
-
-            tbody.innerHTML = items.map((s, idx) => `
-                <tr class="hover:bg-amber-50/60 transition-colors bg-amber-50/20">
-                    <td class="py-3.5 px-4 text-center font-mono text-amber-700 font-bold">${startIdx + idx + 1}</td>
-                    <td class="py-3.5 px-4">
-                        <div class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(s.name)}</div>
-                        <div class="text-[11px] text-amber-800 font-mono mt-0.5 font-bold">⚡ PRIORITAS INSTALASI HARI INI</div>
-                    </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-semibold text-slate-700">${escapeHtml(s.kab)}</div>
-                        <div class="text-xs text-slate-500">${escapeHtml(s.prov)}</div>
-                    </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-extrabold text-amber-900 font-mono text-sm">${s.emergencyUnits} Unit Darurat</div>
-                        <div class="text-[11px] font-semibold text-slate-500">dari total ${s.totalUnits} unit didapat</div>
-                    </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 animate-pulse">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            <span>Wajib Selesai Hari Ini</span>
-                        </span>
-                    </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="flex items-center gap-1.5 mb-1">${getTimBadge(s.timCode)}</div>
-                        <div class="text-xs font-semibold text-slate-800 truncate">👤 ${escapeHtml(s.teknisi)}</div>
-                    </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(s.pic || '-')}</div>
-                        ${s.telp ? `<a href="tel:${escapeHtml(s.telp)}" class="text-xs font-mono text-amber-700 hover:text-amber-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(s.telp)}</a>` : ''}
-                    </td>
-                    <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-xs cursor-pointer">
-                            <span>Lihat ${s.emergencyUnits} Unit</span>
-                            <span>&rarr;</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-
-            if (mobileContainer) {
-                mobileContainer.innerHTML = items.map((s, idx) => `
-                    <div class="bg-amber-50/40 rounded-2xl p-4 sm:p-5 border-2 border-amber-300 shadow-xs transition-all">
+                mobileContainer.innerHTML = items.map((r, idx) => `
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-rose-200/90 shadow-xs transition-all">
                         <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-mono font-bold bg-amber-200 text-amber-950 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-200 text-amber-950 border border-amber-400 animate-pulse">
-                                <span>Darurat Hari Ini</span>
+                            <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                            <span class="badge-pill bg-rose-100 text-rose-800 border border-rose-200">
+                                🚫 Turn Over Kantor
                             </span>
                         </div>
-                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(s.name)}</h4>
-                        <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)}</div>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(r.nama)}</h4>
+                        <div class="text-xs text-slate-500 font-mono mb-3">ID: ${escapeHtml(r.id || '-')} &middot; 📍 ${escapeHtml(r.wilayah)}</div>
 
-                        <div class="p-3 bg-amber-100 rounded-xl border border-amber-300 mb-3 text-xs flex justify-between items-center">
-                            <span class="font-bold text-amber-950">Unit Darurat Hari Ini:</span>
-                            <span class="font-extrabold text-amber-900 font-mono text-sm">${s.emergencyUnits} Unit</span>
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-2.5 border-t border-slate-100">
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Tim & Teknisi</span>
+                                <div class="mt-0.5 flex items-center gap-1">${getTimBadge(r.timCode)}</div>
+                                <span class="font-semibold text-slate-700 mt-1 block truncate">👤 ${escapeHtml(r.teknisi)}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Kontak PIC</span>
+                                <span class="font-semibold text-slate-700 block truncate mt-0.5">${escapeHtml(r.pic || '-')}</span>
+                                ${r.telp ? `<a href="tel:${escapeHtml(r.telp)}" class="text-blue-600 font-mono font-bold hover:underline block truncate mt-0.5">📞 ${escapeHtml(r.telp)}</a>` : ''}
+                            </div>
                         </div>
-
-                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <span>Buka Rincian ${s.emergencyUnits} Unit Darurat</span>
-                            <span>&rarr;</span>
-                        </button>
                     </div>
                 `).join('');
             }
@@ -4514,35 +3791,33 @@
             empty.classList.add('hidden');
 
             tbody.innerHTML = items.map((s, idx) => `
-                <tr class="hover:bg-rose-50/60 transition-colors bg-rose-50/20 text-slate-600">
-                    <td class="py-3.5 px-4 text-center font-mono text-rose-400 font-semibold">${startIdx + idx + 1}</td>
+                <tr class="hover:bg-rose-50/40 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-slate-400 font-semibold">${startIdx + idx + 1}</td>
                     <td class="py-3.5 px-4">
-                        <div class="font-bold text-slate-800 text-sm leading-snug line-through opacity-80">${escapeHtml(s.name)}</div>
-                        <div class="text-[11px] text-rose-600 font-mono mt-0.5">🚫 Turn Over Kantor</div>
+                        <div class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(s.name)}</div>
                     </td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
                         <div class="font-semibold text-slate-700">${escapeHtml(s.kab)}</div>
                         <div class="text-xs text-slate-500">${escapeHtml(s.prov)}</div>
                     </td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-extrabold text-rose-700 font-mono text-sm">${s.turnOverUnits} Unit Hangus</div>
-                        <div class="text-[11px] font-semibold text-slate-400">Total terdaftar: ${s.grossUnits} unit</div>
+                        <div class="font-extrabold text-rose-700 font-mono text-sm">${s.turnOverUnits} Unit Turn Over</div>
                     </td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-100 px-2 py-0.5 rounded border border-rose-200">
-                            🚫 Tidak Dihitung Target Didapat
+                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                            🚫 Dialihkan Kantor
                         </span>
                     </td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="flex items-center gap-1.5 mb-1 opacity-70">${getTimBadge(s.timCode)}</div>
-                        <div class="text-xs font-semibold text-slate-600 truncate">👤 ${escapeHtml(s.teknisi)}</div>
+                        <div class="flex items-center gap-1.5 mb-1">${getTimBadge(s.timCode)}</div>
+                        <div class="text-xs font-semibold text-slate-800 truncate">👤 ${escapeHtml(s.teknisi)}</div>
                     </td>
                     <td class="py-3.5 px-4 whitespace-nowrap">
-                        <div class="font-bold text-slate-700 text-xs">${escapeHtml(s.pic || '-')}</div>
-                        ${s.telp ? `<span class="text-xs font-mono text-slate-400 mt-0.5 block">📞 ${escapeHtml(s.telp)}</span>` : ''}
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(s.pic || '-')}</div>
+                        ${s.telp ? `<a href="tel:${escapeHtml(s.telp)}" class="text-xs font-mono text-blue-600 hover:text-blue-800 transition flex items-center gap-1 font-semibold mt-0.5">📞 ${escapeHtml(s.telp)}</a>` : ''}
                     </td>
                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-bold border border-rose-200 transition shadow-xs cursor-pointer">
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200 transition shadow-xs cursor-pointer">
                             <span>Lihat ${s.turnOverUnits} Unit</span>
                             <span>&rarr;</span>
                         </button>
@@ -4552,18 +3827,18 @@
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = items.map((s, idx) => `
-                    <div class="bg-rose-50/30 rounded-2xl p-4 sm:p-5 border border-rose-200 shadow-xs transition-all">
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-rose-200/90 shadow-xs transition-all">
                         <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-mono font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
+                            <span class="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#${startIdx + idx + 1}</span>
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                                <span>Hangus TO Kantor</span>
+                                <span>Turn Over Kantor</span>
                             </span>
                         </div>
-                        <h4 class="font-bold text-slate-700 text-base leading-snug mb-1 line-through opacity-80">${escapeHtml(s.name)}</h4>
-                        <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)} &middot; ${s.turnOverUnits} Unit Hangus</div>
+                        <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">${escapeHtml(s.name)}</h4>
+                        <div class="text-xs text-slate-500 font-medium mb-3">📍 ${escapeHtml(s.kab)}, ${escapeHtml(s.prov)} &middot; ${s.turnOverUnits} Unit Turn Over</div>
 
-                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-rose-100 hover:bg-rose-200 text-rose-900 rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <span>Buka Rincian ${s.turnOverUnits} Unit Hangus</span>
+                        <button onclick="filterSchoolUnits(this)" data-school="${encodeAttr(s.name)}" class="w-full py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-xl text-xs font-bold border border-rose-200 shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span>Buka Rincian ${s.turnOverUnits} Unit Turn Over</span>
                             <span>&rarr;</span>
                         </button>
                     </div>
@@ -4578,19 +3853,17 @@
             activeTab = tab;
             document.getElementById('installed-section').classList.add('hidden');
             document.getElementById('pending-section').classList.add('hidden');
-            document.getElementById('emergency-section').classList.add('hidden');
-            document.getElementById('turnover-section').classList.add('hidden');
             document.getElementById('trouble-section').classList.add('hidden');
+            document.getElementById('turnover-section').classList.add('hidden');
 
             const btnInstalled = document.getElementById('tab-installed');
             const btnPending = document.getElementById('tab-pending');
-            const btnEmergency = document.getElementById('tab-emergency');
-            const btnTurnOver = document.getElementById('tab-turnover');
             const btnTrouble = document.getElementById('tab-trouble');
+            const btnTurnOver = document.getElementById('tab-turnover');
 
             // Reset active styles
             const normalCls = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer';
-            [btnInstalled, btnPending, btnEmergency, btnTurnOver, btnTrouble].forEach(btn => {
+            [btnInstalled, btnPending, btnTrouble, btnTurnOver].forEach(btn => {
                 if (btn) btn.className = normalCls;
             });
 
@@ -4600,15 +3873,12 @@
             } else if (tab === 'pending') {
                 document.getElementById('pending-section').classList.remove('hidden');
                 btnPending.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-amber-700 shadow-xs cursor-pointer';
-            } else if (tab === 'emergency') {
-                document.getElementById('emergency-section').classList.remove('hidden');
-                btnEmergency.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-amber-500 text-white shadow-xs cursor-pointer';
-            } else if (tab === 'turnover') {
-                document.getElementById('turnover-section').classList.remove('hidden');
-                btnTurnOver.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-rose-600 text-white shadow-xs cursor-pointer';
             } else if (tab === 'trouble') {
                 document.getElementById('trouble-section').classList.remove('hidden');
                 btnTrouble.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-rose-700 shadow-xs cursor-pointer';
+            } else if (tab === 'turnover') {
+                document.getElementById('turnover-section').classList.remove('hidden');
+                btnTurnOver.className = 'px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-rose-800 shadow-xs cursor-pointer';
             }
 
             renderPagination();
